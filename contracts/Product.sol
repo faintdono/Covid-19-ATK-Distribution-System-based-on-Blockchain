@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
 contract Manufacturer {
@@ -44,7 +45,9 @@ contract Manufacturer {
         lotIdarr.push(_LotID);
     }
 
-    function getProduct(string memory _LotID)
+    function getProduct(
+        string memory _LotID
+    )
         public
         view
         returns (

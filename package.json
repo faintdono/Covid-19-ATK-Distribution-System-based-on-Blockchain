@@ -1,0 +1,30 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "description": "Covid-19 Antigen Test Kit Distribution System based-on Blockchain Technology",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/faintdono/Covid-19-ATK-Distribution-System-based-on-Blockchain.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/faintdono/Covid-19-ATK-Distribution-System-based-on-Blockchain/issues"
+  },
+  "homepage": "https://github.com/faintdono/Covid-19-ATK-Distribution-System-based-on-Blockchain#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.1",
+    "@nomiclabs/hardhat-ethers": "^2.2.2",
+    "@nomiclabs/hardhat-truffle5": "^2.0.7",
+    "@nomiclabs/hardhat-web3": "^2.0.0",
+    "hardhat": "^2.12.6",
+    "web3": "^1.8.1"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3"
+  }
+}
