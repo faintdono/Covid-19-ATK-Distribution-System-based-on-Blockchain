@@ -11,15 +11,15 @@ services:
               "--rpc-http-enabled",
               "--rpc-http-cors-origins=*",
               "--rpc-http-api=ETH,NET,CLIQUE,DEBUG,MINER,NET,PERM,ADMIN,EEA,TXPOOL,PRIV,WEB3",
-              "--engine-jwt-secret=jwtsecret.hex",
+              "--engine-jwt-secret=/var/lib/besu/data/jwtsecret",
               "--engine-host-allowlist=*",
               "--engine-rpc-enabled=true"]
     volumes:
       - ./besu:/var/lib/besu/data
     ports:
       # Map the p2p port(30303), RPC HTTP port(8545), and engine port (8551)
-      - "18545:8545"
-      - "18551:8551"
+      - "8545:8545"
+      - "8551:8551"
       - "30303:30303/tcp"
       - "30303:30303/udp"
 
@@ -29,10 +29,10 @@ services:
     image: consensys/teku:latest
     command: ["--network=goerli",
               "--data-base-path=/var/lib/teku/data",
-              "--validators-proposer-default-fee-recipient=YOUR_WALLET",
+              "--validators-proposer-default-fee-recipient=0x984B88E1c2B08f073964ecDB6C9a5773207E352d",
               "--ee-endpoint=http://besu_node:8551",
-              "--ee-jwt-secret-file=/var/lib/teku/data/token.txt",
-              "--validator-keys=/var/lib/teku/data/validator/keys:/var/lib/teku/data/validator/passwords",
+              "--ee-jwt-secret-file=/var/lib/teku/data/jwtsecret",
+              "--validator-keys=/var/lib/teku/data/validator/keys/keystore-m_12381_3600_0_0_0-1674491238.json:/var/lib/teku/data/validator/passwords",
               "--p2p-port=9000",
               "--rest-api-enabled=true",
               "--rest-api-docs-enabled=true"]
