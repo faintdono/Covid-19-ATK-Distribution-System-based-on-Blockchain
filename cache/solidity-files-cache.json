@@ -1,8 +1,8 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "D:\\Workspace\\project\\contracts\\Product.sol": {
-      "lastModificationDate": 1674414156858,
+    "C:\\Users\\Jj\\Desktop\\Covid-19-ATK-Distribution-System-based-on-Blockchain\\contracts\\Product.sol": {
+      "lastModificationDate": 1674487044686,
       "contentHash": "8e0c1c6dd20ff3188528ab359e4a0241",
       "sourceName": "contracts/Product.sol",
       "solcConfig": {
@@ -34,41 +34,6 @@
       ],
       "artifacts": [
         "Manufacturer"
-      ]
-    },
-    "D:\\Workspace\\project\\contracts\\Token.sol": {
-      "lastModificationDate": 1674421442809,
-      "contentHash": "4d6674d46fbb74ce71972f4c45a34698",
-      "sourceName": "contracts/Token.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.9"
-      ],
-      "artifacts": [
-        "Token"
       ]
     }
   }
