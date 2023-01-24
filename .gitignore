@@ -131,11 +131,11 @@ dist
 
 # artifacts
 artifacts/
-cahche/
+cache/
 
 # key
 jwtsecret.hex
 
 # docker
-./Docker/besu/*
-./Docker/teku/*
+Docker/besu
+Docker/teku
