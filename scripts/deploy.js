@@ -3,7 +3,7 @@ const { ethers } = require("hardhat");
 require("dotenv").config();
 
 async function main() {
-  const [deployer] = await ethers.getSigners();
+  const deployer = await ethers.getSigner();
   console.log("Deploying contracts with the account:", deployer.address);
 
   const Registry = await ethers.getContractFactory("Registry");
