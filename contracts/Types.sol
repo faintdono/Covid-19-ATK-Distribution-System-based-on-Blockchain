@@ -3,10 +3,10 @@ pragma solidity ^0.8.0;
 
 library Types {
     enum UserRole {
-        Manufacturer,
-        Supplier,
-        Vendor,
-        Custommer
+        manufacturer,
+        distributor,
+        wholesaler,
+        retailer
     }
 
     struct UserDetails {
@@ -19,24 +19,24 @@ library Types {
     //enum ProductType {}
 
     struct UserHistory {
-        address id_;
+        address id;
+        uint256 amount;
         uint256 date;
     }
 
     struct ProductHistory {
         UserHistory manufacturer;
-        UserHistory supplier;
-        UserHistory vendor;
-        UserHistory[] customers;
+        UserHistory[] distributor;
+        UserHistory[] wholesaler;
+        UserHistory[] retailer;
     }
 
     struct Product {
-        string LotID;
-        string ManufacturerName;
-        address Manufacturer;
-        string ManufacturingDate;
-        string ExpiryDate;
-        uint256 ProductAmount;
-        string Status;
+        string lotID;
+        string manufacturerName;
+        address manufacturer;
+        string manufacturingDate;
+        string expiryDate;
+        uint256 productAmount;
     }
 }
