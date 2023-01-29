@@ -18,9 +18,7 @@ contract Products {
         uint256 productAmount
     );
 
-    function createProduct(
-        Types.Product memory _product
-    ) internal {
+    function createProduct(Types.Product memory _product) internal {
         require(
             _product.manufacturer == msg.sender,
             "Only manufacturer can add"
@@ -45,31 +43,36 @@ contract Products {
         address _partyID,
         string memory _lotID,
         uint256 _amount,
-        Types.UserDetails memory _party,
+        Types.UserDetails memory _party
     ) internal {
-        Types.Product memory product_ = product[barcodeId_];
+        Types.Product memory product_ = product[_lotID];
 
         // Updating product history
         Types.UserHistory memory _userHistory = Types.UserHistory({
-            id_: _party.id,
+            id: _partyID,
             amount: _amount,
             date: block.timestamp
         });
-        if (Types.UserRole(_party.role) == Types.UserRole.Supplier) {
+        if (Types.UserRole(_party.role) == Types.UserRole.distributor) {
             productHistory[_lotID].distributor.push(_userHistory);
-        } else if (Types.UserRole(party_.role) == Types.UserRole.Vendor) {
+        } else if (Types.UserRole(_party.role) == Types.UserRole.wholesaler) {
             productHistory[_lotID].wholesaler.push(_userHistory);
-        } else if (Types.UserRole(party_.role) == Types.UserRole.Customer) {
+        } else if (Types.UserRole(_party.role) == Types.UserRole.retailer) {
             productHistory[_lotID].retailer.push(_userHistory);
         } else {
             // Not in the assumption scope
             revert("Not valid operation");
         }
         verify(_lotID);
-        
+    }
+
     function verify(string memory _lotID) internal view returns (bool) {
         uint256 total;
-        for (uint256 i = 0; i < productHistory[_lotID].distributor.length; i++) {
+        for (
+            uint256 i = 0;
+            i < productHistory[_lotID].distributor.length;
+            i++
+        ) {
             total += productHistory[_lotID].distributor[i].amount;
         }
         for (uint256 i = 0; i < productHistory[_lotID].wholesaler.length; i++) {
@@ -84,7 +87,10 @@ contract Products {
         return false;
     }
 
-    function hash(string memory _lotID,address _sender) public pure returns(bytes32) {     
+    function hash(
+        string memory _lotID,
+        address _sender
+    ) public pure returns (bytes32) {
         return keccak256(abi.encodePacked(_lotID, _sender));
     }
 
@@ -94,6 +100,5 @@ contract Products {
     ) internal pure returns (bool) {
         return (keccak256(abi.encodePacked(a)) ==
             keccak256(abi.encodePacked(b)));
-    }
     }
 }

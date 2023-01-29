@@ -3,10 +3,10 @@ pragma solidity ^0.8.0;
 
 library Types {
     enum UserRole {
-        Manufacturer,
-        Distributor,
+        manufacturer,
+        distributor,
         wholesaler,
-        Retailer
+        retailer
     }
 
     struct UserDetails {
