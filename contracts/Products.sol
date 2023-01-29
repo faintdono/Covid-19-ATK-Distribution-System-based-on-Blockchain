@@ -86,7 +86,20 @@ contract Products {
         }
         return false;
     }
-
+    function history(string memory _lotID) public returns (string[] memory){
+        string[] memory history = new string[](productHistory[_lotID].distributor.length + productHistory[_lotID].wholesaler.length + productHistory[_lotID].retailer.length + 1);
+        history[0] = string(abi.encodePacked("Manufacturer: ", productHistory[_lotID].manufacturer.id, " ", productHistory[_lotID].manufacturer.amount, " ", productHistory[_lotID].manufacturer.date));
+        for (uint256 i = 0; i < productHistory[_lotID].distributor.length; i++) {
+            history[i+1] = string(abi.encodePacked("Distributor: ", productHistory[_lotID].distributor[i].id, " ", productHistory[_lotID].distributor[i].amount, " ", productHistory[_lotID].distributor[i].date));
+        }
+        for (uint256 i = 0; i < productHistory[_lotID].wholesaler.length; i++) {
+            history[i+1+productHistory[_lotID].distributor.length] = string(abi.encodePacked("Wholesaler: ", productHistory[_lotID].wholesaler[i].id, " ", productHistory[_lotID].wholesaler[i].amount, " ", productHistory[_lotID].wholesaler[i].date));
+        }
+        for (uint256 i = 0; i < productHistory[_lotID].retailer.length; i++) {
+            history[i+1+productHistory[_lotID].distributor.length+productHistory[_lotID].wholesaler.length] = string(abi.encodePacked("Retailer: ", productHistory[_lotID].retailer[i].id, " ", productHistory[_lotID].retailer[i].amount, " ", productHistory[_lotID].retailer[i].date));
+        }
+        return history;
+    }
     function hash(
         string memory _lotID,
         address _sender
