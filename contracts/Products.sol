@@ -8,7 +8,8 @@ contract Products {
     Types.Product[] internal products;
     mapping(string => Types.Product) internal product;
     mapping(address => string[]) internal userLinkedProducts;
-    mapping(string => Types.ProductHistory) internal productHistory;
+    mapping(string => Types.ProductHistory) public productHistory;
+    mapping(bytes32 => Types.Storage) public store;
 
     // event that notifies clients about the new product
     event NewProduct(
@@ -18,19 +19,27 @@ contract Products {
         uint256 productAmount
     );
 
-    function createProduct(Types.Product memory _product) internal {
+    function createProduct(Types.Product memory _product) public {
         require(
             _product.manufacturer == msg.sender,
             "Only manufacturer can add"
         );
+        // add product
         products.push(_product);
         product[_product.lotID] = _product;
+
+        // add amount of product to storage
+        bytes32 hsh = hash(_product.lotID, msg.sender);
+        store[hsh].amount = _product.productAmount;
+
+        // create history of this Lot of product
         productHistory[_product.lotID].manufacturer = Types.UserHistory({
             id: msg.sender,
-            amount: _product.productAmount,
             date: block.timestamp
         });
+
         userLinkedProducts[msg.sender].push(_product.lotID);
+
         emit NewProduct(
             _product.lotID,
             _product.manufacturerName,
@@ -44,13 +53,10 @@ contract Products {
         string memory _lotID,
         uint256 _amount,
         Types.UserDetails memory _party
-    ) internal {
-        Types.Product memory product_ = product[_lotID];
-
+    ) public {
         // Updating product history
         Types.UserHistory memory _userHistory = Types.UserHistory({
             id: _partyID,
-            amount: _amount,
             date: block.timestamp
         });
         if (Types.UserRole(_party.role) == Types.UserRole.distributor) {
@@ -63,48 +69,55 @@ contract Products {
             // Not in the assumption scope
             revert("Not valid operation");
         }
-        verify(_lotID);
+        transferProduct(msg.sender, _partyID, _amount, _lotID);
+    }
+
+    function transferProduct(
+        address _seller,
+        address _buyer,
+        uint256 _amount,
+        string memory _lotID
+    ) internal {
+        // TODO: transfer the product from address to address
+        bytes32 hsh1 = hash(_lotID, _seller);
+        bytes32 hsh2 = hash(_lotID, _buyer);
+        // These lines are probably needed
+        // if (!hashexist(store[hsh2],"")) {
+        // store[hsh1].amount -= _amount;
+        // store[hsh2] = Types.Storage({
+        // sellerAddress: _seller,
+        // amount: _amount
+        // });
+        // } else {
+        // store[hsh1].amount -= _amount;
+        // store[hsh2].amount += _amount;
+        // }
+        store[hsh1].amount -= _amount;
+        store[hsh2] = Types.Storage({sellerAddress: _seller, amount: _amount});
     }
 
     function verify(string memory _lotID) internal view returns (bool) {
-        uint256 total;
-        for (
-            uint256 i = 0;
-            i < productHistory[_lotID].distributor.length;
-            i++
-        ) {
-            total += productHistory[_lotID].distributor[i].amount;
-        }
-        for (uint256 i = 0; i < productHistory[_lotID].wholesaler.length; i++) {
-            total += productHistory[_lotID].wholesaler[i].amount;
-        }
-        for (uint256 i = 0; i < productHistory[_lotID].retailer.length; i++) {
-            total += productHistory[_lotID].retailer[i].amount;
-        }
-        if (productHistory[_lotID].manufacturer.amount >= total) {
-            return true;
-        }
-        return false;
+        //TO DO: validate that the amount of product is the same
     }
-    function history(string memory _lotID) public returns (string[] memory){
-        string[] memory history = new string[](productHistory[_lotID].distributor.length + productHistory[_lotID].wholesaler.length + productHistory[_lotID].retailer.length + 1);
-        history[0] = string(abi.encodePacked("Manufacturer: ", productHistory[_lotID].manufacturer.id, " ", productHistory[_lotID].manufacturer.amount, " ", productHistory[_lotID].manufacturer.date));
-        for (uint256 i = 0; i < productHistory[_lotID].distributor.length; i++) {
-            history[i+1] = string(abi.encodePacked("Distributor: ", productHistory[_lotID].distributor[i].id, " ", productHistory[_lotID].distributor[i].amount, " ", productHistory[_lotID].distributor[i].date));
-        }
-        for (uint256 i = 0; i < productHistory[_lotID].wholesaler.length; i++) {
-            history[i+1+productHistory[_lotID].distributor.length] = string(abi.encodePacked("Wholesaler: ", productHistory[_lotID].wholesaler[i].id, " ", productHistory[_lotID].wholesaler[i].amount, " ", productHistory[_lotID].wholesaler[i].date));
-        }
-        for (uint256 i = 0; i < productHistory[_lotID].retailer.length; i++) {
-            history[i+1+productHistory[_lotID].distributor.length+productHistory[_lotID].wholesaler.length] = string(abi.encodePacked("Retailer: ", productHistory[_lotID].retailer[i].id, " ", productHistory[_lotID].retailer[i].amount, " ", productHistory[_lotID].retailer[i].date));
-        }
-        return history;
+
+    function history(string memory _lotID) public returns (string[] memory) {
+        //TO DO: get the history of _lotID that user buy
     }
+
     function hash(
         string memory _lotID,
         address _sender
-    ) public pure returns (bytes32) {
+    ) internal pure returns (bytes32) {
         return keccak256(abi.encodePacked(_lotID, _sender));
+    }
+
+    function hashexist(
+        string memory _lotID,
+        string a,
+        string b
+    ) internal pure returns (bool) {
+        return (keccak256(abi.encodePacked(_lotID, a)) ==
+            keccak256(abi.encodePacked(_lotID, b)));
     }
 
     function compareStrings(
