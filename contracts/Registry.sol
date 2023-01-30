@@ -18,6 +18,7 @@ contract Registry {
     uint256[] stakeArray;
 
     function createStakeholder(address _stakeholder) public {
+        require(msg.sender == owner, "Only owner can create stakeholders");
         count++;
         stakeholders[count] = stakeholder(count, _stakeholder);
         stakeArray.push(count);
@@ -33,7 +34,7 @@ contract Registry {
 
     function checkStakeholders(address _input) public view returns (bool) {
         uint256 i = 0;
-        while (i < stakeArray.length) {
+        while (i <= stakeArray.length) {
             if (getAddress(i) == _input) {
                 return true;
             }

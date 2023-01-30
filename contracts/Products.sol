@@ -53,7 +53,7 @@ contract Products {
         string memory _lotID,
         uint256 _amount,
         Types.UserDetails memory _party
-    ) public {
+    ) public returns (bool) {
         // Updating product history
         Types.UserHistory memory _userHistory = Types.UserHistory({
             id: _partyID,
@@ -70,6 +70,7 @@ contract Products {
             revert("Not valid operation");
         }
         transferProduct(msg.sender, _partyID, _amount, _lotID);
+        return verify(_lotID);
     }
 
     function transferProduct(
@@ -97,7 +98,25 @@ contract Products {
     }
 
     function verify(string memory _lotID) internal view returns (bool) {
-        //TO DO: validate that the amount of product is the same
+        uint256 totalProduct = product[_lotID].productAmount;
+        uint256 count = store[hash(_lotID, productHistory[_lotID].manufacturer.id)].amount;
+        for ( uint256 i = 0; i < productHistory[_lotID].distributor.length; i++
+        ) {
+            bytes32 hsh = hash(_lotID,productHistory[_lotID].distributor[i].id);
+            count += store[hsh].amount;
+        }
+        for (uint256 i = 0; i < productHistory[_lotID].wholesaler.length; i++) {
+            bytes32 hsh = hash(_lotID, productHistory[_lotID].wholesaler[i].id);
+            count += store[hsh].amount;
+        }
+        for (uint256 i = 0; i < productHistory[_lotID].retailer.length; i++) {
+            bytes32 hsh = hash(_lotID, productHistory[_lotID].retailer[i].id);
+            count += store[hsh].amount;
+        }
+        if (count == totalProduct) {
+            return true;
+        }
+        return false;
     }
 
     function history(string memory _lotID) public returns (string[] memory) {
@@ -113,8 +132,8 @@ contract Products {
 
     function hashexist(
         string memory _lotID,
-        string a,
-        string b
+        string memory a,
+        string memory b
     ) internal pure returns (bool) {
         return (keccak256(abi.encodePacked(_lotID, a)) ==
             keccak256(abi.encodePacked(_lotID, b)));
