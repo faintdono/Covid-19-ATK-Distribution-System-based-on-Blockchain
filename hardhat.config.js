@@ -2,6 +2,7 @@ require("@nomicfoundation/hardhat-toolbox");
 require("@nomiclabs/hardhat-truffle5");
 require("@nomiclabs/hardhat-ethers");
 require("dotenv").config();
+
 const {
   besu_dev_acc_priv1,
   besu_dev_acc_priv2,
