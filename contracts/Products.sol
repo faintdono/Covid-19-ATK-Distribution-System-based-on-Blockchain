@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Unlicense
+//SPDX-License-Identifier: GPL-3.0
 pragma experimental ABIEncoderV2;
 pragma solidity ^0.8.0;
 
@@ -17,6 +17,13 @@ contract Products {
         string manufacturerName,
         string manufacturingDate,
         uint256 productAmount
+    );
+
+    event transferAProduct(
+        address indexed from,
+        address indexed to,
+        uint256 value,
+        string lotID
     );
 
     function createProduct(Types.Product memory _product) public {
@@ -95,6 +102,7 @@ contract Products {
         // }
         store[hsh1].amount -= _amount;
         store[hsh2] = Types.Storage({sellerAddress: _seller, amount: _amount});
+        emit transferAProduct(_seller, _buyer, _amount, _lotID);
     }
 
     function verify(string memory _lotID) internal view returns (bool) {
