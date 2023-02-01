@@ -11,7 +11,7 @@
     "url": "git+https://github.com/faintdono/Covid-19-ATK-Distribution-System-based-on-Blockchain.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/faintdono/Covid-19-ATK-Distribution-System-based-on-Blockchain/issues"
   },
@@ -25,6 +25,8 @@
     "web3": "^1.8.1"
   },
   "dependencies": {
-    "dotenv": "^16.0.3"
+    "@usedapp/core": "^1.2.2",
+    "dotenv": "^16.0.3",
+    "ethers": "^5.7.2"
   }
 }
