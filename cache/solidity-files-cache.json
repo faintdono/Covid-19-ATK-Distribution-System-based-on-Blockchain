@@ -1,44 +1,9 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "C:\\Users\\Jj\\Desktop\\Covid-19-ATK-Distribution-System-based-on-Blockchain\\contracts\\Manufacturer.sol": {
-      "lastModificationDate": 1674576252331,
-      "contentHash": "b83b2c0fb7aa34a6452bf0a7bd8a828f",
-      "sourceName": "contracts/Manufacturer.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "Manufacturer"
-      ]
-    },
     "C:\\Users\\Jj\\Desktop\\Covid-19-ATK-Distribution-System-based-on-Blockchain\\contracts\\Registry.sol": {
-      "lastModificationDate": 1674579520301,
-      "contentHash": "aa8487543fe3c8db18852659e9711333",
+      "lastModificationDate": 1675243314894,
+      "contentHash": "f25e61a5ff6b4310b40595fa02e4c7c4",
       "sourceName": "contracts/Registry.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -72,8 +37,8 @@
       ]
     },
     "C:\\Users\\Jj\\Desktop\\Covid-19-ATK-Distribution-System-based-on-Blockchain\\contracts\\Products.sol": {
-      "lastModificationDate": 1675023430468,
-      "contentHash": "ca71549d71151f003ac51e9f99320ac2",
+      "lastModificationDate": 1675243674199,
+      "contentHash": "52492c4cb03a4207cadaa20bd322d80a",
       "sourceName": "contracts/Products.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -109,8 +74,8 @@
       ]
     },
     "C:\\Users\\Jj\\Desktop\\Covid-19-ATK-Distribution-System-based-on-Blockchain\\contracts\\Types.sol": {
-      "lastModificationDate": 1674990892355,
-      "contentHash": "1f788ce8993542fc90ae2e112c95e545",
+      "lastModificationDate": 1675243339862,
+      "contentHash": "6f81614a6ca0d79ac58258fda2ba11da",
       "sourceName": "contracts/Types.sol",
       "solcConfig": {
         "version": "0.8.17",

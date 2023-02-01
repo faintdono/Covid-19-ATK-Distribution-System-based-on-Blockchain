@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Unlicense
+//SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.0;
 
 contract Registry {
@@ -40,7 +40,7 @@ contract Registry {
                 return true;
             }
             i++;
-        }return false;
+        }
+        return false;
     }
 }
-
