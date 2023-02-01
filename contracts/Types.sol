@@ -20,7 +20,6 @@ library Types {
 
     struct UserHistory {
         address id;
-        uint256 amount;
         uint256 date;
     }
 
@@ -38,5 +37,10 @@ library Types {
         string manufacturingDate;
         string expiryDate;
         uint256 productAmount;
+    }
+
+    struct Storage {
+        address sellerAddress;
+        uint256 amount;
     }
 }

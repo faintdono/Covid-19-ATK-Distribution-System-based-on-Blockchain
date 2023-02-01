@@ -2,11 +2,13 @@
 Covid-19 Antigen Test Kit Distribution System based-on Blockchain Technology
 ## Usage
 You can use these command to deploy and using hardhat console to interact with contract if you are using besu as your node.
+
 ```
 npx hardhat compile
 npx hardhat run scripts/deploy.js
 npx console --network besu_dev
 ```
+
 In hardhat console
 
 ```
