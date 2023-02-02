@@ -24,7 +24,7 @@ contract Products {
         address indexed to,
         uint256 value,
         string lotID
-    );;
+    );
 
     function createProduct(Types.Product memory _product) public {
         require(
