@@ -2,9 +2,21 @@
 pragma experimental ABIEncoderV2;
 pragma solidity ^0.8.0;
 
+// inherited contracts
 import "./Types.sol";
+import "./AccessControl/ManufacturerRole.sol";
+import "./AccessControl/WholesalerRole.sol";
+import "./AccessControl/DistributorRole.sol";
+import "./AccessControl/RetailerRole.sol";
 
-contract Products {
+// Define a contract 'Supplychain'
+contract SupplyChain is
+    ManufacturerRole,
+    WholesalerRole,
+    DistributorRole,
+    RetailerRole
+{
+    // Mapping Products
     Types.Product[] internal products;
     mapping(string => Types.Product) internal product;
     mapping(address => string[]) internal userLinkedProducts;
@@ -24,13 +36,11 @@ contract Products {
         address indexed to,
         uint256 value,
         string lotID
-    );;
+    );
 
-    function createProduct(Types.Product memory _product) public {
-        require(
-            _product.manufacturer == msg.sender,
-            "Only manufacturer can add"
-        );
+    function createProduct(
+        Types.Product memory _product
+    ) public onlyManufacturer {
         // add product
         products.push(_product);
         product[_product.lotID] = _product;
@@ -107,10 +117,18 @@ contract Products {
 
     function verify(string memory _lotID) internal view returns (bool) {
         uint256 totalProduct = product[_lotID].productAmount;
-        uint256 count = store[hash(_lotID, productHistory[_lotID].manufacturer.id)].amount;
-        for ( uint256 i = 0; i < productHistory[_lotID].distributor.length; i++
+        uint256 count = store[
+            hash(_lotID, productHistory[_lotID].manufacturer.id)
+        ].amount;
+        for (
+            uint256 i = 0;
+            i < productHistory[_lotID].distributor.length;
+            i++
         ) {
-            bytes32 hsh = hash(_lotID,productHistory[_lotID].distributor[i].id);
+            bytes32 hsh = hash(
+                _lotID,
+                productHistory[_lotID].distributor[i].id
+            );
             count += store[hsh].amount;
         }
         for (uint256 i = 0; i < productHistory[_lotID].wholesaler.length; i++) {
@@ -130,6 +148,9 @@ contract Products {
     function history(string memory _lotID) public returns (string[] memory) {
         //TO DO: get the history of _lotID that user buy
     }
+
+    //BASIC FUNCTIONS
+    //NOT MESSING WITH THESE
 
     function hash(
         string memory _lotID,
