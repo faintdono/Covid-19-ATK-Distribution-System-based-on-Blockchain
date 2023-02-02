@@ -41,4 +41,21 @@ library Types {
         address sellerAddress;
         uint256 amount;
     }
+
+    enum State
+  {
+    createByManufacturer,         
+    ForSaleByManufacturer,      
+    PurchasedByDistributor,
+    ShippedByFarmer,
+    ReceivedByDistributor,
+    ProcessedByDistributor,
+    PackageByDistributor,
+    ForSaleByDistributor,
+    PurchasedByRetailer,
+    ShippedByDistributor,
+    ReceivedByRetailer,
+    ForSaleByRetailer,
+    PurchasedByConsumer
+    }
 }
