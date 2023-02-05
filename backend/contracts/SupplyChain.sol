@@ -16,6 +16,20 @@ contract SupplyChain is
     DistributorRole,
     RetailerRole
 {
+    // All users need to be registered to use this function
+    modifier verifyCaller(address _address) {
+        require((
+            msg.sender == _address) &&
+            (
+                (isDistributor(_address)) ||
+                (isManufacturer(_address)) ||
+                (isRetailer(_address)) ||
+                (isWholesaler(_address))
+            )    
+            );
+        _;
+    }
+
     // Mapping Products
     Types.Product[] internal products;
     mapping(string => Types.Product) internal product;
@@ -70,7 +84,7 @@ contract SupplyChain is
         string memory _lotID,
         uint256 _amount,
         Types.UserDetails memory _party
-    ) public returns (bool) {
+    ) public verifyCaller(msg.sender) returns (bool) {
         // Updating product history
         Types.UserHistory memory _userHistory = Types.UserHistory({
             id: _partyID,
@@ -95,7 +109,7 @@ contract SupplyChain is
         address _buyer,
         uint256 _amount,
         string memory _lotID
-    ) internal {
+    ) verifyCaller(msg.sender) internal {
         // TODO: transfer the product from address to address
         bytes32 hsh1 = hash(_lotID, _seller);
         bytes32 hsh2 = hash(_lotID, _buyer);

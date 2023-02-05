@@ -9,9 +9,12 @@ describe('Products', () => {
     //will do this to setup before start testing
     beforeEach(async () => {
 
-        [manufacturer, distributor, wholesaler, retailer] = await ethers.getSigners()
-        //need implement add these into enum
+        //Add address into roles
 
+        [manufacturer, distributor, wholesaler, retailer] = await ethers.getSigners()
+
+        //need implement add these into enum
+        
         const Types = await ethers.getContractFactory('Types')
         types = await Types.deploy()
 
