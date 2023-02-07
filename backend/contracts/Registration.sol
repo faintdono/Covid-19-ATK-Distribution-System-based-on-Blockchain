@@ -19,13 +19,41 @@ contract Registration is
     function addUser(string memory _Role, address _id) public {
         if (compareStrings(_Role, "manufacturer")) {
             addManufacturer(_id);
+            users[_id] = Types.UserDetails({
+                role: Types.UserRole.manufacturer,
+                id_: _id,
+                name: "",
+                email: ""
+            });
         } else if (compareStrings(_Role, "distributor")) {
             addDistributor(_id);
+            users[_id] = Types.UserDetails({
+                role: Types.UserRole.distributor,
+                id_: _id,
+                name: "",
+                email: ""
+            });
         } else if (compareStrings(_Role, "wholesaler")) {
             addWholesaler(_id);
+            users[_id] = Types.UserDetails({
+                role: Types.UserRole.wholesaler,
+                id_: _id,
+                name: "",
+                email: ""
+            });
         } else if (compareStrings(_Role, "retailer")) {
             addRetailer(_id);
+            users[_id] = Types.UserDetails({
+                role: Types.UserRole.retailer,
+                id_: _id,
+                name: "",
+                email: ""
+            });     
         }
+    }
+
+    function getUserDetails(address _id) public returns (Types.UserDetails memory) {
+        return users[_id];
     }
 
     constructor() {}
@@ -60,5 +88,9 @@ contract RegistrationCaller {
 
     function isRetailer(address _address) external view returns (bool) {
         return registration.isRetailer(_address);
+    }
+
+    function getUserDetails(address _address) external returns (Types.UserDetails memory) {
+        return registration.getUserDetails(_address);
     }
 }
