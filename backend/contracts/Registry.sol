@@ -18,7 +18,7 @@ contract Registry {
 
     uint256[] stakeArray;
 
-    function createStakeholder(address _stakeholder) public {
+    function createStakeholder(address _stakeholder) internal {
         require(msg.sender == owner, "Only owner can create stakeholders");
         count++;
         stakeholders[count] = stakeholder(count, _stakeholder);

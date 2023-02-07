@@ -16,7 +16,7 @@ contract DistributorRole {
   Roles.Role private distributors;
 
   // In the constructor make the address that deploys this contract the 1st distributor
-  constructor() public {
+  constructor() {
     _addDistributor(msg.sender);
   }
 
@@ -32,12 +32,12 @@ contract DistributorRole {
   }
 
   // Define a function 'addDistributor' that adds this role
-  function addDistributor(address account) public onlyDistributor {
+  function addDistributor(address account) internal onlyDistributor {
     _addDistributor(account);
   }
 
   // Define a function 'renounceDistributor' to renounce this role
-  function renounceDistributor() public {
+  function renounceDistributor() internal {
     _removeDistributor(msg.sender);
   }
 

@@ -6,12 +6,12 @@ async function main() {
   const deployer = await ethers.getSigner();
   console.log("Deploying contracts with the account:", deployer.address);
 
-  const Registry = await ethers.getContractFactory("Registry");
-  const registry = await Registry.deploy();
-  console.log("Registry address:", registry.address);
-  const Man = await ethers.getContractFactory("Manufacturer");
-  const man = await Man.deploy(registry.address);
-  console.log("Manufacturer address:", man.address);
+  const Registration = await ethers.getContractFactory("Registration");
+  const reg = await Registration.deploy();
+  console.log("Registration address:", reg.address);
+  const SupplyChain = await ethers.getContractFactory("SupplyChain");
+  const sc = await SupplyChain.deploy(reg.address);
+  console.log("SupplyChain address:", sc.address);
 }
 
 main()

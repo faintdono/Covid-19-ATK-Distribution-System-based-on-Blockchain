@@ -16,7 +16,7 @@ contract ManufacturerRole {
   Roles.Role private manufacturers;
 
   // In the constructor make the address that deploys this contract the 1st manufacturer
-  constructor() public {
+  constructor() {
     _addManufacturer(msg.sender);
   }
 
@@ -32,12 +32,12 @@ contract ManufacturerRole {
   }
 
   // Define a function 'addManufacturer' that adds this role
-  function addManufacturer(address account) public onlyManufacturer {
+  function addManufacturer(address account) internal onlyManufacturer {
     _addManufacturer(account);
   }
 
   // Define a function 'renounceManufacturer' to renounce this role
-  function renounceManufacturer() public {
+  function renounceManufacturer() internal {
     _removeManufacturer(msg.sender);
   }
 

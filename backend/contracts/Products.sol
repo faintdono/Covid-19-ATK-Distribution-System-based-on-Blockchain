@@ -26,7 +26,7 @@ contract Products {
         string lotID
     );
 
-    function createProduct(Types.Product memory _product) public {
+    function createProduct(Types.Product memory _product) internal {
         require(
             _product.manufacturer == msg.sender,
             "Only manufacturer can add"
@@ -60,7 +60,7 @@ contract Products {
         string memory _lotID,
         uint256 _amount,
         Types.UserDetails memory _party
-    ) public returns (bool) {
+    ) internal returns (bool) {
         // Updating product history
         Types.UserHistory memory _userHistory = Types.UserHistory({
             id: _partyID,
@@ -127,7 +127,7 @@ contract Products {
         return false;
     }
 
-    function history(string memory _lotID) public returns (string[] memory) {
+    function history(string memory _lotID) internal returns (string[] memory) {
         //TO DO: get the history of _lotID that user buy
     }
 
