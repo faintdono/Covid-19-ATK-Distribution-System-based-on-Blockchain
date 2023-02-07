@@ -8,10 +8,10 @@ import "./Products.sol";
 import "./Registration.sol";
 
 contract SupplyChain is Products {
-    Registration registration;
+    RegistrationCaller registration;
 
     constructor(address _Address) {
-        registration = Registration(_Address);
+        registration = RegistrationCaller(_Address);
     }
 
     function addProduct(

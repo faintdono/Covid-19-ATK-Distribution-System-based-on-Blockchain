@@ -16,7 +16,7 @@ contract Registration is
 {
     mapping(address => Types.UserDetails) internal users;
 
-    function addUser(string memory _Role, address _id) public {
+    function addUser(string memory _Role, address _id) public onlyOwner{
         if (compareStrings(_Role, "manufacturer")) {
             addManufacturer(_id);
             users[_id] = Types.UserDetails({
@@ -52,11 +52,16 @@ contract Registration is
         }
     }
 
-    function getUserDetails(address _id) public returns (Types.UserDetails memory) {
+    function getUserDetails(address _id) public view returns (Types.UserDetails memory) {
         return users[_id];
     }
 
     constructor() {}
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function.");
+        _;
+    }
 
     function compareStrings(
         string memory a,
@@ -90,7 +95,7 @@ contract RegistrationCaller {
         return registration.isRetailer(_address);
     }
 
-    function getUserDetails(address _address) external returns (Types.UserDetails memory) {
+    function getUserDetails(address _address) external view returns (Types.UserDetails memory) {
         return registration.getUserDetails(_address);
     }
 }
