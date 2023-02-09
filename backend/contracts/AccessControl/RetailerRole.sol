@@ -16,7 +16,7 @@ contract RetailerRole {
   Roles.Role private retailers;
 
   // In the constructor make the address that deploys this contract the 1st retailer
-  constructor() public {
+  constructor() {
     _addRetailer(msg.sender);
   }
 
@@ -32,12 +32,12 @@ contract RetailerRole {
   }
 
   // Define a function 'addRetailer' that adds this role
-  function addRetailer(address account) public onlyRetailer {
+  function addRetailer(address account) internal onlyRetailer {
     _addRetailer(account);
   }
 
   // Define a function 'renounceRetailer' to renounce this role
-  function renounceRetailer() public {
+  function renounceRetailer() internal {
     _removeRetailer(msg.sender);
   }
 

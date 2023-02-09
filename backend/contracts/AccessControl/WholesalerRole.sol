@@ -16,7 +16,7 @@ contract WholesalerRole {
   Roles.Role private wholesalers;
 
   // In the constructor make the address that deploys this contract the 1st wholesaler
-  constructor() public {
+  constructor() {
     _addWholesaler(msg.sender);
   }
 
@@ -32,12 +32,12 @@ contract WholesalerRole {
   }
 
   // Define a function 'addWholesaler' that adds this role
-  function addWholesaler(address account) public onlyWholesaler {
+  function addWholesaler(address account) internal onlyWholesaler {
     _addWholesaler(account);
   }
 
   // Define a function 'renounceWholesaler' to renounce this role
-  function renounceWholesaler() public {
+  function renounceWholesaler() internal {
     _removeWholesaler(msg.sender);
   }
 
