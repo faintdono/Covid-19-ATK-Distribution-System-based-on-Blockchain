@@ -41,4 +41,25 @@ library Types {
         address sellerAddress;
         uint256 amount;
     }
+
+    enum OrderStatus {
+        manufactured,
+        pending,
+        processing,
+        shipped,
+        delivered,
+        cancelled,
+        onhold,
+        returned
+    }
+
+    struct Order {
+        string orderID;
+        address buyerAddress;
+        address sellerAddress;
+        uint256 amount;
+        uint256 date;
+        string lotID;
+        OrderStatus status;
+    }
 }
