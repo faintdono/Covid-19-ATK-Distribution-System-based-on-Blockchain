@@ -89,20 +89,23 @@ contract Products {
         // TODO: transfer the product from address to address
         bytes32 hsh1 = hash(_lotID, _seller);
         bytes32 hsh2 = hash(_lotID, _buyer);
-        // These lines are probably needed
-        // if (!hashexist(store[hsh2],"")) {
-        // store[hsh1].amount -= _amount;
-        // store[hsh2] = Types.Storage({
-        // sellerAddress: _seller,
-        // amount: _amount
-        // });
-        // } else {
-        // store[hsh1].amount -= _amount;
-        // store[hsh2].amount += _amount;
-        // }
         store[hsh1].amount -= _amount;
         store[hsh2] = Types.Storage({sellerAddress: _seller, amount: _amount});
         emit transferAProduct(_seller, _buyer, _amount, _lotID);
+    }
+
+    function renounceTransfer(address _buyer,address _seller,string memory _lotID) internal {
+        bytes32 hsh1 = hash(_lotID, _seller);
+        bytes32 hsh2 = hash(_lotID, _buyer);
+        store[hsh1].amount += store[hsh2].amount;
+        delete store[hsh2];
+    }
+
+    function destroyProduct(address _buyer,string memory _lotID) internal {
+        bytes32 hsh1 = hash(_lotID, _buyer);
+        bytes32 hsh2 = hash(_lotID, 0x0000000000000000000000000000000000000000);
+        store[hsh1].amount += store[hsh2].amount;
+        delete store[hsh2];
     }
 
     function verify(string memory _lotID) internal view returns (bool) {
@@ -121,6 +124,7 @@ contract Products {
             bytes32 hsh = hash(_lotID, productHistory[_lotID].retailer[i].id);
             count += store[hsh].amount;
         }
+        count += store[hash(_lotID,0x0000000000000000000000000000000000000000)].amount;
         if (count == totalProduct) {
             return true;
         }
