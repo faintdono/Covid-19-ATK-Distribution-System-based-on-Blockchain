@@ -43,7 +43,7 @@ library Types {
     }
 
     enum OrderStatus {
-        manufactured,
+        placed,
         pending,
         processing,
         shipped,
@@ -61,5 +61,6 @@ library Types {
         uint256 date;
         string lotID;
         OrderStatus status;
+        uint256 lastUpdated;
     }
 }

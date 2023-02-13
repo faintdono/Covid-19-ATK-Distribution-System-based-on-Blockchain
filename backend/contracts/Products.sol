@@ -94,14 +94,18 @@ contract Products {
         emit transferAProduct(_seller, _buyer, _amount, _lotID);
     }
 
-    function renounceTransfer(address _buyer,address _seller,string memory _lotID) internal {
+    function renounceTransfer(
+        address _buyer,
+        address _seller,
+        string memory _lotID
+    ) internal {
         bytes32 hsh1 = hash(_lotID, _seller);
         bytes32 hsh2 = hash(_lotID, _buyer);
         store[hsh1].amount += store[hsh2].amount;
         delete store[hsh2];
     }
 
-    function destroyProduct(address _buyer,string memory _lotID) internal {
+    function destroyProduct(address _buyer, string memory _lotID) internal {
         bytes32 hsh1 = hash(_lotID, _buyer);
         bytes32 hsh2 = hash(_lotID, 0x0000000000000000000000000000000000000000);
         store[hsh1].amount += store[hsh2].amount;
@@ -110,10 +114,18 @@ contract Products {
 
     function verify(string memory _lotID) internal view returns (bool) {
         uint256 totalProduct = product[_lotID].productAmount;
-        uint256 count = store[hash(_lotID, productHistory[_lotID].manufacturer.id)].amount;
-        for ( uint256 i = 0; i < productHistory[_lotID].distributor.length; i++
+        uint256 count = store[
+            hash(_lotID, productHistory[_lotID].manufacturer.id)
+        ].amount;
+        for (
+            uint256 i = 0;
+            i < productHistory[_lotID].distributor.length;
+            i++
         ) {
-            bytes32 hsh = hash(_lotID,productHistory[_lotID].distributor[i].id);
+            bytes32 hsh = hash(
+                _lotID,
+                productHistory[_lotID].distributor[i].id
+            );
             count += store[hsh].amount;
         }
         for (uint256 i = 0; i < productHistory[_lotID].wholesaler.length; i++) {
@@ -124,7 +136,8 @@ contract Products {
             bytes32 hsh = hash(_lotID, productHistory[_lotID].retailer[i].id);
             count += store[hsh].amount;
         }
-        count += store[hash(_lotID,0x0000000000000000000000000000000000000000)].amount;
+        count += store[hash(_lotID, 0x0000000000000000000000000000000000000000)]
+            .amount;
         if (count == totalProduct) {
             return true;
         }
