@@ -1,4 +1,4 @@
-// import { useQuery } from "@apollo/client";
+
 import { Contract } from "@ethersproject/contracts";
 import { shortenAddress, useCall, useEthers, useLookupAddress } from "@usedapp/core";
 import React, { useEffect, useState } from "react";
@@ -7,7 +7,7 @@ import { Body, Button, Container, Header, Image, Link } from "./components";
 import logo from "./ethereumLogo.png";
 
 import { addresses, abis } from "@my-app/contracts";
-// import GET_TRANSFERS from "./graphql/subgraph";
+
 
 function WalletButton() {
   const [rendered, setRendered] = useState("");
