@@ -45,5 +45,6 @@
     "ipfs": "yarn build && ipfs-deploy build/",
     "start": "react-scripts start",
     "test": "react-scripts test"
-  }
+  },
+  "license": "GPL-3.0"
 }
