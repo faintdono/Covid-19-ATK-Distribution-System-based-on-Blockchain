@@ -25,15 +25,11 @@ contract Registry {
         stakeArray.push(count);
     }
 
-    function getID() public view returns (uint256[] memory) {
-        return stakeArray;
+    function isExist(address _input) internal view returns (bool) {
+        return checkStakeholders(_input);
     }
 
-    function getAddress(uint256 _id) private view returns (address) {
-        return stakeholders[_id].stakeAddress;
-    }
-
-    function checkStakeholders(address _input) public view returns (bool) {
+    function checkStakeholders(address _input) internal view returns (bool) {
         uint256 i = 0;
         while (i <= stakeArray.length) {
             if (getAddress(i) == _input) {
@@ -42,5 +38,13 @@ contract Registry {
             i++;
         }
         return false;
+    }
+
+    function getID() public view returns (uint256[] memory) {
+        return stakeArray;
+    }
+
+    function getAddress(uint256 _id) internal view returns (address) {
+        return stakeholders[_id].stakeAddress;
     }
 }

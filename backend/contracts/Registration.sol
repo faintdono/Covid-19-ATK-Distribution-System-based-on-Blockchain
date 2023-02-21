@@ -16,7 +16,9 @@ contract Registration is
 {
     mapping(address => Types.UserDetails) internal users;
 
-    function addUser(string memory _Role, address _id) public onlyOwner{
+    event UserAdded(address indexed _id);
+
+    function addUser(string memory _Role, address _id) public onlyOwner {
         if (compareStrings(_Role, "manufacturer")) {
             addManufacturer(_id);
             users[_id] = Types.UserDetails({
@@ -48,11 +50,18 @@ contract Registration is
                 id_: _id,
                 name: "",
                 email: ""
-            });     
+            });
+        }
+
+        if (!isExist(_id)) {
+            createStakeholder(_id);
+            emit UserAdded(_id);
         }
     }
 
-    function getUserDetails(address _id) public view returns (Types.UserDetails memory) {
+    function getUserDetails(
+        address _id
+    ) public view returns (Types.UserDetails memory) {
         return users[_id];
     }
 
@@ -95,7 +104,9 @@ contract RegistrationCaller {
         return registration.isRetailer(_address);
     }
 
-    function getUserDetails(address _address) external view returns (Types.UserDetails memory) {
+    function getUserDetails(
+        address _address
+    ) external view returns (Types.UserDetails memory) {
         return registration.getUserDetails(_address);
     }
 }

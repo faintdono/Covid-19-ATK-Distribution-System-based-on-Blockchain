@@ -74,27 +74,11 @@ contract SupplyChainCaller {
         supplyChain = SupplyChain(_Address);
     }
 
-    function addProduct(
-        string memory lotID,
-        string memory manufacturerName,
-        string memory manufacturingDate,
-        string memory expiryDate,
-        uint256 productAmount
-    ) public {
-        supplyChain.addProduct(
-            lotID,
-             manufacturerName,
-            manufacturingDate,
-            expiryDate,
-            productAmount
-        );
-    }
-
     function sellProduct(
         string memory lotID,
         address buyerID,
         uint256 amount
-    ) public {
+    ) external {
         supplyChain.sellProduct(lotID, buyerID, amount);
     }
 }
