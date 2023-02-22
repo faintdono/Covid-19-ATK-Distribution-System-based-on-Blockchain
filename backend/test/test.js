@@ -1,50 +1,59 @@
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
 
-describe('Products', () => {
+describe('Registration', () => {
     let manufacturer, distributor, wholesaler, retailer
-    let types, products
+    let registration
 
-    //NEED Mockup-Data and require all function to be public (internal -> public) before testing
-    //will do this to setup before start testing
     beforeEach(async () => {
 
         //Add address into roles
+        [admin, manufacturer, distributor, wholesaler, retailer] = await ethers.getSigners()
 
-        [manufacturer, distributor, wholesaler, retailer] = await ethers.getSigners()
-
-        //need implement add these into enum
-        
-        const Types = await ethers.getContractFactory('Types')
-        types = await Types.deploy()
-
-        const Products = await ethers.getContractFactory('Products')
-        products = await Products.deploy()
-
-    })
-    
-    it('create new product', async () => {
-        const signer = await ethers.getSigner()
-        const result = products.createProduct([1,2, signer.address ,4,5,6])
-        expect(result).to.emit() // need to add NewProduct emit here.
-    } )
-
-    it('only manufacturer can create product', async () => {
-        const result = products.createProduct([1,2, manufacturer.address ,4,5,6])
-        await expect(result).to.be.revertedWith("Only manufacturer can add")
+        const Registration = await ethers.getContractFactory('Registration')
+        registration = await Registration.deploy()
     })
 
-    // for meme I'm ว่าง
-    describe('Base function', () => {
+    describe('Add accounts', () => {
+        it('add manufacturer', async () => {
+            const result = registration.addUser("manufacturer", manufacturer.address)
+            await expect(result)
+                .to.emit(registration, 'UserAdded')
+                .withArgs(manufacturer.address);
+        });
 
-        it('test compare string: true', async() => {
-            const result = await products.compareStrings('abcdefg', 'abcdefg')
-            expect(result).to.be.equal(true)
-        })
+        it('add distributor', async () => {
+            const result = registration.addUser("distributor", distributor.address)
+            await expect(result)
+                .to.emit(registration, 'UserAdded')
+                .withArgs(distributor.address);
+        });
 
-        it('test compare string: false', async() => {
-            const result = await products.compareStrings('abcdefg', 'abcdefh')
-            expect(result).to.be.equal(false)
-        })
+        it('add wholesaler', async () => {
+            const result = registration.addUser("wholesaler", wholesaler.address)
+            await expect(result)
+                .to.emit(registration, 'UserAdded')
+                .withArgs(wholesaler.address);
+        });
+
+        it('add retailer', async () => {
+            const result = registration.addUser("retailer", retailer.address)
+            await expect(result)
+                .to.emit(registration, 'UserAdded')
+                .withArgs(retailer.address);
+        });
+
+        it('add existing address same role', async () => {
+            registration.addUser("retailer", retailer.address)
+            const result = registration.addUser("retailer", retailer.address)
+            await expect(result).to.be.reverted
+        });
+
+        it('reject non-admin add account', async () => {
+            await expect(registration
+                .connect(manufacturer)
+                .addUser("manufacturer", manufacturer.address))
+                .to.be.rejectedWith("Only owner can call this function.");
+        });
     })
 })
