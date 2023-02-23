@@ -2,7 +2,7 @@ import React from "react";
 
 const About = () => (
   <div className="has-text-centered">
-    <section class="hero is-info">
+    <section className="hero is-info">
       <div className="container">
         <h1 className="title">About</h1>
         <h2 className="page-title">
