@@ -43,17 +43,73 @@ describe('Registration', () => {
                 .withArgs(retailer.address);
         });
 
-        it('add existing address same role', async () => {
+        it('reject to add existing address into the same role', async () => {
             registration.addUser("retailer", retailer.address)
             const result = registration.addUser("retailer", retailer.address)
             await expect(result).to.be.reverted
         });
 
-        it('reject non-admin add account', async () => {
+        // write Registration.sol to detect existing address into other roles too.
+        /*
+        it('add existing address into others role role', async () => {
+            registration.addUser("manufacturer", retailer.address)
+            registration.addUser("retailer", retailer.address)
+            const result = registration.getUserDetails(retailer.address)
+                .then(function (result) {
+                    console.log(result)
+                });
+        });
+        */
+    })
+
+    /* IDK how to check inside object but I can make it print lol
+    describe('Get user details', () => {
+        it('get manufacturer', async () => {
+            registration.addUser("manufacturer", manufacturer.address)
+            const result = registration.getUserDetails(manufacturer.address)
+                .then(function (result) {
+                    console.log(result)
+                });
+            expect(result[0]).to.be.equal(0)
+        });
+    })
+    */
+
+    describe('Others function', () => {
+        it('reject non-admin to add account', async () => {
             await expect(registration
                 .connect(manufacturer)
                 .addUser("manufacturer", manufacturer.address))
                 .to.be.rejectedWith("Only owner can call this function.");
         });
     })
+})
+
+describe('Supply Chain', () => {
+    let manufacturer, distributor, wholesaler, retailer
+    let registration, supplychain
+
+    beforeEach(async () => {
+
+        //Add address into roles
+        [admin, manufacturer, distributor, wholesaler, retailer] = await ethers.getSigners()
+
+        const Registration = await ethers.getContractFactory('Registration')
+        registration = await Registration.deploy()
+
+        const SupplyChain = await ethers.getContractFactory('SupplyChain')
+        supplychain = await SupplyChain.deploy
+    })
+
+    /*
+    describe('Creating products', () => {
+        it('Manufacturer create new product', async () => {
+            registration.addUser("manufacturer", manufacturer.address)
+            await expect(supplychain
+                .connect(manufacturer)
+                .addProduct('1', '2', '3', '4', 5))
+                .to.emit(supplychain, 'NewProduct')
+        })
+    })
+    */
 })
