@@ -97,19 +97,20 @@ describe('Supply Chain', () => {
         const Registration = await ethers.getContractFactory('Registration')
         registration = await Registration.deploy()
 
-        const SupplyChain = await ethers.getContractFactory('SupplyChain')
-        supplychain = await SupplyChain.deploy
+        registration.addUser("manufacturer", manufacturer.address)
+        registration.addUser("distributor", distributor.address)
+        registration.addUser("wholesaler", wholesaler.address)
+        registration.addUser("retailer", retailer.address)
+
+        const SupplyChain = await ethers.getContractFactory('SupplyChain');
+        supplychain = await SupplyChain.deploy(registration.address)
+
     })
 
-    /*
     describe('Creating products', () => {
         it('Manufacturer create new product', async () => {
-            registration.addUser("manufacturer", manufacturer.address)
-            await expect(supplychain
-                .connect(manufacturer)
-                .addProduct('1', '2', '3', '4', 5))
-                .to.emit(supplychain, 'NewProduct')
+            const result = supplychain.addProduct(1, 2, 3, 4, 5)
+            expect(result).to.emit(supplychain, 'NewProduct')
         })
     })
-    */
 })
