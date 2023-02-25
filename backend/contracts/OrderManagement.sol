@@ -6,9 +6,12 @@ import "./Types.sol";
 contract OrderManagement {
     Types.Order[] internal orders;
     mapping(string => Types.Order) internal order;
-    mapping(address => string[]) internal userLinkedOrders;
+    mapping(address => string[]) internal userOngoingLinkedOrders;
+    mapping(address => string[]) internal userShippedLinkedOrders;
+    mapping(address => string[]) internal userFinishLinkedOrders;
 
-    // event that notifies clients about the new order
+    // event
+
     event NewOrder(
         string orderID,
         address indexed from,
@@ -17,9 +20,18 @@ contract OrderManagement {
         uint256 date
     );
 
+    event OrderStatusChange(
+        string orderID,
+        uint256 date,
+        Types.OrderStatus status
+    );
+
     function createOrder(address _seller, uint256 _amount) public {
+        string memory _orderID = string(
+            abi.encodePacked(block.timestamp, msg.sender)
+        );
         Types.Order memory _order = Types.Order({
-            orderID: string(abi.encodePacked(block.timestamp, msg.sender)),
+            orderID: _orderID,
             buyerAddress: msg.sender,
             sellerAddress: _seller,
             amount: _amount,
@@ -29,39 +41,163 @@ contract OrderManagement {
             lastUpdated: block.timestamp
         });
         orders.push(_order);
-        order[string(abi.encodePacked(block.timestamp, msg.sender))] = _order;
-        emit NewOrder(
-            string(abi.encodePacked(block.timestamp, msg.sender)),
-            msg.sender,
-            _seller,
-            _amount,
-            block.timestamp
-        );
+        order[_orderID] = _order;
+        linkedOrderHandler(msg.sender, _orderID, Types.OrderStatus.placed);
+        linkedOrderHandler(_seller, _orderID, Types.OrderStatus.placed);
+        emit NewOrder(_orderID, msg.sender, _seller, _amount, block.timestamp);
     }
 
-    function confirmOrder(string memory _orderID) public onlyReceiver(_orderID) {
+    function confirmOrder(
+        string memory _orderID
+    ) public onlyReceiver(_orderID) {
         Types.Order storage _order = order[_orderID];
         _order.status = Types.OrderStatus.pending;
         _order.lastUpdated = block.timestamp;
+        emit OrderStatusChange(
+            _orderID,
+            block.timestamp,
+            Types.OrderStatus.pending
+        );
     }
 
-    function shipOrder(string memory _orderID) public onlyReceiver(_orderID) {
+    function rejectOrder(string memory _orderID) public onlyReceiver(_orderID) {
+        Types.Order storage _order = order[_orderID];
+        _order.status = Types.OrderStatus.rejected;
+        _order.lastUpdated = block.timestamp;
+        linkedOrderHandler(
+            _order.buyerAddress,
+            _orderID,
+            Types.OrderStatus.rejected
+        );
+        linkedOrderHandler(
+            _order.sellerAddress,
+            _orderID,
+            Types.OrderStatus.rejected
+        );
+        emit OrderStatusChange(
+            _orderID,
+            block.timestamp,
+            Types.OrderStatus.rejected
+        );
+    }
+
+    function shipOrder(
+        string memory _orderID
+    ) public onlyReceiver(_orderID) orderShipable(_orderID) {
         Types.Order storage _order = order[_orderID];
         _order.status = Types.OrderStatus.shipped;
         _order.lastUpdated = block.timestamp;
+        linkedOrderHandler(
+            _order.buyerAddress,
+            _orderID,
+            Types.OrderStatus.shipped
+        );
+        linkedOrderHandler(
+            _order.sellerAddress,
+            _orderID,
+            Types.OrderStatus.shipped
+        );
+        emit OrderStatusChange(
+            _orderID,
+            block.timestamp,
+            Types.OrderStatus.shipped
+        );
     }
 
     function acceptOrder(string memory _orderID) public onlySender(_orderID) {
         Types.Order storage _order = order[_orderID];
         _order.status = Types.OrderStatus.delivered;
         _order.lastUpdated = block.timestamp;
+        linkedOrderHandler(
+            _order.buyerAddress,
+            _orderID,
+            Types.OrderStatus.delivered
+        );
+        linkedOrderHandler(
+            _order.sellerAddress,
+            _orderID,
+            Types.OrderStatus.delivered
+        );
+        emit OrderStatusChange(
+            _orderID,
+            block.timestamp,
+            Types.OrderStatus.delivered
+        );
     }
 
     function cancelOrder(string memory _orderID) public onlySender(_orderID) {
         Types.Order storage _order = order[_orderID];
         _order.status = Types.OrderStatus.cancelled;
         _order.lastUpdated = block.timestamp;
+        linkedOrderHandler(
+            _order.buyerAddress,
+            _orderID,
+            Types.OrderStatus.cancelled
+        );
+        linkedOrderHandler(
+            _order.sellerAddress,
+            _orderID,
+            Types.OrderStatus.cancelled
+        );
+        emit OrderStatusChange(
+            _orderID,
+            block.timestamp,
+            Types.OrderStatus.cancelled
+        );
     }
+
+    function onholdOrder(string memory _orderID) public onlyReceiver(_orderID) {
+        Types.Order storage _order = order[_orderID];
+        _order.status = Types.OrderStatus.onhold;
+        _order.lastUpdated = block.timestamp;
+        emit OrderStatusChange(
+            _orderID,
+            block.timestamp,
+            Types.OrderStatus.onhold
+        );
+    }
+
+    // internal functions
+
+    function linkedOrderHandler(
+        address _user,
+        string memory _orderID,
+        Types.OrderStatus _status
+    ) internal {
+        if (_status == Types.OrderStatus.placed) {
+            userOngoingLinkedOrders[_user].push(_orderID);
+        } else if (_status == Types.OrderStatus.shipped) {
+            popMatchOrder(userOngoingLinkedOrders[_user], _orderID);
+            userShippedLinkedOrders[_user].push(_orderID);
+        } else if (_status == Types.OrderStatus.delivered) {
+            popMatchOrder(userShippedLinkedOrders[_user], _orderID);
+            userFinishLinkedOrders[_user].push(_orderID);
+        } else if (_status == Types.OrderStatus.cancelled) {
+            popMatchOrder(userShippedLinkedOrders[_user], _orderID);
+            userFinishLinkedOrders[_user].push(_orderID);
+        } else if (_status == Types.OrderStatus.rejected) {
+            popMatchOrder(userOngoingLinkedOrders[_user], _orderID);
+            userFinishLinkedOrders[_user].push(_orderID);
+        }
+    }
+
+    function popMatchOrder(
+        string[] storage _array,
+        string memory _orderID
+    ) internal {
+        for (uint256 i = 0; i < _array.length; i++) {
+            if (
+                keccak256(abi.encodePacked(_array[i])) ==
+                keccak256(abi.encodePacked(_orderID))
+            ) {
+                _array[i] = _array[_array.length - 1];
+                _array.pop();
+                break;
+            }
+        }
+    }
+
+    // geter functions
 
     function getOrder(
         string memory _orderID
@@ -72,6 +208,26 @@ contract OrderManagement {
     function getOrders() public view returns (Types.Order[] memory) {
         return orders;
     }
+
+    function getOngoingOrders(
+        address _user
+    ) public view returns (string[] memory) {
+        return userOngoingLinkedOrders[_user];
+    }
+
+    function getShippedOrders(
+        address _user
+    ) public view returns (string[] memory) {
+        return userShippedLinkedOrders[_user];
+    }
+
+    function getFinishOrders(
+        address _user
+    ) public view returns (string[] memory) {
+        return userFinishLinkedOrders[_user];
+    }
+
+    // function modifiers
 
     modifier onlyReceiver(string memory _orderID) {
         require(
@@ -85,6 +241,46 @@ contract OrderManagement {
         require(
             msg.sender == order[_orderID].buyerAddress,
             "Only order's sender can use this function"
+        );
+        _;
+    }
+
+    modifier orderConfirmable(string memory _orderID) {
+        require(
+            order[_orderID].status == Types.OrderStatus.pending,
+            "Order is not confirmable"
+        );
+        _;
+    }
+
+    modifier orderRejectable(string memory _orderID) {
+        require(
+            order[_orderID].status == Types.OrderStatus.pending,
+            "Order is not rejectable"
+        );
+        _;
+    }
+
+    modifier orderShipable(string memory _orderID) {
+        require(
+            order[_orderID].status == Types.OrderStatus.pending,
+            "Order is not shipable"
+        );
+        _;
+    }
+    
+    modifier orderAcceptable(string memory _orderID) {
+        require(
+            order[_orderID].status == Types.OrderStatus.shipped,
+            "Order is not acceptable"
+        );
+        _;
+    }
+
+    modifier orderCancellable(string memory _orderID) {
+        require(
+            order[_orderID].status == Types.OrderStatus.pending,
+            "Order is not cancellable"
         );
         _;
     }

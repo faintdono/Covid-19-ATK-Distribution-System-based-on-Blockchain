@@ -45,7 +45,7 @@ library Types {
     enum OrderStatus {
         placed,
         pending,
-        processing,
+        rejected,
         shipped,
         delivered,
         cancelled,

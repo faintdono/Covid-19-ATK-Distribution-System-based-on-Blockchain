@@ -80,6 +80,27 @@ contract Products {
         return verify(_lotID);
     }
 
+    // function can't be used for now due to the incomplete implementation of the function
+    
+    function returned(
+        string memory _lotID,
+        uint256 _amount,
+        Types.UserRole role, // 1: distributor, 2: wholesaler, 3: retailer
+        string memory _reason // 1: expired, 2: damaged, 3: other
+    ) internal returns (bool) {
+        if (Types.UserRole(role) == Types.UserRole.distributor) {
+            popMatchHistory(productHistory[_lotID].distributor, msg.sender);
+        } else if (Types.UserRole(role) == Types.UserRole.wholesaler) {
+            popMatchHistory(productHistory[_lotID].wholesaler, msg.sender);
+        } else if (Types.UserRole(role) == Types.UserRole.retailer) {
+            popMatchHistory(productHistory[_lotID].retailer, msg.sender);
+        } else {
+            // Not in the assumption scope
+            revert("Not valid operation");
+        }
+        // NEED TO ADD RETURNED REASON CONDITION
+    }
+
     function transferProduct(
         address _seller,
         address _buyer,
@@ -89,9 +110,16 @@ contract Products {
         // TODO: transfer the product from address to address
         bytes32 hsh1 = hash(_lotID, _seller);
         bytes32 hsh2 = hash(_lotID, _buyer);
-        store[hsh1].amount -= _amount;
-        store[hsh2] = Types.Storage({sellerAddress: _seller, amount: _amount});
-        emit transferAProduct(_seller, _buyer, _amount, _lotID);
+        if (store[hsh1].amount >= _amount) {
+            store[hsh1].amount -= _amount;
+            store[hsh2] = Types.Storage({
+                sellerAddress: _seller,
+                amount: _amount
+            });
+            emit transferAProduct(_seller, _buyer, _amount, _lotID);
+        } else {
+            revert("Not enough product to transfer");
+        }
     }
 
     function renounceTransfer(
@@ -146,6 +174,19 @@ contract Products {
 
     function history(string memory _lotID) internal returns (string[] memory) {
         //TO DO: get the history of _lotID that user buy
+    }
+
+    function popMatchHistory(
+        Types.UserHistory[] storage _array,
+        address _partyID
+    ) internal {
+        for (uint256 i = 0; i < _array.length; i++) {
+            if (_array[i].id == _partyID) {
+                _array[i] = _array[_array.length - 1];
+                _array.pop();
+                break;
+            }
+        }
     }
 
     function hash(
