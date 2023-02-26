@@ -40,6 +40,14 @@ contract SupplyChain is Products {
         sell(buyerID, lotID, amount, registration.getUserDetails(buyerID));
     }
 
+    function returnProduct(
+        string memory lotID,
+        string memory reason
+    ) public verifyCaller(msg.sender) {
+        Types.UserRole role = registration.getUserDetails(msg.sender).role;
+        returned(msg.sender, lotID, role, reason);
+    }
+
     modifier verifyCaller(address _address) {
         require(
             (msg.sender == _address) &&

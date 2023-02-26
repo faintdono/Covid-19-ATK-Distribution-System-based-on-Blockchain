@@ -81,19 +81,19 @@ contract Products {
     }
 
     // function can't be used for now due to the incomplete implementation of the function
-    
+
     function returned(
+        address _partyID,
         string memory _lotID,
-        uint256 _amount,
         Types.UserRole role, // 1: distributor, 2: wholesaler, 3: retailer
         string memory _reason // 1: expired, 2: damaged, 3: other
     ) internal returns (bool) {
         if (Types.UserRole(role) == Types.UserRole.distributor) {
-            popMatchHistory(productHistory[_lotID].distributor, msg.sender);
+            popMatchHistory(productHistory[_lotID].distributor, _partyID);
         } else if (Types.UserRole(role) == Types.UserRole.wholesaler) {
-            popMatchHistory(productHistory[_lotID].wholesaler, msg.sender);
+            popMatchHistory(productHistory[_lotID].wholesaler, _partyID);
         } else if (Types.UserRole(role) == Types.UserRole.retailer) {
-            popMatchHistory(productHistory[_lotID].retailer, msg.sender);
+            popMatchHistory(productHistory[_lotID].retailer, _partyID);
         } else {
             // Not in the assumption scope
             revert("Not valid operation");
@@ -172,8 +172,21 @@ contract Products {
         return false;
     }
 
-    function history(string memory _lotID) internal returns (string[] memory) {
-        //TO DO: get the history of _lotID that user buy
+    // not tested yet i hope it works
+    function history(string memory _lotID) public returns (address[] memory) {
+        address[] memory _history;
+        bytes32 hsh = hash(_lotID, msg.sender);
+        uint256 count = 0;
+        while (true) {
+            address sellerAddress = store[hsh].sellerAddress;
+            if (sellerAddress != address(0)) {
+                _history[count] = sellerAddress;
+                hsh = hash(_lotID, sellerAddress);
+            } else {
+                break;
+            }
+        }
+        return _history;
     }
 
     function popMatchHistory(
