@@ -2,8 +2,15 @@
 pragma solidity ^0.8.0;
 
 import "./Types.sol";
+import "./Registration.sol";
 
 contract OrderManagement {
+    RegistrationCaller registration;
+
+    constructor(address _Address) {
+        registration = RegistrationCaller(_Address);
+    }
+
     Types.Order[] internal orders;
     mapping(string => Types.Order) internal order;
     mapping(address => string[]) internal userOngoingLinkedOrders;
@@ -26,10 +33,11 @@ contract OrderManagement {
         Types.OrderStatus status
     );
 
-    function createOrder(address _seller, uint256 _amount) public {
-        string memory _orderID = string(
-            abi.encodePacked(block.timestamp, msg.sender)
-        );
+    function createOrder(
+        string memory _orderID,
+        address _seller,
+        uint256 _amount
+    ) public verifycaller(msg.sender) {
         Types.Order memory _order = Types.Order({
             orderID: _orderID,
             buyerAddress: msg.sender,
@@ -41,7 +49,7 @@ contract OrderManagement {
             lastUpdated: block.timestamp
         });
         orders.push(_order);
-        order[_orderID] = _order;
+        order[_orderID] = _order; // mapping
         linkedOrderHandler(msg.sender, _orderID, Types.OrderStatus.placed);
         linkedOrderHandler(_seller, _orderID, Types.OrderStatus.placed);
         emit NewOrder(_orderID, msg.sender, _seller, _amount, block.timestamp);
@@ -49,7 +57,12 @@ contract OrderManagement {
 
     function confirmOrder(
         string memory _orderID
-    ) public onlyReceiver(_orderID) {
+    )
+        public
+        onlyReceiver(_orderID)
+        orderConfirmable(_orderID)
+        verifycaller(msg.sender)
+    {
         Types.Order storage _order = order[_orderID];
         _order.status = Types.OrderStatus.pending;
         _order.lastUpdated = block.timestamp;
@@ -60,7 +73,14 @@ contract OrderManagement {
         );
     }
 
-    function rejectOrder(string memory _orderID) public onlyReceiver(_orderID) {
+    function rejectOrder(
+        string memory _orderID
+    )
+        public
+        onlyReceiver(_orderID)
+        orderRejectable(_orderID)
+        verifycaller(msg.sender)
+    {
         Types.Order storage _order = order[_orderID];
         _order.status = Types.OrderStatus.rejected;
         _order.lastUpdated = block.timestamp;
@@ -83,7 +103,12 @@ contract OrderManagement {
 
     function shipOrder(
         string memory _orderID
-    ) public onlyReceiver(_orderID) orderShipable(_orderID) {
+    )
+        public
+        onlyReceiver(_orderID)
+        orderShipable(_orderID)
+        verifycaller(msg.sender)
+    {
         Types.Order storage _order = order[_orderID];
         _order.status = Types.OrderStatus.shipped;
         _order.lastUpdated = block.timestamp;
@@ -104,7 +129,14 @@ contract OrderManagement {
         );
     }
 
-    function acceptOrder(string memory _orderID) public onlySender(_orderID) {
+    function acceptOrder(
+        string memory _orderID
+    )
+        public
+        onlySender(_orderID)
+        orderAcceptable(_orderID)
+        verifycaller(msg.sender)
+    {
         Types.Order storage _order = order[_orderID];
         _order.status = Types.OrderStatus.delivered;
         _order.lastUpdated = block.timestamp;
@@ -125,7 +157,14 @@ contract OrderManagement {
         );
     }
 
-    function cancelOrder(string memory _orderID) public onlySender(_orderID) {
+    function cancelOrder(
+        string memory _orderID
+    )
+        public
+        onlySender(_orderID)
+        orderCancellable(_orderID)
+        verifycaller(msg.sender)
+    {
         Types.Order storage _order = order[_orderID];
         _order.status = Types.OrderStatus.cancelled;
         _order.lastUpdated = block.timestamp;
@@ -146,7 +185,9 @@ contract OrderManagement {
         );
     }
 
-    function onholdOrder(string memory _orderID) public onlyReceiver(_orderID) {
+    function onholdOrder(
+        string memory _orderID
+    ) public onlyReceiver(_orderID) verifycaller(msg.sender) {
         Types.Order storage _order = order[_orderID];
         _order.status = Types.OrderStatus.onhold;
         _order.lastUpdated = block.timestamp;
@@ -268,7 +309,7 @@ contract OrderManagement {
         );
         _;
     }
-    
+
     modifier orderAcceptable(string memory _orderID) {
         require(
             order[_orderID].status == Types.OrderStatus.shipped,
@@ -281,6 +322,25 @@ contract OrderManagement {
         require(
             order[_orderID].status == Types.OrderStatus.pending,
             "Order is not cancellable"
+        );
+        _;
+    }
+
+    modifier orderOnholdable(string memory _orderID) {
+        require(
+            order[_orderID].status == Types.OrderStatus.shipped,
+            "Order is not onholdable"
+        );
+        _;
+    }
+
+    modifier verifycaller(address _address) {
+        require(
+            registration.isManufacturer(_address) ||
+                registration.isDistributor(_address) ||
+                registration.isWholesaler(_address) ||
+                registration.isRetailer(_address),
+            "Only registered users can call this function."
         );
         _;
     }

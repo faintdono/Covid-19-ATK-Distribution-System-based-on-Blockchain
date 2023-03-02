@@ -136,8 +136,8 @@ contract Products {
     function destroyProduct(address _buyer, string memory _lotID) internal {
         bytes32 hsh1 = hash(_lotID, _buyer);
         bytes32 hsh2 = hash(_lotID, 0x0000000000000000000000000000000000000000);
-        store[hsh1].amount += store[hsh2].amount;
-        delete store[hsh2];
+        store[hsh2].amount += store[hsh1].amount;
+        delete store[hsh1];
     }
 
     function verify(string memory _lotID) internal view returns (bool) {
@@ -170,23 +170,6 @@ contract Products {
             return true;
         }
         return false;
-    }
-
-    // not tested yet i hope it works
-    function history(string memory _lotID) public returns (address[] memory) {
-        address[] memory _history;
-        bytes32 hsh = hash(_lotID, msg.sender);
-        uint256 count = 0;
-        while (true) {
-            address sellerAddress = store[hsh].sellerAddress;
-            if (sellerAddress != address(0)) {
-                _history[count] = sellerAddress;
-                hsh = hash(_lotID, sellerAddress);
-            } else {
-                break;
-            }
-        }
-        return _history;
     }
 
     function popMatchHistory(
