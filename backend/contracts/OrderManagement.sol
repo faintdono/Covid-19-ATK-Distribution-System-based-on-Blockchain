@@ -288,7 +288,7 @@ contract OrderManagement {
 
     modifier orderConfirmable(string memory _orderID) {
         require(
-            order[_orderID].status == Types.OrderStatus.pending,
+            order[_orderID].status == Types.OrderStatus.placed,
             "Order is not confirmable"
         );
         _;

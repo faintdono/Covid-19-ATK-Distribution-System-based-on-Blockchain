@@ -184,29 +184,123 @@ describe('Order Management', () => {
         registration = await Registration.deploy()
 
         const OrderManagement = await ethers.getContractFactory('OrderManagement');
-        ordermanagement = await OrderManagement.deploy()
+        ordermanagement = await OrderManagement.deploy(registration.address)
 
+        registration.addUser("manufacturer", manufacturer.address)
+        registration.addUser("distributor", distributor.address)
+        registration.addUser("wholesaler", wholesaler.address)
+        registration.addUser("retailer", retailer.address)
     })
 
-    describe('Creating Order', () => {
-        //I will look into to this more using JsonRPCProvider in online test-case (infura)
-        //Get block.timestamp compare
+    describe('Normal Orders', () => {
+
+        async function generateRandomOrderID(userAddress) {
+            const timestamp = Date.now();
+            const combinedString = `${userAddress}${timestamp}`;
+            const randomNum = Math.floor(Math.random() * 100000);
+            const finalString = `${combinedString}${randomNum}`;
+            return finalString;
+        }
+
         it('Create New Order', async () => {
-            const result = ordermanagement.createOrder(manufacturer.address, 1)
-            expect(result).to.emit(ordermanagement, 'NewOrder')
+            const orderID = generateRandomOrderID(distributor.address)
+            const result = ordermanagement
+                .connect(distributor)
+                .createOrder(orderID, manufacturer.address, 1)
+            expect(result)
+                .to.emit(ordermanagement, 'NewOrder')
+                .withArgs(orderID, manufacturer.address, 1)
         })
 
-        it('Get Order ID', async () => {
-
-            ordermanagement.createOrder(manufacturer, 1)
-
-            async function getOrder() {
-                const test = await ordermanagement.getOrder(distributor);
-                return test;
-            }
-
-            const result = await getOrder();
-            //console.log(result)
+        it('Confirm Order', async () => {
+            const orderID = generateRandomOrderID(distributor.address)
+            ordermanagement.connect(distributor).createOrder(orderID, manufacturer.address, 1)
+            const result = ordermanagement
+                .connect(manufacturer)
+                .confirmOrder(orderID)
+            expect(result)
+                .to.emit(ordermanagement, 'OrderStatusChange')
+                .withArgs(orderID)
         })
+
+        it('Ship Order', async () => {
+            const orderID = generateRandomOrderID(distributor.address)
+            ordermanagement.connect(distributor).createOrder(orderID, manufacturer.address, 1)
+            ordermanagement.connect(manufacturer).confirmOrder(orderID)
+            const result = ordermanagement
+                .connect(manufacturer)
+                .shipOrder(orderID)
+            expect(result)
+                .to.emit(ordermanagement, 'OrderStatusChange')
+                .withArgs(orderID)
+        })
+
+        it('Accept Order', async () => {
+            const orderID = generateRandomOrderID(distributor.address)
+            ordermanagement.connect(distributor).createOrder(orderID, manufacturer.address, 1)
+            ordermanagement.connect(manufacturer).confirmOrder(orderID)
+            ordermanagement.connect(manufacturer).shipOrder(orderID)
+            const result = ordermanagement
+                .connect(distributor)
+                .acceptOrder(orderID)
+            expect(result)
+                .to.emit(ordermanagement, 'OrderStatusChange')
+                .withArgs(orderID)
+        })
+
+        it('Reject Order', async () => {
+            const orderID = generateRandomOrderID(distributor.address)
+            ordermanagement.connect(distributor).createOrder(orderID, manufacturer.address, 1)
+            ordermanagement.connect(manufacturer).confirmOrder(orderID)
+            const result = ordermanagement
+                .connect(manufacturer)
+                .rejectOrder(orderID)
+            expect(result)
+                .to.emit(ordermanagement, 'OrderStatusChange')
+                .withArgs(orderID)
+        })
+
+        //Why Cancel look like Reject Order above ? dev might need to fix this ?
+
+        it('Cancel Order', async () => {
+            const orderID = generateRandomOrderID(distributor.address)
+            ordermanagement.connect(distributor).createOrder(orderID, manufacturer.address, 1)
+            ordermanagement.connect(manufacturer).confirmOrder(orderID)
+            const result = ordermanagement
+                .connect(manufacturer)
+                .cancelOrder(orderID)
+            expect(result)
+                .to.emit(ordermanagement, 'OrderStatusChange')
+                .withArgs(orderID)
+        })
+
+        it('Onhold Order', async () => {
+            const orderID = generateRandomOrderID(distributor.address)
+            ordermanagement.connect(distributor).createOrder(orderID, manufacturer.address, 1)
+            ordermanagement.connect(manufacturer).confirmOrder(orderID)
+            ordermanagement.connect(manufacturer).shipOrder(orderID)
+            const result = ordermanagement
+                .connect(manufacturer)
+                .onholdOrder(orderID)
+            expect(result)
+                .to.emit(ordermanagement, 'OrderStatusChange')
+                .withArgs(orderID)
+        })
+    })
+
+    describe('Get Orders', () => {
+        async function generateRandomOrderID(userAddress) {
+            const timestamp = Date.now();
+            const combinedString = `${userAddress}${timestamp}`;
+            const randomNum = Math.floor(Math.random() * 100000);
+            const finalString = `${combinedString}${randomNum}`;
+            return finalString;
+        }
+        //note for testing 
+        //Status [placed --> pending --> shipped --> delivered]
+        //rejected = status: pending
+        //cancelled = status: pending [something might be wrong about this]
+        //onhold = status: shipped
+        //returned = ?
     })
 })
