@@ -6,6 +6,7 @@ pragma solidity ^0.8.0;
 import "./Types.sol";
 import "./Products.sol";
 import "./Registration.sol";
+import "./OrderManagement.sol";
 
 contract SupplyChain is Products {
     RegistrationCaller registration;
@@ -37,11 +38,9 @@ contract SupplyChain is Products {
     }
 
     function sellProduct(
-        string memory lotID,
-        address buyerID,
-        uint256 amount
-    ) public verifyCaller(msg.sender) verifyUser(buyerID) {
-        //TODO: sellProductToBuyer
+        string memory orderID
+    ) public verifyCaller(msg.sender) verifyUser() {
+        
     }
 
     function returnProduct(

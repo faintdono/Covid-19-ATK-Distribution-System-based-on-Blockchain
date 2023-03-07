@@ -60,7 +60,10 @@ contract OrderManagement {
     }
 
     function confirmOrder(
-        string memory _orderID
+        string memory _orderID,
+        string memory _invoice,
+        string memory _lotID,
+        string memory _sku
     )
         public
         onlyReceiver(_orderID)
@@ -202,6 +205,39 @@ contract OrderManagement {
         );
     }
 
+    // getter functions
+    function getOrder(
+        string memory _orderID
+    ) external view returns (Types.Order memory) {
+        return order[_orderID];
+    }
+
+    function getOrders() external view returns (Types.Order[] memory) {
+        return orders;
+    }
+
+    function getOngoingOrders(
+        address _user
+    ) external view returns (string[] memory) {
+        return userOngoingLinkedOrders[_user];
+    }
+
+    function getShippedOrders(
+        address _user
+    ) external view returns (string[] memory) {
+        return userShippedLinkedOrders[_user];
+    }
+
+    function getFinishOrders(
+        address _user
+    ) external view returns (string[] memory) {
+        return userFinishLinkedOrders[_user];
+    }
+
+    function getNonce() external view returns (uint256) {
+        return privateNumber;
+    }
+
     // internal functions
 
     function linkedOrderHandler(
@@ -242,49 +278,15 @@ contract OrderManagement {
         }
     }
 
-    // geter functions
-
-    function getOrder(
-        string memory _orderID
-    ) public view returns (Types.Order memory) {
-        return order[_orderID];
-    }
-
-    function getOrders() public view returns (Types.Order[] memory) {
-        return orders;
-    }
-
-    function getOngoingOrders(
-        address _user
-    ) public view returns (string[] memory) {
-        return userOngoingLinkedOrders[_user];
-    }
-
-    function getShippedOrders(
-        address _user
-    ) public view returns (string[] memory) {
-        return userShippedLinkedOrders[_user];
-    }
-
-    function getFinishOrders(
-        address _user
-    ) public view returns (string[] memory) {
-        return userFinishLinkedOrders[_user];
-    }
-
-    function getNonce() public view returns (uint256) {
-        return privateNumber;
-    }
-
-    function increseNonce() public {
-        privateNumber++;
-    }
-
     function random() private view returns (uint) {
         return
             uint(
                 keccak256(abi.encodePacked(block.difficulty, block.timestamp))
             );
+    }
+
+    function increaseNonce() private {
+        privateNumber++;
     }
 
     // function modifiers
@@ -365,10 +367,48 @@ contract OrderManagement {
     }
 }
 
-contract OrderManagementCaller{
-    OrderManagement orderManagement;
+contract OrderManagementCaller {
+    OrderManagement orderMan;
 
     constructor(address _orderManagementAddress) {
-        orderManagement = OrderManagement(_orderManagementAddress);
+        orderMan = OrderManagement(_orderManagementAddress);
+    }
+
+    // geter functions
+
+    function getOrder(
+        string memory _orderID
+    ) external view returns (Types.Order memory) {
+        return orderMan.getOrder(_orderID);
+    }
+
+    function getOrders() external view returns (Types.Order[] memory) {
+        return orderMan.getOrders();
+    }
+
+    function getOngoingOrders(
+        address _user
+    ) external view returns (string[] memory) {
+        return orderMan.getOngoingOrders(_user);
+    }
+
+    function getShippedOrders(
+        address _user
+    ) external view returns (string[] memory) {
+        return orderMan.getShippedOrders(_user);
+    }
+
+    function getFinishOrders(
+        address _user
+    ) external view returns (string[] memory) {
+        return orderMan.getFinishOrders(_user);
+    }
+
+    function getNonce() external view returns (uint256) {
+        return orderMan.getNonce();
+    }
+
+    function increaseNonce() external {
+        orderMan.increaseNonce();
     }
 }

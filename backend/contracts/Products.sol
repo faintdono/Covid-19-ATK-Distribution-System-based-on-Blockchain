@@ -6,9 +6,9 @@ import "./Types.sol";
 
 contract Products {
     Types.Product[] internal products;
-    mapping(string => Types.Product) internal product;
-    // mapping(address => string[]) internal userLinkedProducts;
-    mapping(string => Types.ProductHistory) public productHistory;
+    mapping(bytes32 => Types.Product) internal product; // bytes32 = generateProductKey(lotID,sku,manufacturerName) => hash function
+    mapping(address => bytes32[]) internal userLinkedProducts;
+    mapping(bytes32 => Types.ProductHistory) public productHistory; // bytes32 = same as above
 
     // for transaction and verify
     mapping(bytes32 => Types.Ledger) internal ledger; // bytes32 = generateLedgetrKey(owner, seller, orderID, lotID, sku, invoice, key, amount) => hash function
@@ -18,6 +18,7 @@ contract Products {
     // event that notifies clients about the new product
     event NewProduct(
         string lotID,
+        string sku,
         string manufacturerName,
         string manufacturingDate,
         uint256 productAmount
@@ -35,12 +36,17 @@ contract Products {
             _product.manufacturer == msg.sender,
             "Only manufacturer can add"
         );
+        bytes32 hsh1 = generateProductKey(
+            _product.lotID,
+            _product.sku,
+            _product.manufacturerName
+        );
         // add product
         products.push(_product);
-        product[_product.lotID] = _product;
+        product[hsh1] = _product;
 
         // create ledger of this Lot of product
-        bytes32 hsh = generateLedgerKey(
+        bytes32 hsh2 = generateLedgerKey(
             msg.sender,
             address(0),
             "",
@@ -52,25 +58,26 @@ contract Products {
         );
 
         // Note: address(0) = 0x0000000000000000000000000000000000000000
-        ledger[hsh] = Types.Ledger({
+        ledger[hsh2] = Types.Ledger({
             owner: msg.sender,
             orderID: "",
             invoice: "",
-            key: hsh,
+            key: hsh2,
             sellerAddress: address(0),
             amount: _product.productAmount
         });
 
-        // create history of this Lot of product
-        productHistory[_product.lotID].manufacturer = Types.UserHistory({
+        // create history of this product
+        productHistory[hsh1].manufacturer = Types.UserHistory({
             id: msg.sender,
             date: block.timestamp
         });
 
-        //userLinkedProducts[msg.sender].push(_product.lotID);
+        userLinkedProducts[msg.sender].push(hsh1); // add product to user
 
         emit NewProduct(
             _product.lotID,
+            _product.sku,
             _product.manufacturerName,
             _product.manufacturingDate,
             _product.productAmount
@@ -85,7 +92,8 @@ contract Products {
         string memory _invoice,
         string memory _lotID,
         string memory _sku,
-        bytes32 _key,
+        bytes32 _ledgerKey,
+        bytes32 _productKey,
         uint256 _amount,
         Types.UserDetails memory _party
     ) internal returns (bool) {
@@ -94,25 +102,27 @@ contract Products {
             id: _partyID,
             date: block.timestamp
         });
+
         if (Types.UserRole(_party.role) == Types.UserRole.distributor) {
-            productHistory[_lotID].distributor.push(_userHistory);
+            productHistory[_productKey].distributor.push(_userHistory);
         } else if (Types.UserRole(_party.role) == Types.UserRole.wholesaler) {
-            productHistory[_lotID].wholesaler.push(_userHistory);
+            productHistory[_productKey].wholesaler.push(_userHistory);
         } else if (Types.UserRole(_party.role) == Types.UserRole.retailer) {
-            productHistory[_lotID].retailer.push(_userHistory);
+            productHistory[_productKey].retailer.push(_userHistory);
         } else {
             // Not in the assumption scope
             revert("Not valid operation");
         }
-        verify()
-        bytes32 hsh = generateLedgerKey(
+        userLinkedProducts[_partyID].push(_productKey);
+        verify(_ledgerKey, _amount);
+        bytes32 _newLedgerKey = generateLedgerKey(
             _partyID,
             msg.sender,
             _orderID,
             _lotID,
             _sku,
             _invoice,
-            _key,
+            _ledgerKey,
             _amount
         );
 
@@ -121,8 +131,8 @@ contract Products {
             msg.sender,
             _orderID,
             _invoice,
-            hsh,
-            _key,
+            _newLedgerKey, // ownerKey
+            _ledgerKey, // sellerKey
             _amount
         );
         // return verify()
@@ -151,8 +161,9 @@ contract Products {
     // verify only UPPER LEVEL
     function verify(
         bytes32 _rootKey,
+        uint256 _amount
     ) internal view returns (bool) {
-        childKeys = childKey[_rootKey];
+        bytes32[] memory childKeys = childKey[_rootKey];
         uint256 totalAmount = 0;
         for (uint256 i = 0; i < childKeys.length; i++) {
             totalAmount += ledger[childKeys[i]].amount;
@@ -247,13 +258,12 @@ contract Products {
             );
     }
 
-    function hashexist(
+    function generateProductKey(
         string memory _lotID,
-        string memory a,
-        string memory b
-    ) internal pure returns (bool) {
-        return (keccak256(abi.encodePacked(_lotID, a)) ==
-            keccak256(abi.encodePacked(_lotID, b)));
+        string memory _sku,
+        string memory _manufacturingName
+    ) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked(_lotID, _sku, _manufacturingName));
     }
 
     function compareStrings(
