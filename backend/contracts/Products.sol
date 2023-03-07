@@ -11,9 +11,9 @@ contract Products {
     mapping(string => Types.ProductHistory) public productHistory;
 
     // for transaction and verify
-    mapping(bytes32 => Types.Ledger) internal ledger;
-    mapping(bytes32 => bytes32[]) internal childKey;
-    mapping(address => bytes32[]) public userKey;
+    mapping(bytes32 => Types.Ledger) internal ledger; // bytes32 = generateLedgetrKey(owner, seller, orderID, lotID, sku, invoice, key, amount) => hash function
+    mapping(bytes32 => bytes32[]) internal childKey; // bytes32 = still the same as above => it's a parent key
+    mapping(address => bytes32[]) internal userKey;
 
     // event that notifies clients about the new product
     event NewProduct(
@@ -39,17 +39,19 @@ contract Products {
         products.push(_product);
         product[_product.lotID] = _product;
 
-        // add amount of product to storage
-        bytes32 hsh = hash(
+        // create ledger of this Lot of product
+        bytes32 hsh = generateLedgerKey(
             msg.sender,
+            address(0),
             "",
             _product.lotID,
             _product.sku,
             "",
             bytes32(0),
-            address(0),
             _product.productAmount
         );
+
+        // Note: address(0) = 0x0000000000000000000000000000000000000000
         ledger[hsh] = Types.Ledger({
             owner: msg.sender,
             orderID: "",
@@ -79,8 +81,11 @@ contract Products {
     // Note: call data need to be updated to match our requirements
     function sell(
         address _partyID,
+        string memory _orderID,
+        string memory _invoice,
         string memory _lotID,
         string memory _sku,
+        bytes32 _key,
         uint256 _amount,
         Types.UserDetails memory _party
     ) internal returns (bool) {
@@ -99,12 +104,65 @@ contract Products {
             // Not in the assumption scope
             revert("Not valid operation");
         }
-        transferProduct(msg.sender, _partyID, _amount, _lotID);
+        verify()
+        bytes32 hsh = generateLedgerKey(
+            _partyID,
+            msg.sender,
+            _orderID,
+            _lotID,
+            _sku,
+            _invoice,
+            _key,
+            _amount
+        );
+
+        transferProduct(
+            _partyID,
+            msg.sender,
+            _orderID,
+            _invoice,
+            hsh,
+            _key,
+            _amount
+        );
         // return verify()
     }
 
-    // function can't be used for now due to the incomplete implementation of the function
+    function transferProduct(
+        address _owner,
+        address _sellerAddress,
+        string memory _orderID,
+        string memory _invoice,
+        bytes32 _ownerKey,
+        bytes32 _sellerKey,
+        uint256 _amount
+    ) internal {
+        ledger[_ownerKey] = Types.Ledger({
+            owner: _owner,
+            sellerAddress: _sellerAddress,
+            orderID: _orderID,
+            invoice: _invoice,
+            key: _sellerKey,
+            amount: _amount
+        });
+        childKey[_sellerKey].push(_ownerKey);
+    }
 
+    // verify only UPPER LEVEL
+    function verify(
+        bytes32 _rootKey,
+    ) internal view returns (bool) {
+        childKeys = childKey[_rootKey];
+        uint256 totalAmount = 0;
+        for (uint256 i = 0; i < childKeys.length; i++) {
+            totalAmount += ledger[childKeys[i]].amount;
+            if (totalAmount >= ledger[_rootKey].amount) {
+                return false;
+            }
+        }
+    }
+
+    // function can't be used for now due to the incomplete implementation of the function
     function returned(
         address _partyID,
         string memory _lotID,
@@ -124,15 +182,6 @@ contract Products {
         // NEED TO ADD RETURNED REASON CONDITION
     }
 
-    function transferProduct(
-        address _seller,
-        address _buyer,
-        uint256 _amount,
-        string memory _lotID
-    ) internal {
-        // TODO: create a new key for the buyer and then create a new ledger by that key
-    }
-
     function renounceTransfer(
         address _buyer,
         address _seller,
@@ -145,12 +194,6 @@ contract Products {
         // TODO: sometimes you want to destroy that proudct due to any reason
         // Note: need to implement Types.OrderStatus Struct
     }
-
-    // need to change it to verify only UPPER LEVEL
-    function verify(
-        bytes32 _rootKey,
-        bytes32 _rootAddress
-    ) internal view returns (bool) {}
 
     function popMatchHistory(
         Types.UserHistory[] storage _array,
@@ -165,27 +208,40 @@ contract Products {
         }
     }
 
+    //geter function
+    function getUserKey(
+        address _userAddress
+    ) internal view returns (bytes32[] memory) {
+        return userKey[_userAddress];
+    }
+
+    function getLedger(
+        bytes32 _key
+    ) internal view returns (Types.Ledger memory) {
+        return ledger[_key];
+    }
+
     // need to know [lotID, sku, invoice, orderID, key, sellerAddress]
-    function hash(
+    function generateLedgerKey(
         address _owner,
+        address _sellerAddress,
         string memory _orderID,
+        string memory _invoice,
         string memory _lotID,
         string memory _sku,
-        string memory _invoice,
         bytes32 _key,
-        address _sellerAddress,
         uint256 _amount
     ) internal pure returns (bytes32) {
         return
             keccak256(
                 abi.encodePacked(
                     _owner,
+                    _sellerAddress,
                     _orderID,
+                    _invoice,
                     _lotID,
                     _sku,
-                    _invoice,
                     _key,
-                    _sellerAddress,
                     _amount
                 )
             );

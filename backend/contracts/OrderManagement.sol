@@ -41,12 +41,14 @@ contract OrderManagement {
         uint256 _amount
     ) public verifycaller(msg.sender) {
         Types.Order memory _order = Types.Order({
-            orderID: _orderID,
             buyerAddress: msg.sender,
             sellerAddress: _seller,
+            orderID: _orderID,
+            invoice: "",
+            lotID: "",
+            sku: "",
             amount: _amount,
             date: block.timestamp,
-            lotID: "",
             status: Types.OrderStatus.placed,
             lastUpdated: block.timestamp
         });
@@ -360,5 +362,13 @@ contract OrderManagement {
             "Only registered users can call this function."
         );
         _;
+    }
+}
+
+contract OrderManagementCaller{
+    OrderManagement orderManagement;
+
+    constructor(address _orderManagementAddress) {
+        orderManagement = OrderManagement(_orderManagementAddress);
     }
 }

@@ -9,13 +9,16 @@ import "./Registration.sol";
 
 contract SupplyChain is Products {
     RegistrationCaller registration;
+    OrderManagementCaller orderManagement;
 
     constructor(address _Address) {
         registration = RegistrationCaller(_Address);
+        orderManagement = OrderManagementCaller(_Address);
     }
 
     function addProduct(
         string memory lotID,
+        string memory sku,
         string memory manufacturerName,
         string memory manufacturingDate,
         string memory expiryDate,
@@ -23,6 +26,7 @@ contract SupplyChain is Products {
     ) public onlyManufacturer {
         Types.Product memory product = Types.Product(
             lotID,
+            sku,
             manufacturerName,
             msg.sender,
             manufacturingDate,
@@ -37,7 +41,7 @@ contract SupplyChain is Products {
         address buyerID,
         uint256 amount
     ) public verifyCaller(msg.sender) verifyUser(buyerID) {
-        sell(buyerID, lotID, amount, registration.getUserDetails(buyerID));
+        //TODO: sellProductToBuyer
     }
 
     function returnProduct(

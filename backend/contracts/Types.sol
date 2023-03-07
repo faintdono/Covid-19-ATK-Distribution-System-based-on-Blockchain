@@ -40,13 +40,21 @@ library Types {
     // need to know [owner,orderID, lotID, sku, invoice,key,sellerAddress,amount]
     struct Ledger {
         address owner;
+        address sellerAddress;
         string orderID;
         string invoice;
         bytes32 key;
-        address sellerAddress;
         uint256 amount;
     }
 
+    struct Key {
+        address owner;
+        address sellerAddress;
+        string orderID;
+        string invoice;
+        string lotID;
+        string sku;
+    }
 
     enum OrderStatus {
         placed,
@@ -60,12 +68,14 @@ library Types {
     }
 
     struct Order {
-        string orderID;
         address buyerAddress;
         address sellerAddress;
+        string orderID;
+        string invoice;
+        string lotID;
+        string sku;
         uint256 amount;
         uint256 date;
-        string lotID;
         OrderStatus status;
         uint256 lastUpdated;
     }
