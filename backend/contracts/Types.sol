@@ -30,17 +30,23 @@ library Types {
 
     struct Product {
         string lotID;
+        string sku;
         string manufacturerName;
         address manufacturer;
         string manufacturingDate;
         string expiryDate;
         uint256 productAmount;
     }
-
-    struct Storage {
+    // need to know [owner,orderID, lotID, sku, invoice,key,sellerAddress,amount]
+    struct Ledger {
+        address owner;
+        string orderID;
+        string invoice;
+        bytes32 key;
         address sellerAddress;
         uint256 amount;
     }
+
 
     enum OrderStatus {
         placed,

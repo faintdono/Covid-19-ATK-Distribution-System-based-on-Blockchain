@@ -6,9 +6,11 @@ import "./Registration.sol";
 
 contract OrderManagement {
     RegistrationCaller registration;
+    uint256 internal privateNumber;
 
     constructor(address _Address) {
         registration = RegistrationCaller(_Address);
+        privateNumber = random();
     }
 
     Types.Order[] internal orders;
@@ -266,6 +268,21 @@ contract OrderManagement {
         address _user
     ) public view returns (string[] memory) {
         return userFinishLinkedOrders[_user];
+    }
+
+    function getNonce() public view returns (uint256) {
+        return privateNumber;
+    }
+
+    function increseNonce() public {
+        privateNumber++;
+    }
+
+    function random() private view returns (uint) {
+        return
+            uint(
+                keccak256(abi.encodePacked(block.difficulty, block.timestamp))
+            );
     }
 
     // function modifiers

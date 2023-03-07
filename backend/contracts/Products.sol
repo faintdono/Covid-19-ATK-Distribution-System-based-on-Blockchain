@@ -7,9 +7,13 @@ import "./Types.sol";
 contract Products {
     Types.Product[] internal products;
     mapping(string => Types.Product) internal product;
-    mapping(address => string[]) internal userLinkedProducts;
+    // mapping(address => string[]) internal userLinkedProducts;
     mapping(string => Types.ProductHistory) public productHistory;
-    mapping(bytes32 => Types.Storage) public store;
+
+    // for transaction and verify
+    mapping(bytes32 => Types.Ledger) internal ledger;
+    mapping(bytes32 => bytes32[]) internal childKey;
+    mapping(address => bytes32[]) public userKey;
 
     // event that notifies clients about the new product
     event NewProduct(
@@ -36,8 +40,24 @@ contract Products {
         product[_product.lotID] = _product;
 
         // add amount of product to storage
-        bytes32 hsh = hash(_product.lotID, msg.sender);
-        store[hsh].amount = _product.productAmount;
+        bytes32 hsh = hash(
+            msg.sender,
+            "",
+            _product.lotID,
+            _product.sku,
+            "",
+            bytes32(0),
+            address(0),
+            _product.productAmount
+        );
+        ledger[hsh] = Types.Ledger({
+            owner: msg.sender,
+            orderID: "",
+            invoice: "",
+            key: hsh,
+            sellerAddress: address(0),
+            amount: _product.productAmount
+        });
 
         // create history of this Lot of product
         productHistory[_product.lotID].manufacturer = Types.UserHistory({
@@ -45,7 +65,7 @@ contract Products {
             date: block.timestamp
         });
 
-        userLinkedProducts[msg.sender].push(_product.lotID);
+        //userLinkedProducts[msg.sender].push(_product.lotID);
 
         emit NewProduct(
             _product.lotID,
@@ -55,9 +75,12 @@ contract Products {
         );
     }
 
+    // need to edit all function below
+    // Note: call data need to be updated to match our requirements
     function sell(
         address _partyID,
         string memory _lotID,
+        string memory _sku,
         uint256 _amount,
         Types.UserDetails memory _party
     ) internal returns (bool) {
@@ -77,7 +100,7 @@ contract Products {
             revert("Not valid operation");
         }
         transferProduct(msg.sender, _partyID, _amount, _lotID);
-        return verify(_lotID);
+        // return verify()
     }
 
     // function can't be used for now due to the incomplete implementation of the function
@@ -107,19 +130,7 @@ contract Products {
         uint256 _amount,
         string memory _lotID
     ) internal {
-        // TODO: transfer the product from address to address
-        bytes32 hsh1 = hash(_lotID, _seller);
-        bytes32 hsh2 = hash(_lotID, _buyer);
-        if (store[hsh1].amount >= _amount) {
-            store[hsh1].amount -= _amount;
-            store[hsh2] = Types.Storage({
-                sellerAddress: _seller,
-                amount: _amount
-            });
-            emit transferAProduct(_seller, _buyer, _amount, _lotID);
-        } else {
-            revert("Not enough product to transfer");
-        }
+        // TODO: create a new key for the buyer and then create a new ledger by that key
     }
 
     function renounceTransfer(
@@ -127,50 +138,19 @@ contract Products {
         address _seller,
         string memory _lotID
     ) internal {
-        bytes32 hsh1 = hash(_lotID, _seller);
-        bytes32 hsh2 = hash(_lotID, _buyer);
-        store[hsh1].amount += store[hsh2].amount;
-        delete store[hsh2];
+        // TODO: delete the ledger of the buyer
     }
 
     function destroyProduct(address _buyer, string memory _lotID) internal {
-        bytes32 hsh1 = hash(_lotID, _buyer);
-        bytes32 hsh2 = hash(_lotID, 0x0000000000000000000000000000000000000000);
-        store[hsh2].amount += store[hsh1].amount;
-        delete store[hsh1];
+        // TODO: sometimes you want to destroy that proudct due to any reason
+        // Note: need to implement Types.OrderStatus Struct
     }
 
-    function verify(string memory _lotID) internal view returns (bool) {
-        uint256 totalProduct = product[_lotID].productAmount;
-        uint256 count = store[
-            hash(_lotID, productHistory[_lotID].manufacturer.id)
-        ].amount;
-        for (
-            uint256 i = 0;
-            i < productHistory[_lotID].distributor.length;
-            i++
-        ) {
-            bytes32 hsh = hash(
-                _lotID,
-                productHistory[_lotID].distributor[i].id
-            );
-            count += store[hsh].amount;
-        }
-        for (uint256 i = 0; i < productHistory[_lotID].wholesaler.length; i++) {
-            bytes32 hsh = hash(_lotID, productHistory[_lotID].wholesaler[i].id);
-            count += store[hsh].amount;
-        }
-        for (uint256 i = 0; i < productHistory[_lotID].retailer.length; i++) {
-            bytes32 hsh = hash(_lotID, productHistory[_lotID].retailer[i].id);
-            count += store[hsh].amount;
-        }
-        count += store[hash(_lotID, 0x0000000000000000000000000000000000000000)]
-            .amount;
-        if (count == totalProduct) {
-            return true;
-        }
-        return false;
-    }
+    // need to change it to verify only UPPER LEVEL
+    function verify(
+        bytes32 _rootKey,
+        bytes32 _rootAddress
+    ) internal view returns (bool) {}
 
     function popMatchHistory(
         Types.UserHistory[] storage _array,
@@ -185,11 +165,30 @@ contract Products {
         }
     }
 
+    // need to know [lotID, sku, invoice, orderID, key, sellerAddress]
     function hash(
+        address _owner,
+        string memory _orderID,
         string memory _lotID,
-        address _sender
+        string memory _sku,
+        string memory _invoice,
+        bytes32 _key,
+        address _sellerAddress,
+        uint256 _amount
     ) internal pure returns (bytes32) {
-        return keccak256(abi.encodePacked(_lotID, _sender));
+        return
+            keccak256(
+                abi.encodePacked(
+                    _owner,
+                    _orderID,
+                    _lotID,
+                    _sku,
+                    _invoice,
+                    _key,
+                    _sellerAddress,
+                    _amount
+                )
+            );
     }
 
     function hashexist(
