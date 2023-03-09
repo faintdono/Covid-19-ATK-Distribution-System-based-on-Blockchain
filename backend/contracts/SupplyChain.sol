@@ -41,14 +41,18 @@ contract SupplyChain is Products {
         string memory orderID,
         bytes32 _ledgerKey,
         bytes32 _productKey
-    ) public verifyCaller(msg.sender) verifyUser {
-        Types.Order _order = orderMan.getOrder(orderID); // get order
+    )
+        public
+        verifyCaller(msg.sender) //verifyUser()
+    {
+        Types.Order memory _order = orderMan.getOrder(orderID); // get order
         Types.UserDetails memory _user = registration.getUserDetails(
             msg.sender
-        ); // get user
+        );
+        // get user
         // if _order.status # I will do it next time
         sell(
-            _order.buyer,
+            _order.buyerAddress,
             orderID,
             _order.invoice,
             _order.lotID,
@@ -63,9 +67,18 @@ contract SupplyChain is Products {
     function returnProduct(
         string memory lotID,
         string memory reason
-    ) public verifyCaller(msg.sender) {
+    )
+        public
+        verifyCaller(msg.sender)
+        returns (
+            address,
+            string memory,
+            Types.UserRole,
+            string memory
+        )
+    {
         Types.UserRole role = registration.getUserDetails(msg.sender).role;
-        returned(msg.sender, lotID, role, reason);
+        return (msg.sender, lotID, role, reason);
     }
 
     modifier verifyCaller(address _address) {
@@ -103,10 +116,10 @@ contract SupplyChainCaller {
     }
 
     function sellProduct(
-        string memory lotID,
-        address buyerID,
-        uint256 amount
+        string memory orderID,
+        bytes32 _ledgerKey,
+        bytes32 _productKey
     ) external {
-        supplyChain.sellProduct(lotID, buyerID, amount);
+        supplyChain.sellProduct(orderID, _ledgerKey, _productKey);
     }
 }
