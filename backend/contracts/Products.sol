@@ -27,8 +27,9 @@ contract Products {
     event transferAProduct(
         address indexed from,
         address indexed to,
-        uint256 value,
-        string lotID
+        string orderID,
+        string invoice,
+        uint256 value
     );
 
     function createProduct(Types.Product memory _product) internal {
@@ -96,13 +97,13 @@ contract Products {
         bytes32 _productKey,
         uint256 _amount,
         Types.UserDetails memory _party
-    ) internal returns (bool) {
+    ) internal {
         // Updating product history
         Types.UserHistory memory _userHistory = Types.UserHistory({
             id: _partyID,
             date: block.timestamp
         });
-
+        verify(_ledgerKey, _amount);
         if (Types.UserRole(_party.role) == Types.UserRole.distributor) {
             productHistory[_productKey].distributor.push(_userHistory);
         } else if (Types.UserRole(_party.role) == Types.UserRole.wholesaler) {
@@ -114,7 +115,6 @@ contract Products {
             revert("Not valid operation");
         }
         userLinkedProducts[_partyID].push(_productKey);
-        verify(_ledgerKey, _amount);
         bytes32 _newLedgerKey = generateLedgerKey(
             _partyID,
             msg.sender,
@@ -135,7 +135,6 @@ contract Products {
             _ledgerKey, // sellerKey
             _amount
         );
-        // return verify()
     }
 
     function transferProduct(
@@ -156,6 +155,7 @@ contract Products {
             amount: _amount
         });
         childKey[_sellerKey].push(_ownerKey);
+        emit transferAProduct(_sellerAddress, _owner, _orderID, _invoice, _amount);
     }
 
     // verify only UPPER LEVEL
@@ -168,29 +168,14 @@ contract Products {
         for (uint256 i = 0; i < childKeys.length; i++) {
             totalAmount += ledger[childKeys[i]].amount;
             if (totalAmount >= ledger[_rootKey].amount) {
-                return false;
+                revert("Maximum amount reached");
             }
         }
-    }
-
-    // function can't be used for now due to the incomplete implementation of the function
-    function returned(
-        address _partyID,
-        string memory _lotID,
-        Types.UserRole role, // 1: distributor, 2: wholesaler, 3: retailer
-        string memory _reason // 1: expired, 2: damaged, 3: other
-    ) internal returns (bool) {
-        if (Types.UserRole(role) == Types.UserRole.distributor) {
-            popMatchHistory(productHistory[_lotID].distributor, _partyID);
-        } else if (Types.UserRole(role) == Types.UserRole.wholesaler) {
-            popMatchHistory(productHistory[_lotID].wholesaler, _partyID);
-        } else if (Types.UserRole(role) == Types.UserRole.retailer) {
-            popMatchHistory(productHistory[_lotID].retailer, _partyID);
-        } else {
-            // Not in the assumption scope
-            revert("Not valid operation");
+        totalAmount += _amount;
+        if (totalAmount > ledger[_rootKey].amount) {
+            revert("insufficient amount");
         }
-        // NEED TO ADD RETURNED REASON CONDITION
+        return true;
     }
 
     function renounceTransfer(

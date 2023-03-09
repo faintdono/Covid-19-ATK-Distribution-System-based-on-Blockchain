@@ -10,11 +10,11 @@ import "./OrderManagement.sol";
 
 contract SupplyChain is Products {
     RegistrationCaller registration;
-    OrderManagementCaller orderManagement;
+    OrderManagementCaller orderMan;
 
     constructor(address _Address) {
         registration = RegistrationCaller(_Address);
-        orderManagement = OrderManagementCaller(_Address);
+        orderMan = OrderManagementCaller(_Address);
     }
 
     function addProduct(
@@ -38,9 +38,26 @@ contract SupplyChain is Products {
     }
 
     function sellProduct(
-        string memory orderID
-    ) public verifyCaller(msg.sender) verifyUser() {
-        
+        string memory orderID,
+        bytes32 _ledgerKey,
+        bytes32 _productKey
+    ) public verifyCaller(msg.sender) verifyUser {
+        Types.Order _order = orderMan.getOrder(orderID); // get order
+        Types.UserDetails memory _user = registration.getUserDetails(
+            msg.sender
+        ); // get user
+        // if _order.status # I will do it next time
+        sell(
+            _order.buyer,
+            orderID,
+            _order.invoice,
+            _order.lotID,
+            _order.sku,
+            _ledgerKey,
+            _productKey,
+            _order.amount,
+            _user
+        );
     }
 
     function returnProduct(

@@ -403,12 +403,4 @@ contract OrderManagementCaller {
     ) external view returns (string[] memory) {
         return orderMan.getFinishOrders(_user);
     }
-
-    function getNonce() external view returns (uint256) {
-        return orderMan.getNonce();
-    }
-
-    function increaseNonce() external {
-        orderMan.increaseNonce();
-    }
 }
