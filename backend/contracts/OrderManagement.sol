@@ -71,6 +71,9 @@ contract OrderManagement {
         verifycaller(msg.sender)
     {
         Types.Order storage _order = order[_orderID];
+        _order.invoice = _invoice;
+        _order.lotID = _lotID;
+        _order.sku = _sku;
         _order.status = Types.OrderStatus.pending;
         _order.lastUpdated = block.timestamp;
         emit OrderStatusChange(

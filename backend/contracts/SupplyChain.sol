@@ -45,11 +45,10 @@ contract SupplyChain is Products {
         public
         verifyCaller(msg.sender) //verifyUser()
     {
-        Types.Order memory _order = orderMan.getOrder(orderID); // get order
+        Types.Order memory _order = orderMan.getOrder(orderID);
         Types.UserDetails memory _user = registration.getUserDetails(
             msg.sender
         );
-        // get user
         // if _order.status # I will do it next time
         sell(
             _order.buyerAddress,
@@ -65,20 +64,14 @@ contract SupplyChain is Products {
     }
 
     function returnProduct(
-        string memory lotID,
-        string memory reason
+        string memory orderID,
+        bytes32 _ledgerKey,
+        bytes32 _productKey
     )
         public
         verifyCaller(msg.sender)
-        returns (
-            address,
-            string memory,
-            Types.UserRole,
-            string memory
-        )
     {
-        Types.UserRole role = registration.getUserDetails(msg.sender).role;
-        return (msg.sender, lotID, role, reason);
+        
     }
 
     modifier verifyCaller(address _address) {

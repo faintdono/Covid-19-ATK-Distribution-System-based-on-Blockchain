@@ -85,8 +85,6 @@ contract Products {
         );
     }
 
-    // need to edit all function below
-    // Note: call data need to be updated to match our requirements
     function sell(
         address _partyID,
         string memory _orderID,
@@ -114,6 +112,7 @@ contract Products {
             // Not in the assumption scope
             revert("Not valid operation");
         }
+        // add product to user
         userLinkedProducts[_partyID].push(_productKey);
         bytes32 _newLedgerKey = generateLedgerKey(
             _partyID,
@@ -155,7 +154,13 @@ contract Products {
             amount: _amount
         });
         childKey[_sellerKey].push(_ownerKey);
-        emit transferAProduct(_sellerAddress, _owner, _orderID, _invoice, _amount);
+        emit transferAProduct(
+            _sellerAddress,
+            _owner,
+            _orderID,
+            _invoice,
+            _amount
+        );
     }
 
     // verify only UPPER LEVEL
@@ -179,16 +184,24 @@ contract Products {
     }
 
     function renounceTransfer(
-        address _buyer,
-        address _seller,
-        string memory _lotID
+        address _partyID,
+        bytes32 _ledgerKey,
+        bytes32 _productKey,
+        Types.UserDetails memory _party
     ) internal {
-        // TODO: delete the ledger of the buyer
-    }
-
-    function destroyProduct(address _buyer, string memory _lotID) internal {
-        // TODO: sometimes you want to destroy that proudct due to any reason
-        // Note: need to implement Types.OrderStatus Struct
+        // Updating product history
+        if (Types.UserRole(_party.role) == Types.UserRole.distributor) {
+            popMatchHistory(productHistory[_productKey].distributor, _partyID);
+        } else if (Types.UserRole(_party.role) == Types.UserRole.wholesaler) {
+            popMatchHistory(productHistory[_productKey].wholesaler, _partyID);
+        } else if (Types.UserRole(_party.role) == Types.UserRole.retailer) {
+            popMatchHistory(productHistory[_productKey].retailer, _partyID);
+        } else {
+            // Not in the assumption scope
+            revert("Not valid operation");
+        }
+        // remove product from user
+        popMatchKey(userLinkedProducts[_partyID], _productKey);
     }
 
     function popMatchHistory(
@@ -197,6 +210,32 @@ contract Products {
     ) internal {
         for (uint256 i = 0; i < _array.length; i++) {
             if (_array[i].id == _partyID) {
+                _array[i] = _array[_array.length - 1];
+                _array.pop();
+                break;
+            }
+        }
+    }
+
+    function popMatchKey(
+        bytes32[] storage _array,
+        bytes32 _ledgerKey
+    ) internal {
+        for (uint256 i = 0; i < _array.length; i++) {
+            if (_array[i] == _ledgerKey) {
+                _array[i] = _array[_array.length - 1];
+                _array.pop();
+                break;
+            }
+        }
+    }
+
+    function popMatchProductKey(
+        bytes32[] storage _array,
+        bytes32 _productKey
+    ) internal {
+        for (uint256 i = 0; i < _array.length; i++) {
+            if (_array[i] == _productKey) {
                 _array[i] = _array[_array.length - 1];
                 _array.pop();
                 break;
