@@ -22,6 +22,12 @@
       {
         "indexed": false,
         "internalType": "string",
+        "name": "sku",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
         "name": "manufacturerName",
         "type": "string"
       },
@@ -58,15 +64,21 @@
       },
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "orderID",
+        "type": "string"
       },
       {
         "indexed": false,
         "internalType": "string",
-        "name": "lotID",
+        "name": "invoice",
         "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
       }
     ],
     "name": "transferAProduct",
@@ -77,6 +89,11 @@
       {
         "internalType": "string",
         "name": "lotID",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "sku",
         "type": "string"
       },
       {
@@ -108,9 +125,9 @@
   {
     "inputs": [
       {
-        "internalType": "string",
+        "internalType": "bytes32",
         "name": "",
-        "type": "string"
+        "type": "bytes32"
       }
     ],
     "name": "productHistory",
@@ -140,21 +157,21 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "lotID",
+        "name": "orderID",
         "type": "string"
       },
       {
-        "internalType": "address",
-        "name": "buyerID",
-        "type": "address"
+        "internalType": "bytes32",
+        "name": "_ledgerKey",
+        "type": "bytes32"
       },
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
+        "internalType": "bytes32",
+        "name": "_productKey",
+        "type": "bytes32"
       }
     ],
-    "name": "sellProduct",
+    "name": "returnProduct",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -162,25 +179,24 @@
   {
     "inputs": [
       {
+        "internalType": "string",
+        "name": "orderID",
+        "type": "string"
+      },
+      {
         "internalType": "bytes32",
-        "name": "",
+        "name": "_ledgerKey",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_productKey",
         "type": "bytes32"
       }
     ],
-    "name": "store",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "sellerAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
+    "name": "sellProduct",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]
