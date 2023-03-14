@@ -40,7 +40,11 @@ contract Products {
         bytes32 hsh1 = generateProductKey(
             _product.lotID,
             _product.sku,
-            _product.manufacturerName
+            _product.manufacturerName,
+            _product.manufacturer,
+            _product.manufacturingDate,
+            _product.expiryDate,
+            _product.productAmount
         );
         // add product
         products.push(_product);
@@ -75,6 +79,7 @@ contract Products {
         });
 
         userLinkedProducts[msg.sender].push(hsh1); // add product to user
+        userKey[msg.sender].push(hsh2); // add ledgerKey to user
 
         emit NewProduct(
             _product.lotID,
@@ -83,6 +88,22 @@ contract Products {
             _product.manufacturingDate,
             _product.productAmount
         );
+    }
+
+    // _lotID, _sku, _manufacturerName, _manufacturer, _manufacturingDate, _expiryDate, _productAmount use for generate productKey
+    // _lotID, _sku, _orderID, _invoice, _key, _amount use for generate ledgerKey
+    function verifyProduct(
+        // payload
+    )
+        internal
+        view
+        returns (
+            bool
+        )
+    {
+        // 1: check product is valid
+        // 2: check orderID is valid (if orderID is not empty)
+        // 3: check parentKey is valid (ledgerKey generated from that parentKey need to equal one we provided)
     }
 
     function sell(
