@@ -12,9 +12,9 @@ contract SupplyChain is Products {
     RegistrationCaller registration;
     OrderManagementCaller orderMan;
 
-    constructor(address _Address) {
-        registration = RegistrationCaller(_Address);
-        orderMan = OrderManagementCaller(_Address);
+    constructor(address _RegAddress, address _OrderAddress) {
+        registration = RegistrationCaller(_RegAddress);
+        orderMan = OrderManagementCaller(_OrderAddress);
     }
 
     function addProduct(
@@ -39,8 +39,7 @@ contract SupplyChain is Products {
 
     function sellProduct(
         string memory orderID,
-        bytes32 _ledgerKey,
-        bytes32 _productKey
+        bytes32 _ledgerKey
     )
         public
         verifyCaller(msg.sender) //verifyUser()
@@ -57,9 +56,7 @@ contract SupplyChain is Products {
             _order.lotID,
             _order.sku,
             _ledgerKey,
-            _productKey,
-            _order.amount,
-            _user
+            _order.amount
         );
     }
 
@@ -67,12 +64,7 @@ contract SupplyChain is Products {
         string memory orderID,
         bytes32 _ledgerKey,
         bytes32 _productKey
-    )
-        public
-        verifyCaller(msg.sender)
-    {
-        
-    }
+    ) public verifyCaller(msg.sender) {}
 
     modifier verifyCaller(address _address) {
         require(
@@ -110,9 +102,8 @@ contract SupplyChainCaller {
 
     function sellProduct(
         string memory orderID,
-        bytes32 _ledgerKey,
-        bytes32 _productKey
+        bytes32 _ledgerKey
     ) external {
-        supplyChain.sellProduct(orderID, _ledgerKey, _productKey);
+        supplyChain.sellProduct(orderID, _ledgerKey);
     }
 }

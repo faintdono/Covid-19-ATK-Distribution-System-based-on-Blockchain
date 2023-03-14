@@ -16,27 +16,17 @@ library Types {
         string email;
     }
 
-    struct UserHistory {
-        address id;
-        uint256 date;
-    }
-
-    struct ProductHistory {
-        UserHistory manufacturer;
-        UserHistory[] distributor;
-        UserHistory[] wholesaler;
-        UserHistory[] retailer;
-    }
-
     struct Product {
         string lotID;
         string sku;
+        // string series;
         string manufacturerName;
         address manufacturer;
         string manufacturingDate;
         string expiryDate;
         uint256 productAmount;
     }
+    
     // need to know [owner,orderID, lotID, sku, invoice,key,sellerAddress,amount]
     struct Ledger {
         address owner;

@@ -7,8 +7,6 @@ import "./Types.sol";
 contract Products {
     Types.Product[] internal products;
     mapping(bytes32 => Types.Product) internal product; // bytes32 = generateProductKey(lotID,sku,manufacturerName) => hash function
-    mapping(address => bytes32[]) internal userLinkedProducts;
-    mapping(bytes32 => Types.ProductHistory) public productHistory; // bytes32 = same as above
 
     // for transaction and verify
     mapping(bytes32 => Types.Ledger) internal ledger; // bytes32 = generateLedgetrKey(owner, seller, orderID, lotID, sku, invoice, key, amount) => hash function
@@ -37,21 +35,7 @@ contract Products {
             _product.manufacturer == msg.sender,
             "Only manufacturer can add"
         );
-        bytes32 hsh1 = generateProductKey(
-            _product.lotID,
-            _product.sku,
-            _product.manufacturerName,
-            _product.manufacturer,
-            _product.manufacturingDate,
-            _product.expiryDate,
-            _product.productAmount
-        );
-        // add product
-        products.push(_product);
-        product[hsh1] = _product;
-
-        // create ledger of this Lot of product
-        bytes32 hsh2 = generateLedgerKey(
+        bytes32 hsh = generateLedgerKey(
             msg.sender,
             address(0),
             "",
@@ -62,24 +46,20 @@ contract Products {
             _product.productAmount
         );
 
+        products.push(_product);
+        product[hsh] = _product;
+
         // Note: address(0) = 0x0000000000000000000000000000000000000000
-        ledger[hsh2] = Types.Ledger({
+        ledger[hsh] = Types.Ledger({
             owner: msg.sender,
             orderID: "",
             invoice: "",
-            key: hsh2,
+            key: hsh,
             sellerAddress: address(0),
             amount: _product.productAmount
         });
 
-        // create history of this product
-        productHistory[hsh1].manufacturer = Types.UserHistory({
-            id: msg.sender,
-            date: block.timestamp
-        });
-
-        userLinkedProducts[msg.sender].push(hsh1); // add product to user
-        userKey[msg.sender].push(hsh2); // add ledgerKey to user
+        userKey[msg.sender].push(hsh); // add ledgerKey to user
 
         emit NewProduct(
             _product.lotID,
@@ -90,20 +70,20 @@ contract Products {
         );
     }
 
-    // _lotID, _sku, _manufacturerName, _manufacturer, _manufacturingDate, _expiryDate, _productAmount use for generate productKey
-    // _lotID, _sku, _orderID, _invoice, _key, _amount use for generate ledgerKey
     function verifyProduct(
-        // payload
-    )
-        internal
-        view
-        returns (
-            bool
-        )
-    {
-        // 1: check product is valid
-        // 2: check orderID is valid (if orderID is not empty)
-        // 3: check parentKey is valid (ledgerKey generated from that parentKey need to equal one we provided)
+        string memory _lotID,
+        string memory _sku,
+        string memory _manufacturerName,
+        string memory _expireDate,
+        bytes32 _ledgerKey
+    ) internal view returns (bool) {
+        bytes32 Key = getRootKey(_ledgerKey);
+        Types.Product memory _product = product[Key];
+        return
+            compareStrings(_product.lotID, _lotID) &&
+            compareStrings(_product.sku, _sku) &&
+            compareStrings(_product.manufacturerName, _manufacturerName) &&
+            compareStrings(_product.expiryDate, _expireDate);
     }
 
     function sell(
@@ -113,28 +93,9 @@ contract Products {
         string memory _lotID,
         string memory _sku,
         bytes32 _ledgerKey,
-        bytes32 _productKey,
-        uint256 _amount,
-        Types.UserDetails memory _party
+        uint256 _amount
     ) internal {
-        // Updating product history
-        Types.UserHistory memory _userHistory = Types.UserHistory({
-            id: _partyID,
-            date: block.timestamp
-        });
-        verify(_ledgerKey, _amount);
-        if (Types.UserRole(_party.role) == Types.UserRole.distributor) {
-            productHistory[_productKey].distributor.push(_userHistory);
-        } else if (Types.UserRole(_party.role) == Types.UserRole.wholesaler) {
-            productHistory[_productKey].wholesaler.push(_userHistory);
-        } else if (Types.UserRole(_party.role) == Types.UserRole.retailer) {
-            productHistory[_productKey].retailer.push(_userHistory);
-        } else {
-            // Not in the assumption scope
-            revert("Not valid operation");
-        }
-        // add product to user
-        userLinkedProducts[_partyID].push(_productKey);
+        verifyTransfer(_ledgerKey, _amount);
         bytes32 _newLedgerKey = generateLedgerKey(
             _partyID,
             msg.sender,
@@ -145,7 +106,7 @@ contract Products {
             _ledgerKey,
             _amount
         );
-
+        userKey[_partyID].push(_newLedgerKey);
         transferProduct(
             _partyID,
             msg.sender,
@@ -184,8 +145,7 @@ contract Products {
         );
     }
 
-    // verify only UPPER LEVEL
-    function verify(
+    function verifyTransfer(
         bytes32 _rootKey,
         uint256 _amount
     ) internal view returns (bool) {
@@ -210,32 +170,7 @@ contract Products {
         bytes32 _productKey,
         Types.UserDetails memory _party
     ) internal {
-        // Updating product history
-        if (Types.UserRole(_party.role) == Types.UserRole.distributor) {
-            popMatchHistory(productHistory[_productKey].distributor, _partyID);
-        } else if (Types.UserRole(_party.role) == Types.UserRole.wholesaler) {
-            popMatchHistory(productHistory[_productKey].wholesaler, _partyID);
-        } else if (Types.UserRole(_party.role) == Types.UserRole.retailer) {
-            popMatchHistory(productHistory[_productKey].retailer, _partyID);
-        } else {
-            // Not in the assumption scope
-            revert("Not valid operation");
-        }
         // remove product from user
-        popMatchKey(userLinkedProducts[_partyID], _productKey);
-    }
-
-    function popMatchHistory(
-        Types.UserHistory[] storage _array,
-        address _partyID
-    ) internal {
-        for (uint256 i = 0; i < _array.length; i++) {
-            if (_array[i].id == _partyID) {
-                _array[i] = _array[_array.length - 1];
-                _array.pop();
-                break;
-            }
-        }
     }
 
     function popMatchKey(
@@ -267,14 +202,19 @@ contract Products {
     //geter function
     function getUserKey(
         address _userAddress
-    ) internal view returns (bytes32[] memory) {
+    ) public view returns (bytes32[] memory) {
         return userKey[_userAddress];
     }
 
-    function getLedger(
-        bytes32 _key
-    ) internal view returns (Types.Ledger memory) {
+    function getLedger(bytes32 _key) public view returns (Types.Ledger memory) {
         return ledger[_key];
+    }
+
+    function getRootKey(bytes32 _key) public view returns (bytes32) {
+        if (ledger[_key].key != bytes32(0)) {
+            return ledger[_key].key;
+        }
+        return (getRootKey(ledger[_key].key));
     }
 
     // need to know [lotID, sku, invoice, orderID, key, sellerAddress]
@@ -306,9 +246,24 @@ contract Products {
     function generateProductKey(
         string memory _lotID,
         string memory _sku,
-        string memory _manufacturingName
+        string memory _manufacturerName,
+        address _manufacturer,
+        string memory _manufacturingDate,
+        string memory _expiryDate,
+        uint256 _productAmount
     ) internal pure returns (bytes32) {
-        return keccak256(abi.encodePacked(_lotID, _sku, _manufacturingName));
+        return
+            keccak256(
+                abi.encodePacked(
+                    _lotID,
+                    _sku,
+                    _manufacturerName,
+                    _manufacturer,
+                    _manufacturingDate,
+                    _expiryDate,
+                    _productAmount
+                )
+            );
     }
 
     function compareStrings(
