@@ -6,11 +6,11 @@ import "./Types.sol";
 
 contract Products {
     Types.Product[] internal products;
-    mapping(bytes32 => Types.Product) internal product; // bytes32 = generateProductKey(lotID,sku,manufacturerName) => hash function
+    mapping(bytes32 => Types.Product) internal product; // bytes32 = generateLedgetrKey(owner, seller, orderID, lotID, sku, invoice, key, amount) => hash function
 
     // for transaction and verify
     mapping(bytes32 => Types.Ledger) internal ledger; // bytes32 = generateLedgetrKey(owner, seller, orderID, lotID, sku, invoice, key, amount) => hash function
-    mapping(bytes32 => bytes32[]) internal childKey; // bytes32 = still the same as above => it's a parent key
+    mapping(bytes32 => bytes32[]) internal childKey; // bytes32 = generateLedgetrKey(owner, seller, orderID, lotID, sku, invoice, key, amount) => hash function
     mapping(address => bytes32[]) internal userKey;
 
     // event that notifies clients about the new product
@@ -186,19 +186,6 @@ contract Products {
         }
     }
 
-    function popMatchProductKey(
-        bytes32[] storage _array,
-        bytes32 _productKey
-    ) internal {
-        for (uint256 i = 0; i < _array.length; i++) {
-            if (_array[i] == _productKey) {
-                _array[i] = _array[_array.length - 1];
-                _array.pop();
-                break;
-            }
-        }
-    }
-
     //geter function
     function getUserKey(
         address _userAddress
@@ -239,29 +226,6 @@ contract Products {
                     _sku,
                     _key,
                     _amount
-                )
-            );
-    }
-
-    function generateProductKey(
-        string memory _lotID,
-        string memory _sku,
-        string memory _manufacturerName,
-        address _manufacturer,
-        string memory _manufacturingDate,
-        string memory _expiryDate,
-        uint256 _productAmount
-    ) internal pure returns (bytes32) {
-        return
-            keccak256(
-                abi.encodePacked(
-                    _lotID,
-                    _sku,
-                    _manufacturerName,
-                    _manufacturer,
-                    _manufacturingDate,
-                    _expiryDate,
-                    _productAmount
                 )
             );
     }
