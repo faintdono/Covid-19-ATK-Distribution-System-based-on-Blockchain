@@ -30,6 +30,7 @@ library Types {
     // need to know [owner,orderID, lotID, sku, invoice,key,sellerAddress,amount]
     struct Ledger {
         address owner;
+        UserRole role;
         address sellerAddress;
         string orderID;
         string invoice;

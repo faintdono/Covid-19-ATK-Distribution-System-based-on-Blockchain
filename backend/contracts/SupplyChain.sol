@@ -46,7 +46,7 @@ contract SupplyChain is Products {
     {
         Types.Order memory _order = orderMan.getOrder(orderID);
         Types.UserDetails memory _user = registration.getUserDetails(
-            msg.sender
+            _order.buyerAddress
         );
         // if _order.status # I will do it next time
         sell(
@@ -56,7 +56,8 @@ contract SupplyChain is Products {
             _order.lotID,
             _order.sku,
             _ledgerKey,
-            _order.amount
+            _order.amount,
+            _user.role
         );
     }
 
@@ -100,10 +101,7 @@ contract SupplyChainCaller {
         supplyChain = SupplyChain(_Address);
     }
 
-    function sellProduct(
-        string memory orderID,
-        bytes32 _ledgerKey
-    ) external {
+    function sellProduct(string memory orderID, bytes32 _ledgerKey) external {
         supplyChain.sellProduct(orderID, _ledgerKey);
     }
 }

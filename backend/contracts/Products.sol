@@ -52,6 +52,7 @@ contract Products {
         // Note: address(0) = 0x0000000000000000000000000000000000000000
         ledger[hsh] = Types.Ledger({
             owner: msg.sender,
+            role: Types.UserRole.manufacturer,
             orderID: "",
             invoice: "",
             key: hsh,
@@ -93,7 +94,8 @@ contract Products {
         string memory _lotID,
         string memory _sku,
         bytes32 _ledgerKey,
-        uint256 _amount
+        uint256 _amount,
+        Types.UserRole _partyRole  
     ) internal {
         verifyTransfer(_ledgerKey, _amount);
         bytes32 _newLedgerKey = generateLedgerKey(
@@ -114,7 +116,8 @@ contract Products {
             _invoice,
             _newLedgerKey, // ownerKey
             _ledgerKey, // sellerKey
-            _amount
+            _amount,
+            _partyRole // Role of that party
         );
     }
 
@@ -125,7 +128,8 @@ contract Products {
         string memory _invoice,
         bytes32 _ownerKey,
         bytes32 _sellerKey,
-        uint256 _amount
+        uint256 _amount,
+        Types.UserRole _role
     ) internal {
         ledger[_ownerKey] = Types.Ledger({
             owner: _owner,
@@ -133,7 +137,8 @@ contract Products {
             orderID: _orderID,
             invoice: _invoice,
             key: _sellerKey,
-            amount: _amount
+            amount: _amount,
+            role: _role
         });
         childKey[_sellerKey].push(_ownerKey);
         emit transferAProduct(
