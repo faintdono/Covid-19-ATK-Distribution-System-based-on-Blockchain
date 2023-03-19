@@ -10,6 +10,7 @@ const {
   GOERLI_ACC_PRIV2,
   GOERLI_ACC_PRIV3,
   GOERLI_ACC_PRIV4,
+  GOERLI_ACC_PRIV5,
 } = process.env;
 
 const { task } = require("hardhat/config");
@@ -23,7 +24,15 @@ task("accounts", "Prints the list of accounts", async () => {
 });
 
 module.exports = {
-  solidity: "0.8.17",
+  solidity: {
+    version: "0.8.17",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 1000,
+      },
+    },
+  },
   networks: {
     besu_dev: {
       url: "http://localhost:18545",
@@ -36,6 +45,7 @@ module.exports = {
         `${GOERLI_ACC_PRIV2}`,
         `${GOERLI_ACC_PRIV3}`,
         `${GOERLI_ACC_PRIV4}`,
+        `${GOERLI_ACC_PRIV5}`,
       ],
     },
   },
