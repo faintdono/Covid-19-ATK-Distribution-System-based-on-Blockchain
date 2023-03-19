@@ -81,32 +81,32 @@ contract Registration is
     }
 }
 
-contract RegistrationCaller {
-    Registration registration;
+// contract RegistrationCaller {
+//     Registration registration;
 
-    constructor(address _registration) {
-        registration = Registration(_registration);
-    }
+//     constructor(address _registration) {
+//         registration = Registration(_registration);
+//     }
 
-    function isManufacturer(address _address) external view returns (bool) {
-        return registration.isManufacturer(_address);
-    }
+//     function isManufacturer(address _address) external view returns (bool) {
+//         return registration.isManufacturer(_address);
+//     }
 
-    function isDistributor(address _address) external view returns (bool) {
-        return registration.isDistributor(_address);
-    }
+//     function isDistributor(address _address) external view returns (bool) {
+//         return registration.isDistributor(_address);
+//     }
 
-    function isWholesaler(address _address) external view returns (bool) {
-        return registration.isWholesaler(_address);
-    }
+//     function isWholesaler(address _address) external view returns (bool) {
+//         return registration.isWholesaler(_address);
+//     }
 
-    function isRetailer(address _address) external view returns (bool) {
-        return registration.isRetailer(_address);
-    }
+//     function isRetailer(address _address) external view returns (bool) {
+//         return registration.isRetailer(_address);
+//     }
 
-    function getUserDetails(
-        address _address
-    ) external view returns (Types.UserDetails memory) {
-        return registration.getUserDetails(_address);
-    }
-}
+//     function getUserDetails(
+//         address _address
+//     ) external view returns (Types.UserDetails memory) {
+//         return registration.getUserDetails(_address);
+//     }
+// }

@@ -5,11 +5,11 @@ import "./Types.sol";
 import "./Registration.sol";
 
 contract OrderManagement {
-    RegistrationCaller registration;
+    Registration registration;
     uint256 internal privateNumber;
 
     constructor(address _Address) {
-        registration = RegistrationCaller(_Address);
+        registration = Registration(_Address);
         privateNumber = random();
     }
 
@@ -370,40 +370,40 @@ contract OrderManagement {
     }
 }
 
-contract OrderManagementCaller {
-    OrderManagement orderMan;
+// contract OrderManagementCaller {
+//     OrderManagement orderMan;
 
-    constructor(address _orderManagementAddress) {
-        orderMan = OrderManagement(_orderManagementAddress);
-    }
+//     constructor(address _orderManagementAddress) {
+//         orderMan = OrderManagement(_orderManagementAddress);
+//     }
 
-    // geter functions
+//     // geter functions
 
-    function getOrder(
-        string memory _orderID
-    ) external view returns (Types.Order memory) {
-        return orderMan.getOrder(_orderID);
-    }
+//     function getOrder(
+//         string memory _orderID
+//     ) external view returns (Types.Order memory) {
+//         return orderMan.getOrder(_orderID);
+//     }
 
-    function getOrders() external view returns (Types.Order[] memory) {
-        return orderMan.getOrders();
-    }
+//     function getOrders() external view returns (Types.Order[] memory) {
+//         return orderMan.getOrders();
+//     }
 
-    function getOngoingOrders(
-        address _user
-    ) external view returns (string[] memory) {
-        return orderMan.getOngoingOrders(_user);
-    }
+//     function getOngoingOrders(
+//         address _user
+//     ) external view returns (string[] memory) {
+//         return orderMan.getOngoingOrders(_user);
+//     }
 
-    function getShippedOrders(
-        address _user
-    ) external view returns (string[] memory) {
-        return orderMan.getShippedOrders(_user);
-    }
+//     function getShippedOrders(
+//         address _user
+//     ) external view returns (string[] memory) {
+//         return orderMan.getShippedOrders(_user);
+//     }
 
-    function getFinishOrders(
-        address _user
-    ) external view returns (string[] memory) {
-        return orderMan.getFinishOrders(_user);
-    }
-}
+//     function getFinishOrders(
+//         address _user
+//     ) external view returns (string[] memory) {
+//         return orderMan.getFinishOrders(_user);
+//     }
+// }

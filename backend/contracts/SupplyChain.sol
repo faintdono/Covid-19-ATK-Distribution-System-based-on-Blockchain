@@ -9,12 +9,12 @@ import "./Registration.sol";
 import "./OrderManagement.sol";
 
 contract SupplyChain is Products {
-    RegistrationCaller registration;
-    OrderManagementCaller orderMan;
+    Registration registration;
+    OrderManagement orderMan;
 
     constructor(address _RegAddress, address _OrderAddress) {
-        registration = RegistrationCaller(_RegAddress);
-        orderMan = OrderManagementCaller(_OrderAddress);
+        registration = Registration(_RegAddress);
+        orderMan = OrderManagement(_OrderAddress);
     }
 
     function addProduct(
@@ -63,8 +63,7 @@ contract SupplyChain is Products {
 
     function returnProduct(
         string memory orderID,
-        bytes32 _ledgerKey,
-        bytes32 _productKey
+        bytes32 _ledgerKey
     ) public verifyCaller(msg.sender) {}
 
     modifier verifyCaller(address _address) {
@@ -91,17 +90,5 @@ contract SupplyChain is Products {
     modifier onlyManufacturer() {
         require(registration.isManufacturer(msg.sender));
         _;
-    }
-}
-
-contract SupplyChainCaller {
-    SupplyChain supplyChain;
-
-    constructor(address _Address) {
-        supplyChain = SupplyChain(_Address);
-    }
-
-    function sellProduct(string memory orderID, bytes32 _ledgerKey) external {
-        supplyChain.sellProduct(orderID, _ledgerKey);
     }
 }
