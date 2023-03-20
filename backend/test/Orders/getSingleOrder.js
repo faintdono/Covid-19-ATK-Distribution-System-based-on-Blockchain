@@ -223,11 +223,6 @@ describe('Order Management', () => {
             await ordermanagement.connect(distributor).createOrder(orderID, manufacturer.address, amount)
             const date = await getBlockTimestamp()
 
-            const ProductInfo = await generateProductInfo()
-            const invoice = Object.values(ProductInfo)[0]
-            const lotID = Object.values(ProductInfo)[1]
-            const sku = Object.values(ProductInfo)[2]
-            await ordermanagement.connect(manufacturer).confirmOrder(orderID, invoice, lotID, sku)
             await ordermanagement.connect(manufacturer).rejectOrder(orderID)
 
             const order = await getOrder(orderID)
@@ -236,7 +231,7 @@ describe('Order Management', () => {
             const status = 2;
             const lastUpdate = await getBlockTimestamp()
 
-            const mockUp = mockUpgetOrder(distributor.address, manufacturer.address, orderID, invoice, lotID, sku, amount, date, status, lastUpdate)
+            const mockUp = mockUpgetOrder(distributor.address, manufacturer.address, orderID, '', '', '', amount, date, status, lastUpdate)
             const result = (checkObjects(convertedOrder, mockUp))
 
             expect(result).to.be.equal(true)
@@ -296,10 +291,10 @@ describe('Order Management', () => {
         /*
         note for testing 
         Status [placed --> pending --> shipped --> delivered]
-        rejected = status: pending
-        cancelled = status: pending [something might be wrong about this]
+        rejected = status: placed
+        cancelled = status: pending 
         onhold = status: shipped
-        returned = ?
+        returned = status: shipped
  
         placed,0
         pending,1
