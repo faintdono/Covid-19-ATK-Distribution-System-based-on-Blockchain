@@ -52,20 +52,29 @@ describe("Supply Chain", () => {
     key,
     amount
   ) {
-    const encoded = web3.eth.abi.encodeParameters(
-      [
-        "address",
-        "address",
-        "string",
-        "string",
-        "string",
-        "string",
-        "bytes32",
-        "uint256",
-      ],
-      [owner, sellerAddress, orderID, invoice, lotID, sku, key, amount]
+    // const encoded = web3.eth.abi.encodeParameters(
+    //   [
+    //     "address",
+    //     "address",
+    //     "string",
+    //     "string",
+    //     "string",
+    //     "string",
+    //     "bytes32",
+    //     "uint256",
+    //   ],
+    //   [owner, sellerAddress, orderID, invoice, lotID, sku, key, amount]
+    // );
+    const hash = web3.utils.soliditySha3(
+      owner,
+      sellerAddress,
+      orderID,
+      invoice,
+      lotID,
+      sku,
+      key,
+      amount
     );
-    const hash = web3.utils.sha3(encoded, { encoding: "hex" });
 
     return hash;
   }
@@ -236,8 +245,15 @@ describe("Supply Chain", () => {
       const keys = await getUserKey(manufacturer.address);
       const ledger101 = await getLedger(keys[0]);
       const ledger = convertBigNumber(ledger101);
-      console.log(ledger[0], ledger[1]);
-      //console.log("manufacturer (ROOT) key = ", keys[0]);
+      console.log("=====================================");
+      console.log("Owner = ", ledger[0]);
+      console.log("Role = ", ledger[1]);
+      console.log("Seller = ", ledger[2]);
+      console.log("OrderID = ", ledger[3]);
+      console.log("invoice = ", ledger[4]);
+      console.log("key = ", ledger[5]);
+      console.log("amount = ", ledger[6]);
+      // gen LedgerKey need 8 params _owner, _sellerAddress, _orderID, _invoice, _lotID, _sku, _key, _amount respectively
       const test = mockUpLedgerKey(
         ledger[0],
         ledger[1],
