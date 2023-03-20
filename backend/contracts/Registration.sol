@@ -19,7 +19,7 @@ contract Registration is
     event UserAdded(address indexed _id);
 
     function addUser(
-        uint32 _duns,
+        uint32 _dunsOrTaxNum,
         string memory _Role,
         address _id
     ) public onlyOwner {
@@ -58,7 +58,7 @@ contract Registration is
         }
 
         if (!isExist(_id)) {
-            createRecord(_duns, _id);
+            createRecord(_dunsOrTaxNum, _id);
             emit UserAdded(_id);
         }
     }

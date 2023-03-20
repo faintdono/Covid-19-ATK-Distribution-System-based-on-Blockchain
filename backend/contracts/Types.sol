@@ -17,7 +17,7 @@ library Types {
     }
 
     struct UserRecord {
-        uint32 duns;
+        uint40 dunsOrTaxNum;
         address stakeAddress;
     }
 

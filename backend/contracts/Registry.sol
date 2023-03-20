@@ -11,15 +11,18 @@ contract Registry {
         owner = msg.sender;
     }
 
-    mapping(uint32 => Types.UserRecord) private userRecords;
+    mapping(uint40 => Types.UserRecord) private userRecords;
 
-    uint32[] userRecordArray;
+    uint40[] userRecordArray;
 
-    function createRecord(uint32 _duns, address _stakeholder) internal {
+    function createRecord(uint40 _dunsOrTaxNum, address _stakeholder) internal {
         require(msg.sender == owner, "Only owner can create stakeholders");
         count++;
-        userRecords[_duns] = Types.UserRecord(_duns, _stakeholder);
-        userRecordArray.push(_duns);
+        userRecords[_dunsOrTaxNum] = Types.UserRecord(
+            _dunsOrTaxNum,
+            _stakeholder
+        );
+        userRecordArray.push(_dunsOrTaxNum);
     }
 
     function isExist(address _input) internal view returns (bool) {
@@ -37,11 +40,11 @@ contract Registry {
         return false;
     }
 
-    function getID() public view returns (uint32[] memory) {
+    function getID() public view returns (uint40[] memory) {
         return userRecordArray;
     }
 
-    function getAddress(uint32 _duns) internal view returns (address) {
-        return userRecords[_duns].stakeAddress;
+    function getAddress(uint40 _dunsOrTaxNum) internal view returns (address) {
+        return userRecords[_dunsOrTaxNum].stakeAddress;
     }
 }
