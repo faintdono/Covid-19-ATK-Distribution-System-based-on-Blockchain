@@ -10,7 +10,16 @@ contract OrderManagement {
 
     constructor(address _Address) {
         registration = Registration(_Address);
-        privateNumber = random() % 10;
+        uint256 randNumber = random();
+        uint256 randNumberMod = randNumber % 10;
+        privateNumber =
+            randNumberMod +
+            (randNumberMod * 10) +
+            (randNumberMod * 100) +
+            (randNumberMod * 1000) +
+            (randNumberMod * 10000) +
+            (randNumberMod * 100000) +
+            197654;
     }
 
     Types.Order[] internal orders;
