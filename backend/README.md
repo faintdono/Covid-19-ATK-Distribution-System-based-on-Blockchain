@@ -40,18 +40,12 @@ If you want to connect Hardhat to this node, you just need to run using --networ
 
 #### `npx hardhat compile`
 
-
-
 #### `npx hardhat test`
 
-
+#### `npx hardhat coverage`
 
 #### `npx hardhat run scripts/deploy.js`
 
-
-
 #### `npx hardhat accounts`
-
-
 
 #### `npx hardhat console`
