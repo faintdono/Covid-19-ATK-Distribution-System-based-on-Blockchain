@@ -1,37 +1,34 @@
 //SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.0;
 
+import "./Types.sol";
+
 contract Registry {
     address public owner;
     uint256 public count = 0;
-
-    struct stakeholder {
-        uint256 id;
-        address stakeAddress;
-    }
 
     constructor() {
         owner = msg.sender;
     }
 
-    mapping(uint256 => stakeholder) private stakeholders;
+    mapping(uint32 => Types.UserRecord) private userRecords;
 
-    uint256[] stakeArray;
+    uint32[] userRecordArray;
 
-    function createStakeholder(address _stakeholder) internal {
+    function createRecord(uint32 _duns, address _stakeholder) internal {
         require(msg.sender == owner, "Only owner can create stakeholders");
         count++;
-        stakeholders[count] = stakeholder(count, _stakeholder);
-        stakeArray.push(count);
+        userRecords[_duns] = Types.UserRecord(_duns, _stakeholder);
+        userRecordArray.push(_duns);
     }
 
     function isExist(address _input) internal view returns (bool) {
-        return checkStakeholders(_input);
+        return checkUserRecords(_input);
     }
 
-    function checkStakeholders(address _input) internal view returns (bool) {
-        uint256 i = 0;
-        while (i <= stakeArray.length) {
+    function checkUserRecords(address _input) internal view returns (bool) {
+        uint32 i = 0;
+        while (i <= userRecordArray.length) {
             if (getAddress(i) == _input) {
                 return true;
             }
@@ -40,11 +37,11 @@ contract Registry {
         return false;
     }
 
-    function getID() public view returns (uint256[] memory) {
-        return stakeArray;
+    function getID() public view returns (uint32[] memory) {
+        return userRecordArray;
     }
 
-    function getAddress(uint256 _id) internal view returns (address) {
-        return stakeholders[_id].stakeAddress;
+    function getAddress(uint32 _duns) internal view returns (address) {
+        return userRecords[_duns].stakeAddress;
     }
 }

@@ -16,6 +16,11 @@ library Types {
         string email;
     }
 
+    struct UserRecord {
+        uint32 duns;
+        address stakeAddress;
+    }
+
     struct Product {
         string lotID;
         string sku;
@@ -26,7 +31,7 @@ library Types {
         string expiryDate;
         uint256 productAmount;
     }
-    
+
     // need to know [owner,orderID, lotID, sku, invoice,key,sellerAddress,amount]
     struct Ledger {
         address owner;

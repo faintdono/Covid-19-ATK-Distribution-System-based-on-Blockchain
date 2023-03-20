@@ -18,7 +18,11 @@ contract Registration is
 
     event UserAdded(address indexed _id);
 
-    function addUser(string memory _Role, address _id) public onlyOwner {
+    function addUser(
+        uint32 _duns,
+        string memory _Role,
+        address _id
+    ) public onlyOwner {
         if (compareStrings(_Role, "manufacturer")) {
             addManufacturer(_id);
             users[_id] = Types.UserDetails({
@@ -54,7 +58,7 @@ contract Registration is
         }
 
         if (!isExist(_id)) {
-            createStakeholder(_id);
+            createRecord(_duns, _id);
             emit UserAdded(_id);
         }
     }
