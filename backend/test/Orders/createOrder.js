@@ -168,14 +168,6 @@ describe("Order Management", () => {
         .connect(distributor)
         .createOrder(orderID, manufacturer.address, amount);
 
-      const ProductInfo = await generateProductInfo();
-      const invoice = Object.values(ProductInfo)[0];
-      const lotID = Object.values(ProductInfo)[1];
-      const sku = Object.values(ProductInfo)[2];
-      await ordermanagement
-        .connect(manufacturer)
-        .confirmOrder(orderID, invoice, lotID, sku);
-
       const result = await ordermanagement
         .connect(manufacturer)
         .rejectOrder(orderID);
