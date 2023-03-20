@@ -16,20 +16,15 @@ library Types {
         string email;
     }
 
-    struct UserHistory {
-        address id;
-        uint256 date;
-    }
-
-    struct ProductHistory {
-        UserHistory manufacturer;
-        UserHistory[] distributor;
-        UserHistory[] wholesaler;
-        UserHistory[] retailer;
+    struct UserRecord {
+        uint40 dunsOrTaxNum;
+        address stakeAddress;
     }
 
     struct Product {
         string lotID;
+        string sku;
+        // string series;
         string manufacturerName;
         address manufacturer;
         string manufacturingDate;
@@ -37,8 +32,47 @@ library Types {
         uint256 productAmount;
     }
 
-    struct Storage {
+    // need to know [owner,orderID, lotID, sku, invoice,key,sellerAddress,amount]
+    struct Ledger {
+        address owner;
+        UserRole role;
         address sellerAddress;
+        string orderID;
+        string invoice;
+        bytes32 key;
         uint256 amount;
+    }
+
+    struct Key {
+        address owner;
+        address sellerAddress;
+        string orderID;
+        string invoice;
+        string lotID;
+        string sku;
+    }
+
+    enum OrderStatus {
+        placed,
+        pending,
+        rejected,
+        shipped,
+        delivered,
+        cancelled,
+        onhold,
+        returned
+    }
+
+    struct Order {
+        address buyerAddress;
+        address sellerAddress;
+        string orderID;
+        string invoice;
+        string lotID;
+        string sku;
+        uint256 amount;
+        uint256 date;
+        OrderStatus status;
+        uint256 lastUpdated;
     }
 }

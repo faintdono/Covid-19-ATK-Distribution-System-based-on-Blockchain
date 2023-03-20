@@ -6,16 +6,20 @@ pragma solidity ^0.8.0;
 import "./Types.sol";
 import "./Products.sol";
 import "./Registration.sol";
+import "./OrderManagement.sol";
 
 contract SupplyChain is Products {
-    RegistrationCaller registration;
+    Registration registration;
+    OrderManagement orderMan;
 
-    constructor(address _Address) {
-        registration = RegistrationCaller(_Address);
+    constructor(address _RegAddress, address _OrderAddress) {
+        registration = Registration(_RegAddress);
+        orderMan = OrderManagement(_OrderAddress);
     }
 
     function addProduct(
         string memory lotID,
+        string memory sku,
         string memory manufacturerName,
         string memory manufacturingDate,
         string memory expiryDate,
@@ -23,6 +27,7 @@ contract SupplyChain is Products {
     ) public onlyManufacturer {
         Types.Product memory product = Types.Product(
             lotID,
+            sku,
             manufacturerName,
             msg.sender,
             manufacturingDate,
@@ -33,12 +38,33 @@ contract SupplyChain is Products {
     }
 
     function sellProduct(
-        string memory lotID,
-        address buyerID,
-        uint256 amount
-    ) public verifyCaller(msg.sender) verifyUser(buyerID) {
-        sell(buyerID, lotID, amount, registration.getUserDetails(buyerID));
+        string memory orderID,
+        bytes32 _ledgerKey
+    )
+        public
+        verifyCaller(msg.sender) //verifyUser()
+    {
+        Types.Order memory _order = orderMan.getOrder(orderID);
+        Types.UserDetails memory _user = registration.getUserDetails(
+            _order.buyerAddress
+        );
+        // if _order.status # I will do it next time
+        sell(
+            _order.buyerAddress,
+            orderID,
+            _order.invoice,
+            _order.lotID,
+            _order.sku,
+            _ledgerKey,
+            _order.amount,
+            _user.role
+        );
     }
+
+    function returnProduct(
+        string memory orderID,
+        bytes32 _ledgerKey
+    ) public verifyCaller(msg.sender) {}
 
     modifier verifyCaller(address _address) {
         require(

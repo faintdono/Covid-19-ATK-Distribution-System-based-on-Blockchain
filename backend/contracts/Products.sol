@@ -6,14 +6,17 @@ import "./Types.sol";
 
 contract Products {
     Types.Product[] internal products;
-    mapping(string => Types.Product) internal product;
-    mapping(address => string[]) internal userLinkedProducts;
-    mapping(string => Types.ProductHistory) public productHistory;
-    mapping(bytes32 => Types.Storage) public store;
+    mapping(bytes32 => Types.Product) internal product; // bytes32 = generateLedgetrKey(owner, seller, orderID, lotID, sku, invoice, key, amount) => hash function
+
+    // for transaction and verify
+    mapping(bytes32 => Types.Ledger) internal ledger; // bytes32 = generateLedgetrKey(owner, seller, orderID, lotID, sku, invoice, key, amount) => hash function
+    mapping(bytes32 => bytes32[]) internal childKey; // bytes32 = generateLedgetrKey(owner, seller, orderID, lotID, sku, invoice, key, amount) => hash function
+    mapping(address => bytes32[]) internal userKey;
 
     // event that notifies clients about the new product
     event NewProduct(
         string lotID,
+        string sku,
         string manufacturerName,
         string manufacturingDate,
         uint256 productAmount
@@ -22,8 +25,9 @@ contract Products {
     event transferAProduct(
         address indexed from,
         address indexed to,
-        uint256 value,
-        string lotID
+        string orderID,
+        string invoice,
+        uint256 value
     );
 
     function createProduct(Types.Product memory _product) internal {
@@ -31,120 +35,204 @@ contract Products {
             _product.manufacturer == msg.sender,
             "Only manufacturer can add"
         );
-        // add product
+        bytes32 hsh = generateLedgerKey(
+            msg.sender,
+            address(0),
+            "",
+            _product.lotID,
+            _product.sku,
+            "",
+            bytes32(0),
+            _product.productAmount
+        );
+
         products.push(_product);
-        product[_product.lotID] = _product;
+        product[hsh] = _product;
 
-        // add amount of product to storage
-        bytes32 hsh = hash(_product.lotID, msg.sender);
-        store[hsh].amount = _product.productAmount;
-
-        // create history of this Lot of product
-        productHistory[_product.lotID].manufacturer = Types.UserHistory({
-            id: msg.sender,
-            date: block.timestamp
+        // Note: address(0) = 0x0000000000000000000000000000000000000000
+        ledger[hsh] = Types.Ledger({
+            owner: msg.sender,
+            role: Types.UserRole.manufacturer,
+            orderID: "",
+            invoice: "",
+            key: hsh,
+            sellerAddress: address(0),
+            amount: _product.productAmount
         });
 
-        userLinkedProducts[msg.sender].push(_product.lotID);
+        userKey[msg.sender].push(hsh); // add ledgerKey to user
 
         emit NewProduct(
             _product.lotID,
+            _product.sku,
             _product.manufacturerName,
             _product.manufacturingDate,
             _product.productAmount
         );
     }
 
+    function verifyProduct(
+        string memory _lotID,
+        string memory _sku,
+        string memory _manufacturerName,
+        string memory _expireDate,
+        bytes32 _ledgerKey
+    ) internal view returns (bool) {
+        bytes32 Key = getRootKey(_ledgerKey);
+        Types.Product memory _product = product[Key];
+        return
+            compareStrings(_product.lotID, _lotID) &&
+            compareStrings(_product.sku, _sku) &&
+            compareStrings(_product.manufacturerName, _manufacturerName) &&
+            compareStrings(_product.expiryDate, _expireDate);
+    }
+
     function sell(
         address _partyID,
+        string memory _orderID,
+        string memory _invoice,
         string memory _lotID,
+        string memory _sku,
+        bytes32 _ledgerKey,
         uint256 _amount,
-        Types.UserDetails memory _party
-    ) internal returns (bool) {
-        // Updating product history
-        Types.UserHistory memory _userHistory = Types.UserHistory({
-            id: _partyID,
-            date: block.timestamp
-        });
-        if (Types.UserRole(_party.role) == Types.UserRole.distributor) {
-            productHistory[_lotID].distributor.push(_userHistory);
-        } else if (Types.UserRole(_party.role) == Types.UserRole.wholesaler) {
-            productHistory[_lotID].wholesaler.push(_userHistory);
-        } else if (Types.UserRole(_party.role) == Types.UserRole.retailer) {
-            productHistory[_lotID].retailer.push(_userHistory);
-        } else {
-            // Not in the assumption scope
-            revert("Not valid operation");
-        }
-        transferProduct(msg.sender, _partyID, _amount, _lotID);
-        return verify(_lotID);
+        Types.UserRole _partyRole  
+    ) internal {
+        verifyTransfer(_ledgerKey, _amount);
+        bytes32 _newLedgerKey = generateLedgerKey(
+            _partyID,
+            msg.sender,
+            _orderID,
+            _lotID,
+            _sku,
+            _invoice,
+            _ledgerKey,
+            _amount
+        );
+        userKey[_partyID].push(_newLedgerKey);
+        transferProduct(
+            _partyID,
+            msg.sender,
+            _orderID,
+            _invoice,
+            _newLedgerKey, // ownerKey
+            _ledgerKey, // sellerKey
+            _amount,
+            _partyRole // Role of that party
+        );
     }
 
     function transferProduct(
-        address _seller,
-        address _buyer,
+        address _owner,
+        address _sellerAddress,
+        string memory _orderID,
+        string memory _invoice,
+        bytes32 _ownerKey,
+        bytes32 _sellerKey,
         uint256 _amount,
-        string memory _lotID
+        Types.UserRole _role
     ) internal {
-        // TODO: transfer the product from address to address
-        bytes32 hsh1 = hash(_lotID, _seller);
-        bytes32 hsh2 = hash(_lotID, _buyer);
-        // These lines are probably needed
-        // if (!hashexist(store[hsh2],"")) {
-        // store[hsh1].amount -= _amount;
-        // store[hsh2] = Types.Storage({
-        // sellerAddress: _seller,
-        // amount: _amount
-        // });
-        // } else {
-        // store[hsh1].amount -= _amount;
-        // store[hsh2].amount += _amount;
-        // }
-        store[hsh1].amount -= _amount;
-        store[hsh2] = Types.Storage({sellerAddress: _seller, amount: _amount});
-        emit transferAProduct(_seller, _buyer, _amount, _lotID);
+        ledger[_ownerKey] = Types.Ledger({
+            owner: _owner,
+            sellerAddress: _sellerAddress,
+            orderID: _orderID,
+            invoice: _invoice,
+            key: _sellerKey,
+            amount: _amount,
+            role: _role
+        });
+        childKey[_sellerKey].push(_ownerKey);
+        emit transferAProduct(
+            _sellerAddress,
+            _owner,
+            _orderID,
+            _invoice,
+            _amount
+        );
     }
 
-    function verify(string memory _lotID) internal view returns (bool) {
-        uint256 totalProduct = product[_lotID].productAmount;
-        uint256 count = store[hash(_lotID, productHistory[_lotID].manufacturer.id)].amount;
-        for ( uint256 i = 0; i < productHistory[_lotID].distributor.length; i++
-        ) {
-            bytes32 hsh = hash(_lotID,productHistory[_lotID].distributor[i].id);
-            count += store[hsh].amount;
+    function verifyTransfer(
+        bytes32 _rootKey,
+        uint256 _amount
+    ) internal view returns (bool) {
+        bytes32[] memory childKeys = childKey[_rootKey];
+        uint256 totalAmount = 0;
+        for (uint256 i = 0; i < childKeys.length; i++) {
+            totalAmount += ledger[childKeys[i]].amount;
+            if (totalAmount >= ledger[_rootKey].amount) {
+                revert("Maximum amount reached");
+            }
         }
-        for (uint256 i = 0; i < productHistory[_lotID].wholesaler.length; i++) {
-            bytes32 hsh = hash(_lotID, productHistory[_lotID].wholesaler[i].id);
-            count += store[hsh].amount;
+        totalAmount += _amount;
+        if (totalAmount > ledger[_rootKey].amount) {
+            revert("insufficient amount");
         }
-        for (uint256 i = 0; i < productHistory[_lotID].retailer.length; i++) {
-            bytes32 hsh = hash(_lotID, productHistory[_lotID].retailer[i].id);
-            count += store[hsh].amount;
-        }
-        if (count == totalProduct) {
-            return true;
-        }
-        return false;
+        return true;
     }
 
-    function history(string memory _lotID) internal returns (string[] memory) {
-        //TO DO: get the history of _lotID that user buy
+    function renounceTransfer(
+        address _partyID,
+        bytes32 _ledgerKey,
+        bytes32 _productKey,
+        Types.UserDetails memory _party
+    ) internal {
+        // remove product from user
     }
 
-    function hash(
+    function popMatchKey(
+        bytes32[] storage _array,
+        bytes32 _ledgerKey
+    ) internal {
+        for (uint256 i = 0; i < _array.length; i++) {
+            if (_array[i] == _ledgerKey) {
+                _array[i] = _array[_array.length - 1];
+                _array.pop();
+                break;
+            }
+        }
+    }
+
+    //geter function
+    function getUserKey(
+        address _userAddress
+    ) public view returns (bytes32[] memory) {
+        return userKey[_userAddress];
+    }
+
+    function getLedger(bytes32 _key) public view returns (Types.Ledger memory) {
+        return ledger[_key];
+    }
+
+    function getRootKey(bytes32 _key) public view returns (bytes32) {
+        if (ledger[_key].key != bytes32(0)) {
+            return ledger[_key].key;
+        }
+        return (getRootKey(ledger[_key].key));
+    }
+
+    // need to know [lotID, sku, invoice, orderID, key, sellerAddress]
+    function generateLedgerKey(
+        address _owner,
+        address _sellerAddress,
+        string memory _orderID,
+        string memory _invoice,
         string memory _lotID,
-        address _sender
+        string memory _sku,
+        bytes32 _key,
+        uint256 _amount
     ) internal pure returns (bytes32) {
-        return keccak256(abi.encodePacked(_lotID, _sender));
-    }
-
-    function hashexist(
-        string memory _lotID,
-        string memory a,
-        string memory b
-    ) internal pure returns (bool) {
-        return (keccak256(abi.encodePacked(_lotID, a)) ==
-            keccak256(abi.encodePacked(_lotID, b)));
+        return
+            keccak256(
+                abi.encodePacked(
+                    _owner,
+                    _sellerAddress,
+                    _orderID,
+                    _invoice,
+                    _lotID,
+                    _sku,
+                    _key,
+                    _amount
+                )
+            );
     }
 
     function compareStrings(

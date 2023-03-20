@@ -1,7 +1,10 @@
 # @my-app/react-app
 
 This package is a fork of the default app built with [Create React App](https://github.com/facebook/create-react-app).
-
+## Useful Resources
+CSS: [https://bulma.io/](https://bulma.io/)  
+Web3: [https://usedapp.io/](https://usedapp.io/)  
+Youtube Tutorial: [https://www.youtube.com/playlist](https://www.youtube.com/playlist?list=PLpepLKamtPjjVpn2rbKfb9icwGE5tDt2O)  
 ## Available Scripts
 
 In the project directory, you can run:
