@@ -10,7 +10,7 @@ contract OrderManagement {
 
     constructor(address _Address) {
         registration = Registration(_Address);
-        privateNumber = random();
+        privateNumber = random() % 10;
     }
 
     Types.Order[] internal orders;
@@ -320,7 +320,7 @@ contract OrderManagement {
 
     modifier orderRejectable(string memory _orderID) {
         require(
-            order[_orderID].status == Types.OrderStatus.pending,
+            order[_orderID].status == Types.OrderStatus.placed,
             "Order is not rejectable"
         );
         _;
@@ -354,6 +354,14 @@ contract OrderManagement {
         require(
             order[_orderID].status == Types.OrderStatus.shipped,
             "Order is not onholdable"
+        );
+        _;
+    }
+
+    modifier orderReturnable(string memory _orderID) {
+        require(
+            order[_orderID].status == Types.OrderStatus.shipped,
+            "Order is not returnable"
         );
         _;
     }
