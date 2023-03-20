@@ -1,217 +1,244 @@
-const { expect } = require('chai');
-const { ethers } = require('hardhat');
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
 
-describe('Order Management', () => {
-    let manufacturer, distributor, wholesaler, retailer
-    let registration, ordermanagement
+describe("Order Management", () => {
+  let manufacturer, distributor, wholesaler, retailer;
+  let registration, ordermanagement;
 
-    beforeEach(async () => {
+  beforeEach(async () => {
+    [admin, manufacturer, distributor, wholesaler, retailer] =
+      await ethers.getSigners();
 
-        [admin, manufacturer, distributor, wholesaler, retailer] = await ethers.getSigners()
+    const Registration = await ethers.getContractFactory("Registration");
+    registration = await Registration.deploy();
 
-        const Registration = await ethers.getContractFactory('Registration')
-        registration = await Registration.deploy()
+    const OrderManagement = await ethers.getContractFactory("OrderManagement");
+    ordermanagement = await OrderManagement.deploy(registration.address);
 
-        const OrderManagement = await ethers.getContractFactory('OrderManagement');
-        ordermanagement = await OrderManagement.deploy(registration.address)
+    registration.addUser(123456789, "manufacturer", manufacturer.address);
+    registration.addUser(223456789, "distributor", distributor.address);
+    registration.addUser(323456789, "wholesaler", wholesaler.address);
+    registration.addUser(423456789, "retailer", retailer.address);
+  });
 
-        registration.addUser("manufacturer", manufacturer.address)
-        registration.addUser("distributor", distributor.address)
-        registration.addUser("wholesaler", wholesaler.address)
-        registration.addUser("retailer", retailer.address)
-    })
+  describe("Normal Orders", () => {
+    async function generateRandomOrderID(userAddress) {
+      const timestamp = Date.now();
+      const combinedString = `${userAddress}${timestamp}`;
+      const randomNum = Math.floor(Math.random() * 100000);
+      const finalString = `${combinedString}${randomNum}`;
+      return finalString;
+    }
 
-    describe('Normal Orders', () => {
+    async function generateRandomAmount() {
+      return Math.floor(Math.random() * 100) + 1;
+    }
 
-        async function generateRandomOrderID(userAddress) {
-            const timestamp = Date.now();
-            const combinedString = `${userAddress}${timestamp}`;
-            const randomNum = Math.floor(Math.random() * 100000);
-            const finalString = `${combinedString}${randomNum}`;
-            return finalString;
-        }
+    async function getBlockTimestamp() {
+      const blockNumBefore = await ethers.provider.getBlockNumber();
+      const blockBefore = await ethers.provider.getBlock(blockNumBefore);
+      const timestampBefore = blockBefore.timestamp;
+      return timestampBefore;
+    }
 
-        async function generateRandomAmount() {
-            return Math.floor(Math.random() * 100) + 1;
-        }
+    async function getOrder(orderID) {
+      const result = ordermanagement.getOrder(orderID);
+      return result;
+    }
 
-        async function getBlockTimestamp() {
-            const blockNumBefore = await ethers.provider.getBlockNumber();
-            const blockBefore = await ethers.provider.getBlock(blockNumBefore);
-            const timestampBefore = blockBefore.timestamp;
-            return timestampBefore
-        }
+    function generateRandomString() {
+      const length = 10; // or any other desired length
+      const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      let result = "";
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        result += characters[randomIndex];
+      }
+      return result;
+    }
 
-        async function getOrder(orderID) {
-            const result = ordermanagement.getOrder(orderID)
-            return result;
-        }
+    async function generateProductInfo() {
+      const invoice = generateRandomString();
+      const lotID = generateRandomString();
+      const sku = generateRandomString();
+      return { invoice, lotID, sku };
+    }
 
-        function generateRandomString() {
-            const length = 10; // or any other desired length
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                const randomIndex = Math.floor(Math.random() * characters.length);
-                result += characters[randomIndex];
-            }
-            return result;
-        }
+    it("Create New Order", async () => {
+      const orderID = generateRandomOrderID(distributor.address);
+      const amount = generateRandomAmount();
+      const result = await ordermanagement
+        .connect(distributor)
+        .createOrder(orderID, manufacturer.address, amount);
+      const timestamp = await getBlockTimestamp();
 
-        async function generateProductInfo() {
-            const invoice = generateRandomString();
-            const lotID = generateRandomString();
-            const sku = generateRandomString();
-            return { invoice, lotID, sku };
-        }
+      expect(result)
+        .to.emit(ordermanagement, "NewOrder")
+        .withArgs(
+          orderID,
+          manufacturer.address,
+          distributor.address,
+          amount,
+          timestamp
+        );
+    });
 
+    it("Confirm Order", async () => {
+      const orderID = generateRandomOrderID(distributor.address);
+      const amount = generateRandomAmount();
+      await ordermanagement
+        .connect(distributor)
+        .createOrder(orderID, manufacturer.address, amount);
 
-        it('Create New Order', async () => {
-            const orderID = generateRandomOrderID(distributor.address)
-            const amount = generateRandomAmount()
-            const result = await ordermanagement
-                .connect(distributor)
-                .createOrder(orderID, manufacturer.address, amount)
-            const timestamp = await getBlockTimestamp()
+      const ProductInfo = await generateProductInfo();
+      const invoice = Object.values(ProductInfo)[0];
+      const lotID = Object.values(ProductInfo)[1];
+      const sku = Object.values(ProductInfo)[2];
 
-            expect(result)
-                .to.emit(ordermanagement, 'NewOrder')
-                .withArgs(orderID, manufacturer.address, distributor.address, amount, timestamp)
-        })
+      const result = await ordermanagement
+        .connect(manufacturer)
+        .confirmOrder(orderID, invoice, lotID, sku);
 
-        it('Confirm Order', async () => {
-            const orderID = generateRandomOrderID(distributor.address)
-            const amount = generateRandomAmount()
-            await ordermanagement.connect(distributor).createOrder(orderID, manufacturer.address, amount)
+      const timestamp = await getBlockTimestamp();
 
-            const ProductInfo = await generateProductInfo()
-            const invoice = Object.values(ProductInfo)[0]
-            const lotID = Object.values(ProductInfo)[1]
-            const sku = Object.values(ProductInfo)[2]
+      expect(result)
+        .to.emit(ordermanagement, "OrderStatusChange")
+        .withArgs(orderID, timestamp);
+    });
 
-            const result = await ordermanagement
-                .connect(manufacturer)
-                .confirmOrder(orderID, invoice, lotID, sku)
+    it("Ship Order", async () => {
+      const orderID = generateRandomOrderID(distributor.address);
+      const amount = generateRandomAmount();
+      await ordermanagement
+        .connect(distributor)
+        .createOrder(orderID, manufacturer.address, amount);
 
-            const timestamp = await getBlockTimestamp()
+      const ProductInfo = await generateProductInfo();
+      const invoice = Object.values(ProductInfo)[0];
+      const lotID = Object.values(ProductInfo)[1];
+      const sku = Object.values(ProductInfo)[2];
+      await ordermanagement
+        .connect(manufacturer)
+        .confirmOrder(orderID, invoice, lotID, sku);
 
-            expect(result)
-                .to.emit(ordermanagement, 'OrderStatusChange')
-                .withArgs(orderID, timestamp)
-        })
+      const result = await ordermanagement
+        .connect(manufacturer)
+        .shipOrder(orderID);
 
-        it('Ship Order', async () => {
-            const orderID = generateRandomOrderID(distributor.address)
-            const amount = generateRandomAmount()
-            await ordermanagement.connect(distributor).createOrder(orderID, manufacturer.address, amount)
+      const timestamp = await getBlockTimestamp();
 
-            const ProductInfo = await generateProductInfo()
-            const invoice = Object.values(ProductInfo)[0]
-            const lotID = Object.values(ProductInfo)[1]
-            const sku = Object.values(ProductInfo)[2]
-            await ordermanagement.connect(manufacturer).confirmOrder(orderID, invoice, lotID, sku)
+      expect(result)
+        .to.emit(ordermanagement, "OrderStatusChange")
+        .withArgs(orderID, timestamp, 3);
+    });
 
-            const result = await ordermanagement
-                .connect(manufacturer)
-                .shipOrder(orderID)
+    it("Accept Order", async () => {
+      const orderID = generateRandomOrderID(distributor.address);
+      const amount = generateRandomAmount();
+      await ordermanagement
+        .connect(distributor)
+        .createOrder(orderID, manufacturer.address, amount);
 
-            const timestamp = await getBlockTimestamp()
+      const ProductInfo = await generateProductInfo();
+      const invoice = Object.values(ProductInfo)[0];
+      const lotID = Object.values(ProductInfo)[1];
+      const sku = Object.values(ProductInfo)[2];
+      await ordermanagement
+        .connect(manufacturer)
+        .confirmOrder(orderID, invoice, lotID, sku);
 
-            expect(result)
-                .to.emit(ordermanagement, 'OrderStatusChange')
-                .withArgs(orderID, timestamp, 3)
-        })
+      await ordermanagement.connect(manufacturer).shipOrder(orderID);
 
-        it('Accept Order', async () => {
-            const orderID = generateRandomOrderID(distributor.address)
-            const amount = generateRandomAmount()
-            await ordermanagement.connect(distributor).createOrder(orderID, manufacturer.address, amount)
+      const result = await ordermanagement
+        .connect(distributor)
+        .acceptOrder(orderID);
 
-            const ProductInfo = await generateProductInfo()
-            const invoice = Object.values(ProductInfo)[0]
-            const lotID = Object.values(ProductInfo)[1]
-            const sku = Object.values(ProductInfo)[2]
-            await ordermanagement.connect(manufacturer).confirmOrder(orderID, invoice, lotID, sku)
+      const timestamp = await getBlockTimestamp();
 
-            await ordermanagement.connect(manufacturer).shipOrder(orderID)
+      expect(result)
+        .to.emit(ordermanagement, "OrderStatusChange")
+        .withArgs(orderID, timestamp);
+    });
 
-            const result = await ordermanagement
-                .connect(distributor)
-                .acceptOrder(orderID)
+    it("Reject Order", async () => {
+      const orderID = generateRandomOrderID(distributor.address);
+      const amount = generateRandomAmount();
+      await ordermanagement
+        .connect(distributor)
+        .createOrder(orderID, manufacturer.address, amount);
 
-            const timestamp = await getBlockTimestamp()
+      const ProductInfo = await generateProductInfo();
+      const invoice = Object.values(ProductInfo)[0];
+      const lotID = Object.values(ProductInfo)[1];
+      const sku = Object.values(ProductInfo)[2];
+      await ordermanagement
+        .connect(manufacturer)
+        .confirmOrder(orderID, invoice, lotID, sku);
 
-            expect(result)
-                .to.emit(ordermanagement, 'OrderStatusChange')
-                .withArgs(orderID, timestamp)
-        })
+      const result = await ordermanagement
+        .connect(manufacturer)
+        .rejectOrder(orderID);
 
-        it('Reject Order', async () => {
-            const orderID = generateRandomOrderID(distributor.address)
-            const amount = generateRandomAmount()
-            await ordermanagement.connect(distributor).createOrder(orderID, manufacturer.address, amount)
+      const timestamp = await getBlockTimestamp();
 
-            const ProductInfo = await generateProductInfo()
-            const invoice = Object.values(ProductInfo)[0]
-            const lotID = Object.values(ProductInfo)[1]
-            const sku = Object.values(ProductInfo)[2]
-            await ordermanagement.connect(manufacturer).confirmOrder(orderID, invoice, lotID, sku)
+      expect(result)
+        .to.emit(ordermanagement, "OrderStatusChange")
+        .withArgs(orderID, timestamp);
+    });
 
-            const result = await ordermanagement
-                .connect(manufacturer)
-                .rejectOrder(orderID)
+    it("Cancel Order", async () => {
+      const orderID = generateRandomOrderID(distributor.address);
+      const amount = generateRandomAmount();
+      await ordermanagement
+        .connect(distributor)
+        .createOrder(orderID, manufacturer.address, amount);
 
-            const timestamp = await getBlockTimestamp()
+      const ProductInfo = await generateProductInfo();
+      const invoice = Object.values(ProductInfo)[0];
+      const lotID = Object.values(ProductInfo)[1];
+      const sku = Object.values(ProductInfo)[2];
+      await ordermanagement
+        .connect(manufacturer)
+        .confirmOrder(orderID, invoice, lotID, sku);
 
-            expect(result)
-                .to.emit(ordermanagement, 'OrderStatusChange')
-                .withArgs(orderID, timestamp)
-        })
+      const result = await ordermanagement
+        .connect(distributor)
+        .cancelOrder(orderID);
 
-        it('Cancel Order', async () => {
-            const orderID = generateRandomOrderID(distributor.address)
-            const amount = generateRandomAmount()
-            await ordermanagement.connect(distributor).createOrder(orderID, manufacturer.address, amount)
+      const timestamp = await getBlockTimestamp();
 
-            const ProductInfo = await generateProductInfo()
-            const invoice = Object.values(ProductInfo)[0]
-            const lotID = Object.values(ProductInfo)[1]
-            const sku = Object.values(ProductInfo)[2]
-            await ordermanagement.connect(manufacturer).confirmOrder(orderID, invoice, lotID, sku)
+      expect(result)
+        .to.emit(ordermanagement, "OrderStatusChange")
+        .withArgs(orderID, timestamp);
+    });
 
-            const result = await ordermanagement
-                .connect(distributor)
-                .cancelOrder(orderID)
+    it("Onhold Order", async () => {
+      const orderID = generateRandomOrderID(distributor.address);
+      const amount = generateRandomAmount();
+      await ordermanagement
+        .connect(distributor)
+        .createOrder(orderID, manufacturer.address, amount);
 
-            const timestamp = await getBlockTimestamp()
+      const ProductInfo = await generateProductInfo();
+      const invoice = Object.values(ProductInfo)[0];
+      const lotID = Object.values(ProductInfo)[1];
+      const sku = Object.values(ProductInfo)[2];
+      await ordermanagement
+        .connect(manufacturer)
+        .confirmOrder(orderID, invoice, lotID, sku);
 
-            expect(result)
-                .to.emit(ordermanagement, 'OrderStatusChange')
-                .withArgs(orderID, timestamp)
-        })
+      await ordermanagement.connect(manufacturer).shipOrder(orderID);
 
-        it('Onhold Order', async () => {
-            const orderID = generateRandomOrderID(distributor.address)
-            const amount = generateRandomAmount()
-            await ordermanagement.connect(distributor).createOrder(orderID, manufacturer.address, amount)
+      const result = await ordermanagement
+        .connect(manufacturer)
+        .onholdOrder(orderID);
 
-            const ProductInfo = await generateProductInfo()
-            const invoice = Object.values(ProductInfo)[0]
-            const lotID = Object.values(ProductInfo)[1]
-            const sku = Object.values(ProductInfo)[2]
-            await ordermanagement.connect(manufacturer).confirmOrder(orderID, invoice, lotID, sku)
+      const timestamp = await getBlockTimestamp();
 
-            await ordermanagement.connect(manufacturer).shipOrder(orderID)
-
-            const result = await ordermanagement
-                .connect(manufacturer)
-                .onholdOrder(orderID)
-
-            const timestamp = await getBlockTimestamp()
-
-            expect(result)
-                .to.emit(ordermanagement, 'OrderStatusChange')
-                .withArgs(orderID, timestamp)
-        })
-    })
-})
+      expect(result)
+        .to.emit(ordermanagement, "OrderStatusChange")
+        .withArgs(orderID, timestamp);
+    });
+  });
+});
