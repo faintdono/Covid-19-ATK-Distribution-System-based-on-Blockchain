@@ -27,6 +27,8 @@ contract Products {
         address indexed to,
         string orderID,
         string invoice,
+        string lotID,
+        string sku,
         uint256 value
     );
 
@@ -39,9 +41,9 @@ contract Products {
             msg.sender,
             address(0),
             "",
+            "",
             _product.lotID,
             _product.sku,
-            "",
             bytes32(0),
             _product.productAmount
         );
@@ -95,16 +97,16 @@ contract Products {
         string memory _sku,
         bytes32 _ledgerKey,
         uint256 _amount,
-        Types.UserRole _partyRole  
+        Types.UserRole _partyRole
     ) internal {
         verifyTransfer(_ledgerKey, _amount);
         bytes32 _newLedgerKey = generateLedgerKey(
             _partyID,
             msg.sender,
             _orderID,
+            _invoice,
             _lotID,
             _sku,
-            _invoice,
             _ledgerKey,
             _amount
         );
@@ -118,6 +120,15 @@ contract Products {
             _ledgerKey, // sellerKey
             _amount,
             _partyRole // Role of that party
+        );
+        emit transferAProduct(
+            msg.sender,
+            _partyID,
+            _orderID,
+            _invoice,
+            _lotID,
+            _sku,
+            _amount
         );
     }
 
@@ -133,21 +144,14 @@ contract Products {
     ) internal {
         ledger[_ownerKey] = Types.Ledger({
             owner: _owner,
+            role: _role,
             sellerAddress: _sellerAddress,
             orderID: _orderID,
             invoice: _invoice,
             key: _sellerKey,
-            amount: _amount,
-            role: _role
+            amount: _amount
         });
         childKey[_sellerKey].push(_ownerKey);
-        emit transferAProduct(
-            _sellerAddress,
-            _owner,
-            _orderID,
-            _invoice,
-            _amount
-        );
     }
 
     function verifyTransfer(

@@ -69,8 +69,6 @@ contract Registration is
         return users[_id];
     }
 
-    constructor() {}
-
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this function.");
         _;
