@@ -21,7 +21,6 @@ contract OrderManagement {
             (randNumberMod * 100000) +
             197654;
     }
-
     Types.Order[] internal orders;
     mapping(string => Types.Order) internal order;
     mapping(address => string[]) internal userOngoingLinkedOrders;
@@ -65,6 +64,7 @@ contract OrderManagement {
         order[_orderID] = _order; // mapping
         linkedOrderHandler(msg.sender, _orderID, Types.OrderStatus.placed);
         linkedOrderHandler(_seller, _orderID, Types.OrderStatus.placed);
+        increaseNonce();
         emit NewOrder(_orderID, msg.sender, _seller, _amount, block.timestamp);
     }
 

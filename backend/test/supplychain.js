@@ -1,5 +1,5 @@
 const { expect } = require("chai");
-const { ethers } = require("hardhat");
+const { ethers, assert } = require("hardhat");
 
 describe("Supply Chain", () => {
   let manufacturer, distributor, wholesaler, retailer;
@@ -52,28 +52,15 @@ describe("Supply Chain", () => {
     key,
     amount
   ) {
-    // const encoded = web3.eth.abi.encodeParameters(
-    //   [
-    //     "address",
-    //     "address",
-    //     "string",
-    //     "string",
-    //     "string",
-    //     "string",
-    //     "bytes32",
-    //     "uint256",
-    //   ],
-    //   [owner, sellerAddress, orderID, invoice, lotID, sku, key, amount]
-    // );
     const hash = web3.utils.soliditySha3(
-      owner,
-      sellerAddress,
-      orderID,
-      invoice,
-      lotID,
-      sku,
-      key,
-      amount
+      { type: "address", value: owner },
+      { type: "address", value: sellerAddress },
+      { type: "string", value: orderID },
+      { type: "string", value: invoice },
+      { type: "string", value: lotID },
+      { type: "string", value: sku },
+      { type: "bytes32", value: key },
+      { type: "uint256", value: amount }
     );
 
     return hash;
@@ -129,17 +116,6 @@ describe("Supply Chain", () => {
     productAmount = generateRandomAmount();
 
     //addProduct("lotID", "sku", "manufacturerName", "manufacturingDate", "expiryDate", "productAmount")
-
-    supplychain
-      .connect(manufacturer)
-      .addProduct(
-        lotID,
-        sku,
-        manufacturerName,
-        manufacturingDate,
-        expiryDate,
-        productAmount
-      );
   });
 
   describe("Create new product", () => {
@@ -231,7 +207,7 @@ describe("Supply Chain", () => {
       const keys = await getUserKey(manufacturer.address);
     });
 
-    it("Sell Product", async () => {
+    it("Generate LedgerKey", async () => {
       supplychain
         .connect(manufacturer)
         .addProduct(
@@ -243,27 +219,23 @@ describe("Supply Chain", () => {
           productAmount
         );
       const keys = await getUserKey(manufacturer.address);
-      const ledger101 = await getLedger(keys[0]);
-      const ledger = convertBigNumber(ledger101);
-      console.log("=====================================");
-      console.log("Owner = ", ledger[0]);
-      console.log("Role = ", ledger[1]);
-      console.log("Seller = ", ledger[2]);
-      console.log("OrderID = ", ledger[3]);
-      console.log("invoice = ", ledger[4]);
-      console.log("key = ", ledger[5]);
-      console.log("amount = ", ledger[6]);
-      // gen LedgerKey need 8 params _owner, _sellerAddress, _orderID, _invoice, _lotID, _sku, _key, _amount respectively
+      const rawLedger = await getLedger(keys[0]);
+      const ledger = convertBigNumber(rawLedger);
+
+      let Bytes0 = ethers.utils.formatBytes32String("");
+
       const test = mockUpLedgerKey(
         ledger[0],
-        ledger[1],
         ledger[2],
         ledger[3],
         ledger[4],
-        ledger[5],
+        lotID,
+        sku,
+        Bytes0,
         ledger[6]
       );
-      console.log(test);
+
+      assert(test, keys[0]);
     });
 
     /*
