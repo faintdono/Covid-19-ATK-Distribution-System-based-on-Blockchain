@@ -238,6 +238,49 @@ describe("Supply Chain", () => {
       assert(test, keys[0]);
     });
 
+    it("Get RootKey", async () => {
+      supplychain
+        .connect(manufacturer)
+        .addProduct(
+          lotID,
+          sku,
+          manufacturerName,
+          manufacturingDate,
+          expiryDate,
+          100
+        );
+      const keys1 = await getUserKey(manufacturer.address);
+      const RootKey = keys1[0];
+      let orderID = "1";
+      let amount = 20;
+      let invoice = "";
+      await ordermanagement
+        .connect(distributor)
+        .createOrder(orderID, manufacturer.address, amount);
+
+      await ordermanagement
+        .connect(manufacturer)
+        .confirmOrder(orderID, invoice, lotID, sku);
+
+      await supplychain.connect(manufacturer).sellProduct(orderID, RootKey);
+      const keys2 = await getUserKey(distributor.address);
+      orderID = "2";
+      amount = 10;
+      await ordermanagement
+        .connect(wholesaler)
+        .createOrder(orderID, distributor.address, amount);
+
+      await supplychain.connect(manufacturer).sellProduct(orderID, RootKey);
+
+      const keys3 = await getUserKey(wholesaler.address);
+      const lastKey = keys3[0];
+      const getRoot = await getRootKey(lastKey);
+      console.log("rootKey:", RootKey);
+      console.log("distributorKey:", keys2[0]);
+      console.log("wholesalerKey:", lastKey);
+      console.log("Result:", getRoot);
+    });
+
     /*
         it('Sell Product', async () => {
             supplychain.connect(manufacturer).addProduct(lotID, sku, manufacturerName, manufacturingDate, expiryDate, productAmount)
