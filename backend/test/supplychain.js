@@ -42,6 +42,27 @@ describe("Supply Chain", () => {
     return Math.floor(Math.random() * 100) + 1;
   }
 
+  function checkObjects(obj1, obj2) {
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+
+    // Check if keys are the same
+    for (let i = 0; i < keys1.length; i++) {
+      const key = keys1[i];
+
+      if (obj1[key] !== obj2[key]) {
+        return false;
+      }
+    }
+
+    // If all checks passed, return true
+    return true;
+  }
+
   function mockUpLedgerKey(
     owner,
     sellerAddress,
@@ -64,6 +85,27 @@ describe("Supply Chain", () => {
     );
 
     return hash;
+  }
+
+  function mockUpgetLedger(
+    owner,
+    role,
+    sellerAddress,
+    orderID,
+    invoice,
+    key,
+    amount
+  ) {
+    const obj = [owner, role, sellerAddress, orderID, invoice, key, amount];
+    obj.owner = owner;
+    obj.role = role;
+    obj.sellerAddress = sellerAddress;
+    obj.orderID = orderID;
+    obj.invoice = invoice;
+    obj.key = key;
+    obj.amount = amount;
+
+    return obj;
   }
 
   function convertBigNumber(obj) {
@@ -191,7 +233,8 @@ describe("Supply Chain", () => {
       expect(result).to.emit(supplychain, "NewProduct");
     });
 
-    it("Generate LedgerKey", async () => {
+/*
+    it("Get Ledger", async () => {
       supplychain
         .connect(manufacturer)
         .addProduct(
@@ -202,24 +245,48 @@ describe("Supply Chain", () => {
           expiryDate,
           productAmount
         );
-      const keys = await getUserKey(manufacturer.address);
-      const firstKey = keys[0];
-      const ledger = await getLedger(firstKey);
-      let Bytes0 = ethers.utils.formatBytes32String("");
 
-      const testValue = mockUpLedgerKey(
-        ledger[0],
-        ledger[2],
-        ledger[3],
-        ledger[4],
-        lotID,
-        sku,
-        Bytes0,
-        ledger[6]
+      const manufacturerKey = getUserKey(manufacturer.address);
+      const rootKey = manufacturerKey[0];
+
+      let orderID = "1";
+      let invoice = "";
+
+      await ordermanagement
+        .connect(distributor)
+        .createOrder(orderID, manufacturer.address, productAmount);
+
+      await ordermanagement
+        .connect(manufacturer)
+        .confirmOrder(orderID, invoice, lotID, sku);
+
+      await supplychain.connect(manufacturer).sellProduct(orderID, rootKey);
+
+      const distributorKey = getUserKey(distributor.address);
+      const leafKey = distributorKey[0];
+
+      const rawLedger = getLedger(leafKey);
+      const ledger = convertBigNumber(rawLedger);
+
+      console.log(ledger);
+
+      const mockUpLedger = mockUpgetLedger(
+        distributor.address,
+        1,
+        manufacturer.address,
+        orderID,
+        invoice,
+        rootKey,
+        productAmount
       );
 
-      expect(firstKey).to.equal(testValue);
+      console.log('hi');
+      console.log(mockUpLedger);
+
+      const result = checkObjects(ledger, mockUpLedger);
+      expect(result).to.be.equal(true);
     });
+*/
 
     it("Get LedgerKey", async () => {
       supplychain
@@ -232,7 +299,24 @@ describe("Supply Chain", () => {
           expiryDate,
           productAmount
         );
-      const keys = await getUserKey(manufacturer.address);
+
+      const manufacturerKey = await getUserKey(manufacturer.address);
+      const ledgerKey = manufacturerKey[0];
+
+      let Bytes0 = ethers.utils.formatBytes32String("");
+
+      const mockUpKey = mockUpLedgerKey(
+        manufacturer.address,
+        "0x0000000000000000000000000000000000000000",
+        "",
+        "",
+        lotID,
+        sku,
+        Bytes0, //root key
+        productAmount
+      );
+
+      expect(ledgerKey).to.equal(mockUpKey);
     });
 
     it("Get RootKey", async () => {
@@ -246,8 +330,8 @@ describe("Supply Chain", () => {
           expiryDate,
           100
         );
-      const keys1 = await getUserKey(manufacturer.address);
-      const RootKey = keys1[0];
+      const manufacturerKey = await getUserKey(manufacturer.address);
+      const rootKey = manufacturerKey[0];
 
       let orderID = "1";
       let amount = 20;
@@ -261,10 +345,10 @@ describe("Supply Chain", () => {
         .connect(manufacturer)
         .confirmOrder(orderID, invoice, lotID, sku);
 
-      await supplychain.connect(manufacturer).sellProduct(orderID, RootKey);
+      await supplychain.connect(manufacturer).sellProduct(orderID, rootKey);
 
-      const keys2 = await getUserKey(distributor.address);
-      const last2Key = keys2[0];
+      const distributorKey = await getUserKey(distributor.address);
+      const firstKey = distributorKey[0];
 
       orderID = "2";
       amount = 10;
@@ -277,41 +361,17 @@ describe("Supply Chain", () => {
         .connect(distributor)
         .confirmOrder(orderID, invoice, lotID, sku);
 
-      await supplychain.connect(distributor).sellProduct(orderID, RootKey);
+      await supplychain.connect(distributor).sellProduct(orderID, rootKey);
 
-      const keys3 = await getUserKey(wholesaler.address);
-      const last3Key = keys3[0];
+      const wholesalerKey = await getUserKey(wholesaler.address);
+      const secondKey = wholesalerKey[0];
 
-      expect(await getRootKey(last2Key)).to.equal(RootKey);
-      expect(await getRootKey(last3Key)).to.equal(RootKey);
+      const firstRootKey = await getRootKey(firstKey);
+      const secondRootKey = await getRootKey(secondKey);
+
+      const result = firstRootKey === rootKey && secondRootKey === rootKey;
+
+      expect(result).to.be.equal(true);
     });
   });
-
-  /*
-        it('Sell Product', async () => {
-            supplychain.connect(manufacturer).addProduct(lotID, sku, manufacturerName, manufacturingDate, expiryDate, productAmount)
-            const keys = await getUserKey(manufacturer.address)
-            const ledger1 = await getLedger(keys[0])
-            console.log(ledger1)
-            console.log('manufacturer (ROOT) key = ', keys[0])
-            console.log('===========================')
-
-            const orderID = generateRandomOrderID(distributor.address)
-            await ordermanagement.connect(distributor).createOrder(orderID, manufacturer.address, productAmount)
-            // const date = await getBlockTimestamp()
-
-            const invoice = generateRandomString()
-
-            await ordermanagement.connect(manufacturer).confirmOrder(orderID, invoice, lotID, sku)
-            await supplychain.connect(manufacturer).sellProduct(orderID, keys[0])
-
-            const keys2 = await getUserKey(distributor.address)
-            const ledger2 = await getLedger(keys2[0])
-            const rootKey = await getRootKey(keys2[0])
-            console.log(ledger2)
-            console.log('distributor key = ', keys2[0])
-            console.log('get ROOT key = ', rootKey)
-
-        })
-        */
 });
