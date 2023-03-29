@@ -233,7 +233,7 @@ describe("Supply Chain", () => {
       expect(result).to.emit(supplychain, "NewProduct");
     });
 
-/*
+    /*
     it("Get Ledger", async () => {
       supplychain
         .connect(manufacturer)
@@ -344,11 +344,16 @@ describe("Supply Chain", () => {
       await ordermanagement
         .connect(manufacturer)
         .confirmOrder(orderID, invoice, lotID, sku);
-
+      
       await supplychain.connect(manufacturer).sellProduct(orderID, rootKey);
 
       const distributorKey = await getUserKey(distributor.address);
       const firstKey = distributorKey[0];
+
+      await ordermanagement.connect(manufacturer).shipOrder(orderID);
+      await ordermanagement.connect(distributor).acceptOrder(orderID);
+      await supplychain.connect(distributor).updateLedgerStatus(firstKey);
+
 
       orderID = "2";
       amount = 10;
@@ -361,14 +366,20 @@ describe("Supply Chain", () => {
         .connect(distributor)
         .confirmOrder(orderID, invoice, lotID, sku);
 
-      await supplychain.connect(distributor).sellProduct(orderID, rootKey);
+      await supplychain.connect(distributor).sellProduct(orderID, firstKey);
 
       const wholesalerKey = await getUserKey(wholesaler.address);
       const secondKey = wholesalerKey[0];
 
       const firstRootKey = await getRootKey(firstKey);
       const secondRootKey = await getRootKey(secondKey);
-
+      const trytoget = await getRootKey(rootKey);
+      // console.log("rootOfroot:",trytoget);
+      // console.log("rootKey:",rootKey);
+      // console.log("firstKey:", firstKey);
+      // console.log("secondKey:", secondKey);
+      // console.log("firstRootKey:", firstRootKey);
+      // console.log("secondRootKey:", secondRootKey);
       const result = firstRootKey === rootKey && secondRootKey === rootKey;
 
       expect(result).to.be.equal(true);

@@ -40,26 +40,39 @@ contract SupplyChain is Products {
     function sellProduct(
         string memory orderID,
         bytes32 _ledgerKey
-    )
-        public
-        verifyCaller(msg.sender) //verifyUser()
-    {
+    ) public verifyCaller(msg.sender) verifyOwnership(_ledgerKey) {
         Types.Order memory _order = orderMan.getOrder(orderID);
         Types.UserDetails memory _user = registration.getUserDetails(
             _order.buyerAddress
         );
-        // if _order.status # I will do it next time
-        sell(
-            _order.buyerAddress,
-            orderID,
-            _order.invoice,
-            _order.lotID,
-            _order.sku,
-            _ledgerKey,
-            _order.amount,
-            _user.role
-        );
+        if (ledger[_ledgerKey].status != Types.LedgerStatus.saleable) {
+            revert("Product is not saleable");
+        } else {
+            sell(
+                _order.buyerAddress,
+                orderID,
+                _order.invoice,
+                _order.lotID,
+                _order.sku,
+                _ledgerKey,
+                _order.amount,
+                _user.role
+            );
+        }
     }
+
+    function updateLedgerStatus(
+        bytes32 _ledgerKey
+    ) public verifyCaller(msg.sender) {
+        Types.Order memory _order = orderMan.getOrder(
+            ledger[_ledgerKey].orderID
+        );
+        if (_order.status != Types.OrderStatus.delivered) {
+            revert("Order is not delivered can't update ledger status");
+        } else {
+            ledger[_ledgerKey].status = Types.LedgerStatus.saleable;
+        }
+    } // --> Use it at the same time when use function Accept Order
 
     function returnProduct(
         string memory orderID,
@@ -84,6 +97,11 @@ contract SupplyChain is Products {
                 (registration.isRetailer(_address)) ||
                 (registration.isWholesaler(_address)))
         );
+        _;
+    }
+
+    modifier verifyOwnership(bytes32 _key) {
+        require(ledger[_key].owner == msg.sender);
         _;
     }
 

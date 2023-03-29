@@ -21,6 +21,7 @@ contract OrderManagement {
             (randNumberMod * 100000) +
             197654;
     }
+
     Types.Order[] internal orders;
     mapping(string => Types.Order) internal order;
     mapping(address => string[]) internal userOngoingLinkedOrders;
@@ -204,9 +205,42 @@ contract OrderManagement {
         );
     }
 
+    function returnOrder(
+        string memory _orderID
+    )
+        public
+        onlyReceiver(_orderID)
+        orderReturnable(_orderID)
+        verifycaller(msg.sender)
+    {
+        Types.Order storage _order = order[_orderID];
+        _order.status = Types.OrderStatus.returned;
+        _order.lastUpdated = block.timestamp;
+        linkedOrderHandler(
+            _order.buyerAddress,
+            _orderID,
+            Types.OrderStatus.returned
+        );
+        linkedOrderHandler(
+            _order.sellerAddress,
+            _orderID,
+            Types.OrderStatus.returned
+        );
+        emit OrderStatusChange(
+            _orderID,
+            block.timestamp,
+            Types.OrderStatus.returned
+        );
+    }
+
     function onholdOrder(
         string memory _orderID
-    ) public onlyReceiver(_orderID) verifycaller(msg.sender) {
+    )
+        public
+        onlyReceiver(_orderID)
+        orderOnholdable(_orderID)
+        verifycaller(msg.sender)
+    {
         Types.Order storage _order = order[_orderID];
         _order.status = Types.OrderStatus.onhold;
         _order.lastUpdated = block.timestamp;
@@ -214,6 +248,19 @@ contract OrderManagement {
             _orderID,
             block.timestamp,
             Types.OrderStatus.onhold
+        );
+    }
+
+    function unholdOrder(
+        string memory _orderID
+    ) public onlyReceiver(_orderID) verifycaller(msg.sender) {
+        Types.Order storage _order = order[_orderID];
+        _order.status = Types.OrderStatus.shipped;
+        _order.lastUpdated = block.timestamp;
+        emit OrderStatusChange(
+            _orderID,
+            block.timestamp,
+            Types.OrderStatus.shipped
         );
     }
 
@@ -257,6 +304,14 @@ contract OrderManagement {
         string memory _orderID,
         Types.OrderStatus _status
     ) internal {
+        // placed -> ongoing
+        // pending -> ongoing
+        // shipped -> shipped
+        // delivered -> finish
+        // rejected -> finish
+        // canceled -> finish
+        // returned -> finish
+
         if (_status == Types.OrderStatus.placed) {
             userOngoingLinkedOrders[_user].push(_orderID);
         } else if (_status == Types.OrderStatus.shipped) {
@@ -266,10 +321,13 @@ contract OrderManagement {
             popMatchOrder(userShippedLinkedOrders[_user], _orderID);
             userFinishLinkedOrders[_user].push(_orderID);
         } else if (_status == Types.OrderStatus.cancelled) {
-            popMatchOrder(userShippedLinkedOrders[_user], _orderID);
+            popMatchOrder(userOngoingLinkedOrders[_user], _orderID);
             userFinishLinkedOrders[_user].push(_orderID);
         } else if (_status == Types.OrderStatus.rejected) {
             popMatchOrder(userOngoingLinkedOrders[_user], _orderID);
+            userFinishLinkedOrders[_user].push(_orderID);
+        } else if (_status == Types.OrderStatus.returned) {
+            popMatchOrder(userShippedLinkedOrders[_user], _orderID);
             userFinishLinkedOrders[_user].push(_orderID);
         }
     }

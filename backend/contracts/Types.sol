@@ -32,6 +32,11 @@ library Types {
         uint256 productAmount;
     }
 
+    enum LedgerStatus {
+        unsaleable,
+        saleable
+    }
+
     // need to know [owner,orderID, lotID, sku, invoice,key,sellerAddress,amount]
     struct Ledger {
         address owner;
@@ -41,6 +46,7 @@ library Types {
         string invoice;
         bytes32 key;
         uint256 amount;
+        LedgerStatus status;
     }
 
     struct Key {

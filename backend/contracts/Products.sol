@@ -57,9 +57,10 @@ contract Products {
             role: Types.UserRole.manufacturer,
             orderID: "",
             invoice: "",
-            key: hsh,
+            key: bytes32(0),
             sellerAddress: address(0),
-            amount: _product.productAmount
+            amount: _product.productAmount, 
+            status: Types.LedgerStatus.saleable
         });
 
         userKey[msg.sender].push(hsh); // add ledgerKey to user
@@ -149,7 +150,8 @@ contract Products {
             orderID: _orderID,
             invoice: _invoice,
             key: _sellerKey,
-            amount: _amount
+            amount: _amount,
+            status: Types.LedgerStatus.unsaleable
         });
         childKey[_sellerKey].push(_ownerKey);
     }
@@ -173,13 +175,10 @@ contract Products {
         return true;
     }
 
-    function renounceTransfer(
-        address _partyID,
-        bytes32 _ledgerKey,
-        bytes32 _productKey,
-        Types.UserDetails memory _party
-    ) internal {
-        // remove product from user
+    function renounceTransfer(address _partyID, bytes32 _ledgerKey) internal {
+        popMatchKey(userKey[_partyID], _ledgerKey);
+        popMatchKey(childKey[ledger[_ledgerKey].key], _ledgerKey);
+        delete ledger[_ledgerKey];
     }
 
     function popMatchKey(
@@ -207,8 +206,8 @@ contract Products {
     }
 
     function getRootKey(bytes32 _key) public view returns (bytes32) {
-        if (ledger[_key].key != bytes32(0)) {
-            return ledger[_key].key;
+        if (ledger[_key].key == bytes32(0)) {
+            return _key;
         }
         return (getRootKey(ledger[_key].key));
     }
