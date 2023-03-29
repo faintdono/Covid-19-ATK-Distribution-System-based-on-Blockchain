@@ -59,7 +59,7 @@ contract SupplyChain is Products {
                 _user.role
             );
         }
-    }
+    } // --> Use it at the same time as function confirmOrder 
 
     function updateLedgerStatus(
         bytes32 _ledgerKey
@@ -72,7 +72,7 @@ contract SupplyChain is Products {
         } else {
             ledger[_ledgerKey].status = Types.LedgerStatus.saleable;
         }
-    } // --> Use it at the same time when use function Accept Order
+    } // --> Use it at the same time as function acceptOrder
 
     function returnProduct(
         string memory orderID,

@@ -273,7 +273,7 @@ describe('Order Management', () => {
             const lotID = Object.values(ProductInfo)[1]
             const sku = Object.values(ProductInfo)[2]
             await ordermanagement.connect(manufacturer).confirmOrder(orderID, invoice, lotID, sku)
-            await ordermanagement.connect(distributor).cancelOrder(orderID)
+            await ordermanagement.connect(manufacturer).shipOrder(orderID)
             await ordermanagement.connect(manufacturer).onholdOrder(orderID)
 
             const order = await getOrder(orderID)

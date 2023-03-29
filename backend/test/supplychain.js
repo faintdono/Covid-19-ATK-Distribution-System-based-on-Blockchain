@@ -344,7 +344,7 @@ describe("Supply Chain", () => {
       await ordermanagement
         .connect(manufacturer)
         .confirmOrder(orderID, invoice, lotID, sku);
-      
+
       await supplychain.connect(manufacturer).sellProduct(orderID, rootKey);
 
       const distributorKey = await getUserKey(distributor.address);
@@ -353,7 +353,6 @@ describe("Supply Chain", () => {
       await ordermanagement.connect(manufacturer).shipOrder(orderID);
       await ordermanagement.connect(distributor).acceptOrder(orderID);
       await supplychain.connect(distributor).updateLedgerStatus(firstKey);
-
 
       orderID = "2";
       amount = 10;
@@ -381,6 +380,43 @@ describe("Supply Chain", () => {
       // console.log("firstRootKey:", firstRootKey);
       // console.log("secondRootKey:", secondRootKey);
       const result = firstRootKey === rootKey && secondRootKey === rootKey;
+
+      expect(result).to.be.equal(true);
+    });
+
+    it("Verify Product", async () => {
+      supplychain
+        .connect(manufacturer)
+        .addProduct(
+          lotID,
+          sku,
+          manufacturerName,
+          manufacturingDate,
+          expiryDate,
+          100
+        );
+      const manufacturerKey = await getUserKey(manufacturer.address);
+      const rootKey = manufacturerKey[0];
+
+      let orderID = "1";
+      let amount = 20;
+      let invoice = "";
+
+      await ordermanagement
+        .connect(distributor)
+        .createOrder(orderID, manufacturer.address, amount);
+
+      await ordermanagement
+        .connect(manufacturer)
+        .confirmOrder(orderID, invoice, lotID, sku);
+
+      await supplychain.connect(manufacturer).sellProduct(orderID, rootKey);
+
+      const distributorKey = await getUserKey(distributor.address);
+      const firstKey = distributorKey[0];
+      const result = await supplychain
+        .connect(manufacturer)
+        .verifyProduct(lotID, sku, manufacturerName, expiryDate, firstKey);
 
       expect(result).to.be.equal(true);
     });

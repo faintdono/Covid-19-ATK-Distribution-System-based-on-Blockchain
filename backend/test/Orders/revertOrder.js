@@ -183,7 +183,7 @@ describe("Order Management", () => {
         .connect(distributor)
         .createOrder(orderID, manufacturer.address, amount);
 
-      const result = await ordermanagement
+      const result = ordermanagement
         .connect(manufacturer)
         .onholdOrder(orderID);
 

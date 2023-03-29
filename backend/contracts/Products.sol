@@ -80,7 +80,7 @@ contract Products {
         string memory _manufacturerName,
         string memory _expireDate,
         bytes32 _ledgerKey
-    ) internal view returns (bool) {
+    ) public view returns (bool) {
         bytes32 Key = getRootKey(_ledgerKey);
         Types.Product memory _product = product[Key];
         return
