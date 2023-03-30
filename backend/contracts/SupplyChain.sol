@@ -59,7 +59,7 @@ contract SupplyChain is Products {
                 _user.role
             );
         }
-    } // --> Use it at the same time as function confirmOrder 
+    }
 
     function updateLedgerStatus(
         bytes32 _ledgerKey
@@ -72,12 +72,19 @@ contract SupplyChain is Products {
         } else {
             ledger[_ledgerKey].status = Types.LedgerStatus.saleable;
         }
-    } // --> Use it at the same time as function acceptOrder
+    } 
 
     function returnProduct(
         string memory orderID,
         bytes32 _ledgerKey
-    ) public verifyCaller(msg.sender) {}
+    ) public verifyCaller(msg.sender) {
+        Types.Order memory _order = orderMan.getOrder(orderID);
+        if (_order.status != Types.OrderStatus.shipped) {
+            revert("Order is not shipped can't return product");
+        } else {
+            renounceTransfer(_order.buyerAddress, _ledgerKey);
+        }
+    } 
 
     modifier verifyCaller(address _address) {
         require(
