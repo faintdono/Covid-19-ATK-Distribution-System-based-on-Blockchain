@@ -1,6 +1,6 @@
 import "./index.css";
 
-import { DAppProvider, Goerli } from "@usedapp/core";
+import { DAppProvider, Goerli, Hardhat } from "@usedapp/core";
 import React from "react";
 import ReactDOM from "react-dom";
 
@@ -12,6 +12,7 @@ const config = {
   readOnlyChainId: Goerli.chainId,
   readOnlyUrls: {
     [Goerli.chainId]: "https://goerli.infura.io/v3/" + INFURA_PROJECT_ID,
+    [Hardhat.chainId]: "http://localhost:8545",
   },
 };
 
