@@ -3,7 +3,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_Address",
+        "name": "_RegAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_OrderAddress",
         "type": "address"
       }
     ],
@@ -76,6 +81,18 @@
       },
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "lotID",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "sku",
+        "type": "string"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "value",
         "type": "uint256"
@@ -126,28 +143,96 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "",
+        "name": "_key",
         "type": "bytes32"
       }
     ],
-    "name": "productHistory",
+    "name": "getLedger",
     "outputs": [
       {
         "components": [
           {
             "internalType": "address",
-            "name": "id",
+            "name": "owner",
             "type": "address"
           },
           {
+            "internalType": "enum Types.UserRole",
+            "name": "role",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "sellerAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "orderID",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "invoice",
+            "type": "string"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "key",
+            "type": "bytes32"
+          },
+          {
             "internalType": "uint256",
-            "name": "date",
+            "name": "amount",
             "type": "uint256"
+          },
+          {
+            "internalType": "enum Types.LedgerStatus",
+            "name": "status",
+            "type": "uint8"
           }
         ],
-        "internalType": "struct Types.UserHistory",
-        "name": "manufacturer",
+        "internalType": "struct Types.Ledger",
+        "name": "",
         "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_key",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getRootKey",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_userAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getUserKey",
+    "outputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "",
+        "type": "bytes32[]"
       }
     ],
     "stateMutability": "view",
@@ -163,11 +248,6 @@
       {
         "internalType": "bytes32",
         "name": "_ledgerKey",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_productKey",
         "type": "bytes32"
       }
     ],
@@ -187,16 +267,63 @@
         "internalType": "bytes32",
         "name": "_ledgerKey",
         "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_productKey",
-        "type": "bytes32"
       }
     ],
     "name": "sellProduct",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_ledgerKey",
+        "type": "bytes32"
+      }
+    ],
+    "name": "updateLedgerStatus",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_lotID",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_sku",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_manufacturerName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_expireDate",
+        "type": "string"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_ledgerKey",
+        "type": "bytes32"
+      }
+    ],
+    "name": "verifyProduct",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   }
 ]
