@@ -9,8 +9,13 @@ async function main() {
   const Registration = await ethers.getContractFactory("Registration");
   const reg = await Registration.deploy();
   console.log("Registration address:", reg.address);
+
+  const OrderManagement = await ethers.getContractFactory("OrderManagement");
+  const om = await OrderManagement.deploy(reg.address);
+  console.log("OrderManagement address:", om.address);
+
   const SupplyChain = await ethers.getContractFactory("SupplyChain");
-  const sc = await SupplyChain.deploy(reg.address);
+  const sc = await SupplyChain.deploy(reg.address, om.address);
   console.log("SupplyChain address:", sc.address);
 }
 
