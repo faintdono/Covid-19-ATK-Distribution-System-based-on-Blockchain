@@ -267,33 +267,33 @@ contract OrderManagement {
     // getter functions
     function getOrder(
         string memory _orderID
-    ) external view returns (Types.Order memory) {
+    ) public view returns (Types.Order memory) {
         return order[_orderID];
     }
 
-    function getOrders() external view returns (Types.Order[] memory) {
+    function getOrders() public view returns (Types.Order[] memory) {
         return orders;
     }
 
     function getOngoingOrders(
         address _user
-    ) external view returns (string[] memory) {
+    ) public view returns (string[] memory) {
         return userOngoingLinkedOrders[_user];
     }
 
     function getShippedOrders(
         address _user
-    ) external view returns (string[] memory) {
+    ) public view returns (string[] memory) {
         return userShippedLinkedOrders[_user];
     }
 
     function getFinishOrders(
         address _user
-    ) external view returns (string[] memory) {
+    ) public view returns (string[] memory) {
         return userFinishLinkedOrders[_user];
     }
 
-    function getNonce() external view returns (uint256) {
+    function getNonce() public view returns (uint256) {
         return privateNumber;
     }
 

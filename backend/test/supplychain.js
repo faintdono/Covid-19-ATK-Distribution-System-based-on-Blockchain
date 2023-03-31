@@ -120,11 +120,28 @@ describe("Supply Chain", () => {
     return obj2;
   }
 
-  async function generateRandomOrderID(userAddress) {
-    const timestamp = Date.now();
-    const combinedString = `${userAddress}${timestamp}`;
-    const randomNum = Math.floor(Math.random() * 100000);
-    const finalString = `${combinedString}${randomNum}`;
+  async function generateRandomOrderID() {
+    const date = new Date();
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    let nonce = await ordermanagement.getNonce();
+    nonce = nonce.toString(); 
+    const step = nonce.length / 3;
+    let finalString = "OD";
+    for (var x = 0; x < 3; x++) {
+      var start = step * x;
+      var end = start + step;
+      var part = nonce.substring(start, end);
+      finalString += part;
+      if (x == 0) {
+        finalString += year;
+      } else if (x == 1) {
+        finalString += month;
+      } else if (x == 2) {
+        finalString += day;
+      }
+    }
     return finalString;
   }
 
@@ -398,7 +415,7 @@ describe("Supply Chain", () => {
       const manufacturerKey = await getUserKey(manufacturer.address);
       const rootKey = manufacturerKey[0];
 
-      let orderID = "1";
+      let orderID = await generateRandomOrderID();
       let amount = 20;
       let invoice = "";
 
