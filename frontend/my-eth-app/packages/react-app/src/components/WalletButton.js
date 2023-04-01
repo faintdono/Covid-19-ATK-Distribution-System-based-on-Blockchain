@@ -1,6 +1,5 @@
 import {
   shortenAddress,
-  useCall,
   useEthers,
   useLookupAddress,
 } from "@usedapp/core";

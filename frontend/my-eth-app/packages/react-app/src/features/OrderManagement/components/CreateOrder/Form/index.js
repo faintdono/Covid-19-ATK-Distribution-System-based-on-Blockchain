@@ -1,11 +1,34 @@
 import { React } from "react";
-import useCreateOrder from "../hooks/useCreateOrder";
-import useGetNonce from "../hooks/useGetNonce"; // this hook is not working
+import useCreateOrder from "../../../hooks/useCreateOrder";
 
-const CreateOrderForm = () => {
+
+const generateOrderID = (orderID) => {
+  const date = new Date();
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  const nonce = orderID.toString();
+  const step = nonce.length / 3;
+  let finalString = "OD";
+  for (var x = 0; x < 3; x++) {
+    var start = step * x;
+    var end = start + step;
+    var part = nonce.substring(start, end);
+    finalString += part;
+    if (x === 0) {
+      finalString += year;
+    } else if (x === 1) {
+      finalString += month;
+    } else if (x === 2) {
+      finalString += day;
+    }
+  }
+  return finalString;
+};
+
+const Form = () => {
   const { send: createOrder, state: createStatus } = useCreateOrder();
-  // const { value: orderID, error } = useGetNonce();
-  // console.log(error);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const { orderID, address, amount } = e.target.elements;
@@ -19,9 +42,6 @@ const CreateOrderForm = () => {
       <form onSubmit={handleSubmit}>
         <div className="field">
           <label className="label">OrderID</label>
-          <div className="control">
-            <input className="input" type="text" id="orderID" />
-          </div>
         </div>
         <div className="field">
           <label className="label">Address</label>
@@ -48,4 +68,4 @@ const CreateOrderForm = () => {
   );
 };
 
-export default CreateOrderForm;
+export default Form;

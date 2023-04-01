@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useCall, useContractFunction } from "@usedapp/core";
+import { useContractFunction } from "@usedapp/core";
 import { Contract } from "@ethersproject/contracts";
 import { utils } from "ethers";
 

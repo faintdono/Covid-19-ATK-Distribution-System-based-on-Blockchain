@@ -12,7 +12,7 @@ const config = {
   readOnlyChainId: Goerli.chainId,
   readOnlyUrls: {
     [Goerli.chainId]: "https://goerli.infura.io/v3/" + INFURA_PROJECT_ID,
-    // [Hardhat.chainId]: "http://localhost:8545",
+    [Hardhat.chainId]: "http://localhost:8545",
   },
 };
 
