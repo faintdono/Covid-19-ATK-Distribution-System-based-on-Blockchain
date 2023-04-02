@@ -11,13 +11,6 @@ const Modal = ({ setOpenModal }) => {
     OrderID = GenerateOrderID(value);
   }
 
-  const handleSubmit = (e) => {
-    const listInput = document.getElementsByTagName("input");
-    console.log(listInput[0].value);
-    // createOrder(OrderID, listInput[0].value, listInput[1].value);
-    // console.log(createOrder);
-  };
-
   return (
     <div className="modal is-active">
       <div className="modal-background"></div>

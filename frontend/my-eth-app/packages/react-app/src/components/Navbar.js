@@ -1,3 +1,4 @@
+import CreateOrder from "../features/OrderManagement/components/CreateOrder";
 import WalletButton from "./WalletButton";
 import React from "react";
 
@@ -16,17 +17,22 @@ const NavBar = () => (
         <a href="/" className="navbar-item">
           Home
         </a>
-        <a href="/orders" className="navbar-item">
-          Order
-        </a>
+
+        <div className="navbar-item has-dropdown is-hoverable">
+          <div className="navbar-link">Order</div>
+          <div className="navbar-dropdown">
+            <a href="/orders" className="navbar-item">
+              MyOrder
+            </a>
+            <CreateOrder/>
+          </div>
+        </div>
+
         <div className="navbar-item has-dropdown is-hoverable">
           <div className="navbar-link">More</div>
           <div className="navbar-dropdown">
             <a href="/projects" className="navbar-item">
               Projects
-            </a>
-            <a href="/about" className="navbar-item">
-              About
             </a>
           </div>
         </div>
