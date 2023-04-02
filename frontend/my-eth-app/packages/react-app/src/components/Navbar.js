@@ -1,3 +1,4 @@
+import ConfirmOrder from "../features/OrderManagement/components/ConfirmOrder";
 import CreateOrder from "../features/OrderManagement/components/CreateOrder";
 import WalletButton from "./WalletButton";
 import React from "react";
@@ -24,7 +25,8 @@ const NavBar = () => (
             <a href="/orders" className="navbar-item">
               MyOrder
             </a>
-            <CreateOrder/>
+            <CreateOrder />
+            <ConfirmOrder />
           </div>
         </div>
 
