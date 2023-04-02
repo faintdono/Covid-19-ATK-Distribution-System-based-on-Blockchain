@@ -1,38 +1,13 @@
 import { React } from "react";
 import useCreateOrder from "../../../hooks/useCreateOrder";
 
-
-const generateOrderID = (orderID) => {
-  const date = new Date();
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-  const nonce = orderID.toString();
-  const step = nonce.length / 3;
-  let finalString = "OD";
-  for (var x = 0; x < 3; x++) {
-    var start = step * x;
-    var end = start + step;
-    var part = nonce.substring(start, end);
-    finalString += part;
-    if (x === 0) {
-      finalString += year;
-    } else if (x === 1) {
-      finalString += month;
-    } else if (x === 2) {
-      finalString += day;
-    }
-  }
-  return finalString;
-};
-
-const Form = () => {
+const Form = ({ OrderID }) => {
   const { send: createOrder, state: createStatus } = useCreateOrder();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { orderID, address, amount } = e.target.elements;
-    createOrder(orderID.value, address.value, amount.value);
+    const { OrderID, address, amount } = e.target.elements;
+    createOrder(OrderID, address.value, amount.value);
     console.log(createOrder);
     console.log(createStatus);
   };
@@ -42,6 +17,7 @@ const Form = () => {
       <form onSubmit={handleSubmit}>
         <div className="field">
           <label className="label">OrderID</label>
+          <div className="control">{OrderID}</div>
         </div>
         <div className="field">
           <label className="label">Address</label>
