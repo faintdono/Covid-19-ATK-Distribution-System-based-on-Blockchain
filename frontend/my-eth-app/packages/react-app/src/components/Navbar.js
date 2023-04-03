@@ -19,7 +19,7 @@ const NavBar = () => (
           Home
         </a>
 
-        <div className="navbar-item has-dropdown is-hoverable">
+        <div className="wnavbar-item has-dropdown is-hoverable">
           <div className="navbar-link">Order</div>
           <div className="navbar-dropdown">
             <a href="/orders" className="navbar-item">

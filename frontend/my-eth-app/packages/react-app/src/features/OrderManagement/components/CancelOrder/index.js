@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import useManagement from "../../hooks/useMangement";
 
-const ShipOrder = (OrderID) => {
-  const { send, state } = useManagement("shipOrder");
+const CancelOrder = (OrderID) => {
+  const { send, state } = useManagement("cancelaOrder");
 
   return (
     <div>
@@ -13,9 +13,10 @@ const ShipOrder = (OrderID) => {
         }}
         className="navbar-item"
       >
-        Ship Order
+        Cancel Order
       </a>
     </div>
   );
 };
-export default ShipOrder;
+
+export default CancelOrder;

@@ -13,7 +13,7 @@ const AcceptOrder = (OrderID) => {
         }}
         className="navbar-item"
       >
-        Reject Order
+        Accept Order
       </a>
     </div>
   );
