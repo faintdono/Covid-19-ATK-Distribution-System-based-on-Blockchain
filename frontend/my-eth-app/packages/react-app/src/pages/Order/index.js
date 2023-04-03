@@ -1,6 +1,6 @@
 import React from "react";
 import CreateOrder from "../../features/OrderManagement/components/CreateOrder";
-import useGet from "../../features/OrderManagement/hooks/useGet";
+import useGet from "../../features/OrderManagement/hooks/useGetOrder";
 import ListOnGoing from "../../features/OrderManagement/components/ListOrders/ListOngoing";
 
 const Order = () => {

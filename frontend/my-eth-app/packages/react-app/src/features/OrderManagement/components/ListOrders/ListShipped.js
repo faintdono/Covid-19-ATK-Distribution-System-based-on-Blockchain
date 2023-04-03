@@ -1,5 +1,5 @@
 import { useEthers } from "@usedapp/core";
-import useGet from "../../hooks/useGet";
+import useGet from "../../hooks/useGetOrder";
 
 const ListShipped = () => {
   const { account } = useEthers();
