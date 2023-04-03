@@ -14,6 +14,7 @@ const config = {
     [Goerli.chainId]: "https://goerli.infura.io/v3/" + INFURA_PROJECT_ID,
     [Hardhat.chainId]: "http://localhost:8545",
   },
+  multicallVersion: 2,
 };
 
 const AppWithRouter = () => (

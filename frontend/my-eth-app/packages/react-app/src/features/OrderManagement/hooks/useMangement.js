@@ -8,12 +8,12 @@ const OrderManInterface = new utils.Interface(abis.OrderManagement);
 const OrderManAddress = addresses.orderManagement;
 const omContract = new Contract(OrderManAddress, OrderManInterface);
 
-const useConfirmOrder = () => {
-  const { state, send } = useContractFunction(omContract, "confirmOrder", {
-    transactionName: "Confirm Order",
+const useManagement = (method) => {
+  const { state, send } = useContractFunction(omContract, method, {
+    transactionName: "Other Order Managment Function",
   });
 
   return { state, send };
 };
 
-export default useConfirmOrder;
+export default useManagement;

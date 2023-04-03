@@ -10,7 +10,7 @@ const omContract = new Contract(OrderManAddress, OrderManInterface);
 
 const useGetNonce = () => {
   const { value, error } =
-    useCall({ contract: omContract, method: "getNonce", args: [] }) ?? {};  
+    useCall({ contract: omContract, method: "getNonce", args: [] }) ?? {};
   if (error) {
     console.error(error.message);
     return undefined;
