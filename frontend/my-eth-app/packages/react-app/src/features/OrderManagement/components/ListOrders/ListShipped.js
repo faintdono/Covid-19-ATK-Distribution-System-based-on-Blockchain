@@ -1,5 +1,5 @@
 import { useEthers } from "@usedapp/core";
-import useGet from "../../hooks/useGetOrder";
+import useGet from "../../hooks/useGetList";
 
 const ListShipped = () => {
   const { account } = useEthers();
@@ -8,7 +8,7 @@ const ListShipped = () => {
   if (values === undefined) {
     return <div>loading...</div>;
   } else {
-    orderIDs = values[0];
+    orderIDs = values;
   }
 
   return (

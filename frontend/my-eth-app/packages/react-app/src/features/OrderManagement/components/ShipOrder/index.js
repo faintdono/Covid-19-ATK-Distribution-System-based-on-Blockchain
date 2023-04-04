@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import useManagement from "../../hooks/useMangement";
 
-const ShipOrder = (OrderID) => {
+const ShipOrder = ({ OD }) => {
   const { send, state } = useManagement("shipOrder");
 
   return (
     <div>
       <a
         href="#"
-        onclick={() => {
-          send(OrderID);
+        onClick={() => {
+          send(OD);
         }}
         className="navbar-item"
       >

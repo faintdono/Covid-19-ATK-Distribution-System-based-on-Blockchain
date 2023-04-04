@@ -1,21 +1,24 @@
 import { useEthers } from "@usedapp/core";
-import useGet from "../../hooks/useGetOrder";
+import useGetList from "../../hooks/useGetList";
+import OnGoingOrder from "../OnGoingOrder";
 
 const ListOnGoing = () => {
   const { account } = useEthers();
-  const values = useGet("getOngoingOrders", account);
+  const values = useGetList("getOngoingOrders", account);
   let orderIDs = [];
   if (values === undefined) {
     return <div>loading...</div>;
   } else {
-    orderIDs = values[0];
+    orderIDs = values;
   }
 
   return (
     <div>
       <ul>
         {orderIDs.map((orderID) => (
-          <li key={orderIDs.id}>{orderID}</li>
+          <li key={orderIDs.id}>
+            <OnGoingOrder OD={orderID} />
+          </li>
         ))}
       </ul>
     </div>

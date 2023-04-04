@@ -26,7 +26,6 @@ const NavBar = () => (
               MyOrder
             </a>
             <CreateOrder />
-            <ConfirmOrder />
           </div>
         </div>
 

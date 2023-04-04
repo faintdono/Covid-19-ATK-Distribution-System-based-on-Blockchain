@@ -8,9 +8,9 @@ const OrderManInterface = new utils.Interface(abis.OrderManagement);
 const OrderManAddress = addresses.orderManagement;
 const omContract = new Contract(OrderManAddress, OrderManInterface);
 
-const useGetOrder = (arg) => {
+const useGetList = (func, arg) => {
   const { value, error } =
-    useCall({ contract: omContract, method: "getOrder", args: [arg] }) ?? {};
+    useCall({ contract: omContract, method: func, args: [arg] }) ?? {};
   if (error) {
     console.error(error.message);
     return undefined;
@@ -18,4 +18,4 @@ const useGetOrder = (arg) => {
   return value?.[0];
 };
 
-export default useGetOrder;
+export default useGetList;

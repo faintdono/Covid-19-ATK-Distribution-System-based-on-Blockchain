@@ -1,5 +1,3 @@
-import React from "react";
-
 const GenerateOrderID = (orderID) => {
   const date = new Date();
   const day = date.getDate();

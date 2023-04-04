@@ -1,20 +1,31 @@
 import React from "react";
-import CreateOrder from "../../features/OrderManagement/components/CreateOrder";
-import useGet from "../../features/OrderManagement/hooks/useGetOrder";
 import ListOnGoing from "../../features/OrderManagement/components/ListOrders/ListOngoing";
+import ListShipped from "../../features/OrderManagement/components/ListOrders/ListShipped";
+import ListFinish from "../../features/OrderManagement/components/ListOrders/ListFinish";
 
 const Order = () => {
   return (
     <>
-      <div className="has-text-centered">
-        <section className="hero is-info">
-          <div className="container">
-            <h1 className="title">Order Page</h1>
-            <h2 className="page-title">List order that you have.</h2>
+      <section className="hero is-primary">
+        <div className="hero-body">
+          <p className="title">Primary hero</p>
+          <p className="subtitle">Primary subtitle</p>
+        </div>
+      </section>
+      <div className="box">
+        <div className="columns">
+          <div className="column">
+            <div className=""></div>
+            <ListOnGoing />
           </div>
-        </section>
+          <div className="column">
+            <ListShipped />
+          </div>
+          <div className="column">
+            <ListFinish />
+          </div>
+        </div>
       </div>
-      <ListOnGoing />
     </>
   );
 };
