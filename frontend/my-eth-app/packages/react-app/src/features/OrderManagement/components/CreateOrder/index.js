@@ -3,7 +3,6 @@ import Modal from "./ModalFormWrapped";
 
 const CreateOrder = () => {
   const [openModal, setOpenModal] = useState(false);
-  console.log(openModal);
   return (
     <div>
       {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
