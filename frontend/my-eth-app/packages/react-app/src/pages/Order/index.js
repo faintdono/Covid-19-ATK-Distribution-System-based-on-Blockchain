@@ -2,14 +2,17 @@ import React from "react";
 import ListOnGoing from "../../features/OrderManagement/components/ListOrders/ListOngoing";
 import ListShipped from "../../features/OrderManagement/components/ListOrders/ListShipped";
 import ListFinish from "../../features/OrderManagement/components/ListOrders/ListFinish";
+import CreateOrder from "../../features/OrderManagement/components/CreateOrder";
 
 const Order = () => {
   return (
     <>
       <section className="hero is-primary">
         <div className="hero-body">
-          <p className="title">Primary hero</p>
-          <p className="subtitle">Primary subtitle</p>
+          <p className="title">Order Management</p>
+          <p className="subtitle">
+            <CreateOrder />
+          </p>
         </div>
       </section>
       <section>
@@ -35,7 +38,7 @@ const Order = () => {
               <article className="message">
                 <div className="message-header">Finished Order</div>
                 <div class="message-body">
-                <ListFinish />
+                  <ListFinish />
                 </div>
               </article>
             </div>

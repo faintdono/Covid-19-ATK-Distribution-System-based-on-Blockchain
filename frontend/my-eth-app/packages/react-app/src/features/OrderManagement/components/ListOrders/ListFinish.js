@@ -15,11 +15,13 @@ const ListFinish = () => {
   return (
     <div>
       <ul>
-        {orderIDs.map((orderID) => (
-          <li key={orderIDs.id}>
-            <FinishOrder OD={orderID} />
-          </li>
-        ))}
+        {orderIDs
+          .map((orderID) => (
+            <li key={orderIDs.id}>
+              <FinishOrder OD={orderID} />
+            </li>
+          ))
+          .reverse()}
       </ul>
     </div>
   );

@@ -7,7 +7,7 @@ const CreateOrder = () => {
   return (
     <div>
       <a href="#" onClick={() => setOpenModal(true)} className="navbar-item">
-        Create Order
+        Create new order
       </a>
       {openModal && <Modal setOpenModal={setOpenModal} />}
     </div>

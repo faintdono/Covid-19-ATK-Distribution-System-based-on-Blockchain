@@ -15,11 +15,13 @@ const ListShipped = () => {
   return (
     <div>
       <ul>
-        {orderIDs.map((orderID) => (
-          <li key={orderIDs.id}>
-            <ShippedOrder OD={orderID} />
-          </li>
-        ))}
+        {orderIDs
+          .map((orderID) => (
+            <li key={orderIDs.id}>
+              <ShippedOrder OD={orderID} />
+            </li>
+          ))
+          .reverse()}
       </ul>
     </div>
   );

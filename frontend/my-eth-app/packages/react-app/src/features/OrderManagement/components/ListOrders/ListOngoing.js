@@ -19,7 +19,7 @@ const ListOnGoing = () => {
           <li key={orderIDs.id}>
             <OnGoingOrder OD={orderID} />
           </li>
-        ))}
+        )).reverse()}
       </ul>
     </div>
   );
