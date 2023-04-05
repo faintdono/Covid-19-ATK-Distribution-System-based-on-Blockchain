@@ -54,6 +54,7 @@ const Modal = ({ setOpenModal, OrderID }) => {
                 document.getElementsByTagName("input")[1].value,
                 document.getElementsByTagName("input")[2].value
               );
+              setOpenModal(false);
             }}
           >
             Submit

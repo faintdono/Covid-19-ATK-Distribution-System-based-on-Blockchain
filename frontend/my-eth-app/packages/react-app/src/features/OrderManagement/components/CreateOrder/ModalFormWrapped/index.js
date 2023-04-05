@@ -4,7 +4,7 @@ import useGetNonce from "../../../hooks/useGetNonce";
 import GenerateOrderID from "../../../utils/GenerateOrderID";
 
 const Modal = ({ setOpenModal }) => {
-  const { send: createOrder, state: createStatus } = useCreateOrder();
+  const { send: createOrder } = useCreateOrder();
   const value = useGetNonce();
   let OrderID = "";
   if (value !== undefined) {
@@ -23,14 +23,12 @@ const Modal = ({ setOpenModal }) => {
             onClick={() => {
               setOpenModal(false);
             }}
-          >
-            X
-          </button>
+          ></button>
         </header>
         <section class="modal-card-body">
           <div className="field">
             <label className="label">OrderID</label>
-            <div className="control">{OrderID}</div>
+            <div className="control has-text-black">{OrderID}</div>
           </div>
           <div className="field">
             <label className="label">Address</label>
@@ -54,6 +52,7 @@ const Modal = ({ setOpenModal }) => {
                 document.getElementsByTagName("input")[0].value,
                 document.getElementsByTagName("input")[1].value
               );
+              setOpenModal(false);
             }}
           >
             Submit

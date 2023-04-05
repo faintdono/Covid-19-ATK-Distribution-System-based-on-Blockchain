@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import useManagement from "../../hooks/useMangement";
 
 const RejectOrder = ({ OD }) => {

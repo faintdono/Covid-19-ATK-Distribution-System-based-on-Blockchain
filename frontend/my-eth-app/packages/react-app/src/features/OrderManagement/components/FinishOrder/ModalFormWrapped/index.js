@@ -1,12 +1,7 @@
 import React from "react";
-import { useEthers } from "@usedapp/core";
 import useGetOrder from "../../../hooks/useGetOrder";
-import AcceptOrder from "../../AcceptOrder";
-import ReturnOrder from "../../ReturnOrder";
-import { OnHoldOrder, UnHoldOrder } from "../../OnHoldOrder";
 
 const Modal = ({ setOpenModal, OrderID }) => {
-  const { account } = useEthers();
   const order = useGetOrder(OrderID);
   if (order === undefined) {
     return (

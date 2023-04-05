@@ -19,25 +19,25 @@ const Order = () => {
         <div className="box">
           <div className="columns">
             <div className="column">
-              <article className="message">
-                <div className="message-header">On-going Order</div>
-                <div class="message-body">
+              <article className="menu">
+                <div className="menu-label">On-going Order</div>
+                <div class="menu-list">
                   <ListOnGoing />
                 </div>
               </article>
             </div>
             <div className="column">
-              <article className="message">
-                <div className="message-header">Shipped Order</div>
-                <div class="message-body">
+              <article className="menu">
+                <div className="menu-label">Shiping Order</div>
+                <div class="menu-list">
                   <ListShipped />
                 </div>
               </article>
             </div>
             <div className="column">
-              <article className="message">
-                <div className="message-header">Finished Order</div>
-                <div class="message-body">
+              <article className="menu">
+                <div className="menu-label">Finished Order</div>
+                <div class="menu-list">
                   <ListFinish />
                 </div>
               </article>

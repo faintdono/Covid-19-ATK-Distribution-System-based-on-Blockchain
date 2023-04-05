@@ -6,6 +6,7 @@ const CreateOrder = () => {
   console.log(openModal);
   return (
     <div>
+      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
       <a href="#" onClick={() => setOpenModal(true)} className="navbar-item">
         Create new order
       </a>

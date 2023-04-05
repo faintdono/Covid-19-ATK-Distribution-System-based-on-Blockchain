@@ -4,6 +4,7 @@ import useGetOrder from "../../../hooks/useGetOrder";
 import ConfirmOrder from "../../ConfirmOrder";
 import RejectOrder from "../../RejectOrder";
 import ShipOrder from "../../ShipOrder";
+import CancelOrder from "../../CancelOrder";
 
 const Modal = ({ setOpenModal, OrderID }) => {
   const { account } = useEthers();
@@ -62,7 +63,7 @@ const Modal = ({ setOpenModal, OrderID }) => {
             </div>
             <div className="field">
               <label className="label">Amount</label>
-              <div className="control">{order[6].toString}</div>
+              <div className="control">{order[6].toString()}</div>
             </div>
             <div className="field">
               <label className="label">Date</label>
@@ -179,21 +180,15 @@ const Modal = ({ setOpenModal, OrderID }) => {
             </div>
             <div className="field">
               <label className="label">Invoice</label>
-              <div className="control">
-                {order[3]}
-              </div>
+              <div className="control">{order[3]}</div>
             </div>
             <div className="field">
               <label className="label">Lot ID</label>
-              <div className="control">
-                {order[4]}
-              </div>
+              <div className="control">{order[4]}</div>
             </div>
             <div className="field">
               <label className="label">SKU</label>
-              <div className="control">
-                {order[5]}
-              </div>
+              <div className="control">{order[5]}</div>
             </div>
             <div className="field">
               <label className="label">Amount</label>
@@ -210,6 +205,9 @@ const Modal = ({ setOpenModal, OrderID }) => {
             <div className="field">
               <label className="label">Last Update</label>
               <div className="control">{Date(order[9].toNumber())}</div>
+            </div>
+            <div className="buttons" data-dismiss="modal">
+              <CancelOrder OD={OrderID} />
             </div>
           </section>
         </div>
