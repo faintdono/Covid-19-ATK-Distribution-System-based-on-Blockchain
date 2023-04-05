@@ -1,5 +1,6 @@
 import { useEthers } from "@usedapp/core";
 import useGet from "../../hooks/useGetList";
+import FinishOrder from "../FinishOrder";
 
 const ListFinish = () => {
   const { account } = useEthers();
@@ -15,7 +16,9 @@ const ListFinish = () => {
     <div>
       <ul>
         {orderIDs.map((orderID) => (
-          <li key={orderIDs.id}>{orderID}</li>
+          <li key={orderIDs.id}>
+            <FinishOrder OD={orderID} />
+          </li>
         ))}
       </ul>
     </div>

@@ -1,5 +1,6 @@
 import { useEthers } from "@usedapp/core";
 import useGet from "../../hooks/useGetList";
+import ShippedOrder from "../ShippedOrder";
 
 const ListShipped = () => {
   const { account } = useEthers();
@@ -15,7 +16,9 @@ const ListShipped = () => {
     <div>
       <ul>
         {orderIDs.map((orderID) => (
-          <li key={orderIDs.id}>{orderID}</li>
+          <li key={orderIDs.id}>
+            <ShippedOrder OD={orderID} />
+          </li>
         ))}
       </ul>
     </div>

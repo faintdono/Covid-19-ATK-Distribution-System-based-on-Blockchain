@@ -1,38 +1,36 @@
 import React, { useState } from "react";
 import useManagement from "../../hooks/useMangement";
 
-export const OnHoldOrder = (OrderID) => {
+export const OnHoldOrder = ({OD}) => {
   const { send, state } = useManagement("onholdOrder");
 
   return (
     <div>
-      <a
-        href="#"
-        onclick={() => {
-          send(OrderID);
+      <button
+        className="button is-warning"
+        onClick={() => {
+          send(OD);
         }}
-        className="navbar-item"
       >
-        OnHold Order
-      </a>
+        OnHold
+      </button>
     </div>
   );
 };
 
-export const UnHoldOrder = (OrderID) => {
+export const UnHoldOrder = ({OD}) => {
   const { send, state } = useManagement("unholdOrder");
 
   return (
     <div>
-      <a
-        href="#"
-        onclick={() => {
-          send(OrderID);
+      <button
+        className="button is-success"
+        onClick={() => {
+          send(OD);
         }}
-        className="navbar-item"
       >
-        UnHold Order
-      </a>
+        UnHold
+      </button>
     </div>
   );
 };

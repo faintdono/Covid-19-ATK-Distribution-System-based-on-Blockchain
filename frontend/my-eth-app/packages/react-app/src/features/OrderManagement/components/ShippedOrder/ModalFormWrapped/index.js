@@ -1,9 +1,9 @@
 import React from "react";
 import { useEthers } from "@usedapp/core";
 import useGetOrder from "../../../hooks/useGetOrder";
-import ConfirmOrder from "../../ConfirmOrder";
-import RejectOrder from "../../RejectOrder";
-import ShipOrder from "../../ShipOrder";
+import AcceptOrder from "../../AcceptOrder";
+import ReturnOrder from "../../ReturnOrder";
+import { OnHoldOrder, UnHoldOrder } from "../../OnHoldOrder";
 
 const Modal = ({ setOpenModal, OrderID }) => {
   const { account } = useEthers();
@@ -16,7 +16,7 @@ const Modal = ({ setOpenModal, OrderID }) => {
       </div>
     );
   }
-  if (account === order[1] && order[8] === 0) {
+  if (account === order[1] && order[8] === 3) {
     return (
       <div className="modal is-active">
         <div className="modal-background"></div>
@@ -77,14 +77,13 @@ const Modal = ({ setOpenModal, OrderID }) => {
               <div className="control">{Date(order[9].toNumber())}</div>
             </div>
             <div className="buttons">
-              <ConfirmOrder OD={OrderID} />
-              <RejectOrder OD={OrderID} />
+              <OnHoldOrder OD={OrderID} />
             </div>
           </section>
         </div>
       </div>
     );
-  } else if (account === order[1] && order[8] === 1) {
+  } else if (account === order[1] && order[8] === 6) {
     return (
       <div className="modal is-active">
         <div className="modal-background"></div>
@@ -145,7 +144,7 @@ const Modal = ({ setOpenModal, OrderID }) => {
               <div className="control">{Date(order[9].toNumber())}</div>
             </div>
             <div className="buttons">
-              <ShipOrder OD={OrderID} />
+              <UnHoldOrder OD={OrderID} />
             </div>
           </section>
         </div>
@@ -210,6 +209,10 @@ const Modal = ({ setOpenModal, OrderID }) => {
             <div className="field">
               <label className="label">Last Update</label>
               <div className="control">{Date(order[9].toNumber())}</div>
+            </div>
+            <div className="buttons">
+              <AcceptOrder OD={OrderID} />
+              <ReturnOrder OD={OrderID} />
             </div>
           </section>
         </div>

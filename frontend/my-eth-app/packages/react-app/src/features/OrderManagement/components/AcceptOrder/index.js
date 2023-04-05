@@ -1,20 +1,19 @@
 import React, { useState } from "react";
 import useManagement from "../../hooks/useMangement";
 
-const AcceptOrder = (OrderID) => {
-  const { send, state } = useManagement("shipOrder");
+const AcceptOrder = ({ OD }) => {
+  const { send, state } = useManagement("acceptOrder");
 
   return (
     <div>
-      <a
-        href="#"
-        onclick={() => {
-          send(OrderID);
+      <button
+        onClick={() => {
+          send(OD);
         }}
-        className="navbar-item"
+        className="button is-success"
       >
-        Accept Order
-      </a>
+        Accept
+      </button>
     </div>
   );
 };
