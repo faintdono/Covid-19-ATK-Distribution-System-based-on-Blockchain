@@ -46,18 +46,21 @@ const Modal = ({ setOpenModal, OrderID }) => {
             <label className="label">Invoice</label>
             <div className="control">
               {order[3] ? order[3].toString : "None"}
+              {order[3]}
             </div>
           </div>
           <div className="field">
             <label className="label">Lot ID</label>
             <div className="control">
               {order[4] ? order[4].toString : "None"}
+              {order[4]}
             </div>
           </div>
           <div className="field">
             <label className="label">SKU</label>
             <div className="control">
               {order[5] ? order[5].toString : "None"}
+              {order[5]}
             </div>
           </div>
           <div className="field">

@@ -6,15 +6,14 @@ const ShipOrder = ({ OD }) => {
 
   return (
     <div>
-      <a
-        href="#"
+      <button
         onClick={() => {
           send(OD);
         }}
-        className="navbar-item"
+        className="button is-success"
       >
-        Ship Order
-      </a>
+        Ship
+      </button>
     </div>
   );
 };
