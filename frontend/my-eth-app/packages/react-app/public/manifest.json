@@ -1,6 +1,6 @@
 {
-  "short_name": "Eth App",
-  "name": "Create Eth App Sample",
+  "short_name": "COVATK",
+  "name": "Covid-19 Antigen Test Kit Distribution System based on Blockchain",
   "icons": [
     {
       "src": "favicon.ico",
