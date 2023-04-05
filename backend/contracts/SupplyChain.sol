@@ -72,7 +72,7 @@ contract SupplyChain is Products {
         } else {
             ledger[_ledgerKey].status = Types.LedgerStatus.saleable;
         }
-    } 
+    }
 
     function returnProduct(
         string memory orderID,
@@ -84,7 +84,7 @@ contract SupplyChain is Products {
         } else {
             renounceTransfer(_order.buyerAddress, _ledgerKey);
         }
-    } 
+    }
 
     modifier verifyCaller(address _address) {
         require(
