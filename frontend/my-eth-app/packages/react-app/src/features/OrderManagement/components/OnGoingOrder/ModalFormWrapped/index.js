@@ -20,7 +20,12 @@ const Modal = ({ setOpenModal, OrderID }) => {
   if (account === order[1] && order[8] === 0) {
     return (
       <div className="modal is-active">
-        <div className="modal-background"></div>
+        <div
+          className="modal-background"
+          onClick={() => {
+            setOpenModal(false);
+          }}
+        ></div>
         <div class="modal-card">
           <header class="modal-card-head">
             <p class="modal-card-title">{OrderID}</p>
@@ -63,7 +68,7 @@ const Modal = ({ setOpenModal, OrderID }) => {
             </div>
             <div className="field">
               <label className="label">Amount</label>
-              <div className="control">{order[6].toString()}</div>
+              <div className="control">{order[6].toString}</div>
             </div>
             <div className="field">
               <label className="label">Date</label>
@@ -88,7 +93,12 @@ const Modal = ({ setOpenModal, OrderID }) => {
   } else if (account === order[1] && order[8] === 1) {
     return (
       <div className="modal is-active">
-        <div className="modal-background"></div>
+        <div
+          className="modal-background"
+          onClick={() => {
+            setOpenModal(false);
+          }}
+        ></div>
         <div class="modal-card">
           <header class="modal-card-head">
             <p class="modal-card-title">{OrderID}</p>
@@ -155,7 +165,12 @@ const Modal = ({ setOpenModal, OrderID }) => {
   } else if (account === order[0]) {
     return (
       <div className="modal is-active">
-        <div className="modal-background"></div>
+        <div
+          className="modal-background"
+          onClick={() => {
+            setOpenModal(false);
+          }}
+        ></div>
         <div class="modal-card">
           <header class="modal-card-head">
             <p class="modal-card-title">{OrderID}</p>

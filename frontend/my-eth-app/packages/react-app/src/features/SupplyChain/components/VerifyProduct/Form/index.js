@@ -3,6 +3,7 @@ import Result from "../Result";
 
 const Form = () => {
   const [Res, setRes] = useState(false);
+  const [OpenModal, setOpenModal] = useState(false);
   const [LotID, setLotID] = useState("1");
   const [SKU, setSKU] = useState("1");
   const [Manufacturer, setManufacturer] = useState("1");
@@ -11,7 +12,15 @@ const Form = () => {
     "0x0000000000000000000000000000000000000000000000000000000000000000"
   );
 
-  function GetResult(Res, LotID, SKU, Manufacturer, ExpirationDate, Key) {
+  function GetResult(
+    Res,
+    LotID,
+    SKU,
+    Manufacturer,
+    ExpirationDate,
+    Key,
+    setOpenModal
+  ) {
     if (Res === false) {
     } else {
       return (
@@ -21,6 +30,7 @@ const Form = () => {
           Manufacturer={Manufacturer}
           ExpirationDate={ExpirationDate}
           Key={Key}
+          setModalOpen={setOpenModal}
         />
       );
     }
@@ -85,11 +95,21 @@ const Form = () => {
           setManufacturer(document.getElementById("Manufacturer").value);
           setExpirationDate(document.getElementById("Exp").value);
           setRes(true);
+          setOpenModal(true);
         }}
       >
         Verify
       </button>
-      {GetResult(Res, LotID, SKU, Manufacturer, ExpirationDate, Key)}
+      {OpenModal &&
+        GetResult(
+          Res,
+          LotID,
+          SKU,
+          Manufacturer,
+          ExpirationDate,
+          Key,
+          setOpenModal
+        )}
     </div>
   );
 };

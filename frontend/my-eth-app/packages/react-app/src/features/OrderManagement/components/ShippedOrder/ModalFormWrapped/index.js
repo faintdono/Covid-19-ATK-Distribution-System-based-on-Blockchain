@@ -19,7 +19,12 @@ const Modal = ({ setOpenModal, OrderID }) => {
   if (account === order[1] && order[8] === 3) {
     return (
       <div className="modal is-active">
-        <div className="modal-background"></div>
+        <div
+          className="modal-background"
+          onClick={() => {
+            setOpenModal(false);
+          }}
+        ></div>
         <div class="modal-card">
           <header class="modal-card-head">
             <p class="modal-card-title">{OrderID}</p>
@@ -86,7 +91,12 @@ const Modal = ({ setOpenModal, OrderID }) => {
   } else if (account === order[1] && order[8] === 6) {
     return (
       <div className="modal is-active">
-        <div className="modal-background"></div>
+        <div
+          className="modal-background"
+          onClick={() => {
+            setOpenModal(false);
+          }}
+        ></div>
         <div class="modal-card">
           <header class="modal-card-head">
             <p class="modal-card-title">{OrderID}</p>
@@ -153,7 +163,12 @@ const Modal = ({ setOpenModal, OrderID }) => {
   } else if (account === order[0]) {
     return (
       <div className="modal is-active">
-        <div className="modal-background"></div>
+        <div
+          className="modal-background"
+          onClick={() => {
+            setOpenModal(false);
+          }}
+        ></div>
         <div class="modal-card">
           <header class="modal-card-head">
             <p class="modal-card-title">{OrderID}</p>
@@ -178,21 +193,15 @@ const Modal = ({ setOpenModal, OrderID }) => {
             </div>
             <div className="field">
               <label className="label">Invoice</label>
-              <div className="control">
-                {order[3]}
-              </div>
+              <div className="control">{order[3]}</div>
             </div>
             <div className="field">
               <label className="label">Lot ID</label>
-              <div className="control">
-                {order[4]}
-              </div>
+              <div className="control">{order[4]}</div>
             </div>
             <div className="field">
               <label className="label">SKU</label>
-              <div className="control">
-                {order[5]}
-              </div>
+              <div className="control">{order[5]}</div>
             </div>
             <div className="field">
               <label className="label">Amount</label>

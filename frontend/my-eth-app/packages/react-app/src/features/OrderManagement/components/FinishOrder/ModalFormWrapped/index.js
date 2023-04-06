@@ -14,7 +14,12 @@ const Modal = ({ setOpenModal, OrderID }) => {
 
   return (
     <div className="modal is-active">
-      <div className="modal-background"></div>
+      <div
+        className="modal-background"
+        onClick={() => {
+          setOpenModal(false);
+        }}
+      ></div>
       <div class="modal-card">
         <header class="modal-card-head">
           <p class="modal-card-title">{OrderID}</p>
