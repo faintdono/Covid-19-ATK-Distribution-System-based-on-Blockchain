@@ -8,9 +8,9 @@ const RegistrationInterface = new utils.Interface(abis.Registration);
 const RegistrationAddress = addresses.registraton;
 const rgContract = new Contract(RegistrationAddress, RegistrationInterface);
 
-const useIsManufacturer = (func, arg) => {
+const useIsManufacturer = ( arg) => {
   const { value, error } =
-    useCall({ contract: rgContract, method: func, args: [arg] }) ?? {};
+    useCall({ contract: rgContract, method: "isManufacturer", args: [arg] }) ?? {};
   if (error) {
     console.error(error.message);
     return undefined;
