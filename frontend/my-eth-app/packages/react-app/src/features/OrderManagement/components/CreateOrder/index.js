@@ -7,7 +7,7 @@ const CreateOrder = () => {
     <div>
       {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
       <a href="#" onClick={() => setOpenModal(true)} className="navbar-item">
-        Create new order
+        create new order
       </a>
       {openModal && <Modal setOpenModal={setOpenModal} />}
     </div>
