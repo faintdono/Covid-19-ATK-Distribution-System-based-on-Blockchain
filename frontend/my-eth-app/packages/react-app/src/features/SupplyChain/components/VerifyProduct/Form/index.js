@@ -84,6 +84,7 @@ const Form = () => {
             className="input"
             type="text"
             placeholder="0x0000000000000000000000000000000000000000000000000000000000000000"
+            id="Key"
           />
         </div>
       </div>
@@ -94,6 +95,9 @@ const Form = () => {
           setSKU(document.getElementById("SKU").value);
           setManufacturer(document.getElementById("Manufacturer").value);
           setExpirationDate(document.getElementById("Exp").value);
+          if (document.getElementById("Key").value !== "") {
+            setKey(document.getElementById("Key").value);
+          }
           setRes(true);
           setOpenModal(true);
         }}

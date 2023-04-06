@@ -1,19 +1,14 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
-import Home from "../pages/Home";
-import About from "../pages/About";
-import Order from "../pages/Order";
-
-
-const Project = () => <h1>Project</h1>;
+import { Home, About, Order, Product } from "../pages";
 
 const Routing = () => (
   <Routes>
     <Route path="/" element={<Home />} />
     <Route path="/about" element={<About />} />
     <Route path="/orders" element={<Order />} />
-    <Route path="/projects" element={<Project />} />
+    <Route path="/product" element={<Product />} />
   </Routes>
 );
 

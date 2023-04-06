@@ -21,7 +21,7 @@ const Result = ({
         ></div>
         <div class="modal-card">
           <section className="modal-card-body">
-            <div className="has-text-centered">loading...</div>
+            <div className="title is-4 has-text-centered">loading...</div>
             <progress
               className="progress is-small is-dark"
               max="100"

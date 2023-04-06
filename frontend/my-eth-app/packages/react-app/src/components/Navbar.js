@@ -19,6 +19,10 @@ const NavBar = () => (
           Home
         </a>
 
+        <a href="/product" className="navbar-item">
+          Product
+        </a>
+
         <a href="/orders" className="navbar-item">
           Order
         </a>
