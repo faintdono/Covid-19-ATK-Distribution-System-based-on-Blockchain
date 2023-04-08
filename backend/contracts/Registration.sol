@@ -21,39 +21,41 @@ contract Registration is
     function addUser(
         uint32 _dunsOrTaxNum,
         string memory _Role,
-        address _id
+        address _id,
+        string memory _name,
+        string memory _email
     ) public onlyOwner {
         if (compareStrings(_Role, "manufacturer")) {
             addManufacturer(_id);
             users[_id] = Types.UserDetails({
                 role: Types.UserRole.manufacturer,
                 id_: _id,
-                name: "",
-                email: ""
+                name: _name,
+                email: _email
             });
         } else if (compareStrings(_Role, "distributor")) {
             addDistributor(_id);
             users[_id] = Types.UserDetails({
                 role: Types.UserRole.distributor,
                 id_: _id,
-                name: "",
-                email: ""
+                name: _name,
+                email: _email
             });
         } else if (compareStrings(_Role, "wholesaler")) {
             addWholesaler(_id);
             users[_id] = Types.UserDetails({
                 role: Types.UserRole.wholesaler,
                 id_: _id,
-                name: "",
-                email: ""
+                name: _name,
+                email: _email
             });
         } else if (compareStrings(_Role, "retailer")) {
             addRetailer(_id);
             users[_id] = Types.UserDetails({
                 role: Types.UserRole.retailer,
                 id_: _id,
-                name: "",
-                email: ""
+                name: _name,
+                email: _email
             });
         }
 
