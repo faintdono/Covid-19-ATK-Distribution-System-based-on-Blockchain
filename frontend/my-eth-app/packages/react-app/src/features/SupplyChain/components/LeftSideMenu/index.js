@@ -1,8 +1,9 @@
 import React from "react";
 import useIsManufacturer from "../../../Registration/hooks/useIsManufacturer";
 import { useEthers } from "@usedapp/core";
+import AddProduct from "../AddProduct";
 
-const SideMenu = () => {
+const LeftSideMenu = () => {
   const { account } = useEthers();
   const value = useIsManufacturer(account);
 
@@ -19,7 +20,7 @@ const SideMenu = () => {
         <p class="menu-label">Function</p>
         <ul class="menu-list">
           <li>
-            <a>Add Product</a>
+            <AddProduct />
           </li>
           <li>
             <a>Sell Product</a>
@@ -44,4 +45,4 @@ const SideMenu = () => {
   }
 };
 
-export default SideMenu;
+export default LeftSideMenu;

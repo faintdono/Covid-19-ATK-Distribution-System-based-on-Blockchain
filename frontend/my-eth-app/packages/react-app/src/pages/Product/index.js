@@ -1,5 +1,7 @@
 import React from "react";
-import SideMenu from "../../features/SupplyChain/components/SideMenu";
+import LeftSideMenu from "../../features/SupplyChain/components/LeftSideMenu";
+import ListUserKey from "../../features/SupplyChain/components/ListUserKey";
+import RightSideMenu from "../../features/SupplyChain/components/RightSideMenu";
 
 const Product = () => {
   return (
@@ -14,29 +16,16 @@ const Product = () => {
         <div className="box">
           <div className="columns">
             <div className="column is-one-fifth">
-              <SideMenu />
+              <LeftSideMenu />
             </div>
             <div className="column">
-              <ul>
-                <li>Mockup</li>
-                <li>Mockup</li>
-                <li>Mockup</li>
-                <li>Mockup</li>
-                <li>Mockup</li>
-                <li>Mockup</li>
-                <li>Mockup</li>
-                <li>Mockup</li>
-              </ul>
+              <ListUserKey />
             </div>
             <div className="column is-one-fifth">
-              <div className="buttons">
-                <button className="button is-info is-outlined">Mockup</button>
-                <button className="button is-link is-outlined">Mockup</button>
-              </div>
+              <RightSideMenu />
             </div>
           </div>
         </div>
-        f
       </section>
     </>
   );

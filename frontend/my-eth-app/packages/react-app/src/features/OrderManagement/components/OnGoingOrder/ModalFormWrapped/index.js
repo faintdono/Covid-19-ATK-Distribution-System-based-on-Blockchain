@@ -9,6 +9,18 @@ import CancelOrder from "../../CancelOrder";
 const Modal = ({ setOpenModal, OrderID }) => {
   const { account } = useEthers();
   const order = useGetOrder(OrderID);
+
+  const Status = [
+    "Placed",
+    "Pending",
+    "Rejected",
+    "Shipped",
+    "Delivered",
+    "Cancelled",
+    "Onhold",
+    "Returned",
+  ];
+
   if (order === undefined) {
     return (
       <div className="modal is-active">
@@ -76,7 +88,7 @@ const Modal = ({ setOpenModal, OrderID }) => {
             </div>
             <div className="field">
               <label className="label">Status</label>
-              <div className="control">{order[8]}</div>
+              <div className="control">{Status[order[8]]}</div>
             </div>
             <div className="field">
               <label className="label">Last Update</label>
@@ -149,7 +161,7 @@ const Modal = ({ setOpenModal, OrderID }) => {
             </div>
             <div className="field">
               <label className="label">Status</label>
-              <div className="control">{order[8]}</div>
+              <div className="control">{Status[order[8]]}</div>
             </div>
             <div className="field">
               <label className="label">Last Update</label>
@@ -215,7 +227,7 @@ const Modal = ({ setOpenModal, OrderID }) => {
             </div>
             <div className="field">
               <label className="label">Status</label>
-              <div className="control">{order[8]}</div>
+              <div className="control">{Status[order[8]]}</div>
             </div>
             <div className="field">
               <label className="label">Last Update</label>

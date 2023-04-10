@@ -10,7 +10,7 @@ const scContract = new Contract(supplyChainAddress, supplyChainInterface);
 
 const useAddProduct = () => {
   const { state, send } = useContractFunction(scContract, "addProduct", {
-    transactionName: "Sell Product",
+    transactionName: "Add Product",
   });
 
   return { state, send };
