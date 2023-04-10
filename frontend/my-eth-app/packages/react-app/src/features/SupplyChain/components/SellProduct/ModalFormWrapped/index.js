@@ -1,15 +1,8 @@
 import React from "react";
-import useCreateOrder from "../../../hooks/useCreateOrder";
-import useGetNonce from "../../../hooks/useGetNonce";
-import GenerateOrderID from "../../../utils/GenerateOrderID";
+import useSellProduct from "../../../hooks/useSellProduct";
 
 const Modal = ({ setOpenModal }) => {
-  const { send: createOrder } = useCreateOrder();
-  const value = useGetNonce();
-  let OrderID = "";
-  if (value !== undefined) {
-    OrderID = GenerateOrderID(value);
-  }
+  const { send: sellProduct } = useSellProduct();
 
   return (
     <div className="modal is-active">
@@ -21,7 +14,7 @@ const Modal = ({ setOpenModal }) => {
       ></div>
       <div class="modal-card">
         <header class="modal-card-head">
-          <p class="modal-card-title">Create Order</p>
+          <p class="modal-card-title">Sell Product</p>
           <button
             class="delete"
             aria-label="close"
@@ -32,19 +25,15 @@ const Modal = ({ setOpenModal }) => {
         </header>
         <section class="modal-card-body">
           <div className="field">
-            <label className="label">OrderID</label>
-            <div className="control has-text-black">{OrderID}</div>
-          </div>
-          <div className="field">
-            <label className="label">Address</label>
-            <div className="control">
-              <input className="input" type="text" id="address" />
+            <label className="label">Order ID</label>
+            <div className="control has-text-black">
+              <input className="input" type="text" id="OrderID" />
             </div>
           </div>
           <div className="field">
-            <label className="label">Amount</label>
+            <label className="label">Key</label>
             <div className="control">
-              <input className="input" type="number" id="amount" />
+              <input className="input" type="text" id="Key" />
             </div>
           </div>
         </section>
@@ -52,10 +41,9 @@ const Modal = ({ setOpenModal }) => {
           <button
             class="button is-success"
             onClick={() => {
-              createOrder(
-                OrderID,
-                document.getElementsByTagName("input")[0].value,
-                document.getElementsByTagName("input")[1].value
+              sellProduct(
+                document.getElementById("OrderID").value,
+                document.getElementById("Key").value
               );
               setOpenModal(false);
             }}

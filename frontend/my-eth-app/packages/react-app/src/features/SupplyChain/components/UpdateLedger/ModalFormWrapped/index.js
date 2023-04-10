@@ -1,15 +1,8 @@
 import React from "react";
-import useCreateOrder from "../../../hooks/useCreateOrder";
-import useGetNonce from "../../../hooks/useGetNonce";
-import GenerateOrderID from "../../../utils/GenerateOrderID";
+import useUpdateLedgerStatus from "../../../hooks/useUpdateLedgerStatus";
 
 const Modal = ({ setOpenModal }) => {
-  const { send: createOrder } = useCreateOrder();
-  const value = useGetNonce();
-  let OrderID = "";
-  if (value !== undefined) {
-    OrderID = GenerateOrderID(value);
-  }
+  const { send: updateLedger } = useUpdateLedgerStatus();
 
   return (
     <div className="modal is-active">
@@ -21,7 +14,7 @@ const Modal = ({ setOpenModal }) => {
       ></div>
       <div class="modal-card">
         <header class="modal-card-head">
-          <p class="modal-card-title">Create Order</p>
+          <p class="modal-card-title">Update Ledger</p>
           <button
             class="delete"
             aria-label="close"
@@ -32,19 +25,9 @@ const Modal = ({ setOpenModal }) => {
         </header>
         <section class="modal-card-body">
           <div className="field">
-            <label className="label">OrderID</label>
-            <div className="control has-text-black">{OrderID}</div>
-          </div>
-          <div className="field">
-            <label className="label">Address</label>
+            <label className="label">Key</label>
             <div className="control">
-              <input className="input" type="text" id="address" />
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Amount</label>
-            <div className="control">
-              <input className="input" type="number" id="amount" />
+              <input className="input" type="text" id="Key" />
             </div>
           </div>
         </section>
@@ -52,11 +35,7 @@ const Modal = ({ setOpenModal }) => {
           <button
             class="button is-success"
             onClick={() => {
-              createOrder(
-                OrderID,
-                document.getElementsByTagName("input")[0].value,
-                document.getElementsByTagName("input")[1].value
-              );
+              updateLedger(document.getElementById("Key").value);
               setOpenModal(false);
             }}
           >

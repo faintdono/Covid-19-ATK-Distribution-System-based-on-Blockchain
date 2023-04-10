@@ -8,7 +8,7 @@ const supplyChainInterface = new utils.Interface(abis.SupplyChain);
 const supplyChainAddress = addresses.supplyChain;
 const scContract = new Contract(supplyChainAddress, supplyChainInterface);
 
-const useUpdateLedgerStatust = () => {
+const useUpdateLedgerStatus = () => {
   const { state, send } = useContractFunction(
     scContract,
     "updateLedgerStatus",
@@ -20,4 +20,4 @@ const useUpdateLedgerStatust = () => {
   return { state, send };
 };
 
-export default useUpdateLedgerStatust;
+export default useUpdateLedgerStatus;

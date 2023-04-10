@@ -2,6 +2,8 @@ import React from "react";
 import useIsManufacturer from "../../../Registration/hooks/useIsManufacturer";
 import { useEthers } from "@usedapp/core";
 import AddProduct from "../AddProduct";
+import SellProduct from "../SellProduct";
+import UpdateLedger from "../UpdateLedger";
 
 const LeftSideMenu = () => {
   const { account } = useEthers();
@@ -23,7 +25,7 @@ const LeftSideMenu = () => {
             <AddProduct />
           </li>
           <li>
-            <a>Sell Product</a>
+            <SellProduct />
           </li>
         </ul>
       </aside>
@@ -34,10 +36,10 @@ const LeftSideMenu = () => {
         <p class="menu-label">Function</p>
         <ul class="menu-list">
           <li>
-            <a>Sell Product</a>
+            <SellProduct />
           </li>
           <li>
-            <a>Update Ledger Key</a>
+            <UpdateLedger />
           </li>
         </ul>
       </aside>

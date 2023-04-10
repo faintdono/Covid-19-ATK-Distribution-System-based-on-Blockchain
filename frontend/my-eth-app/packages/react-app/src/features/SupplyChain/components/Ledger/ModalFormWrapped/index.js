@@ -23,7 +23,7 @@ const Modal = ({ setOpenModal, Key }) => {
       ></div>
       <div class="modal-card">
         <header class="modal-card-head">
-          <p class="modal-card-title">TEST</p>
+          <p class="modal-card-title"></p>
           <button
             class="delete"
             aria-label="close"
@@ -35,6 +35,10 @@ const Modal = ({ setOpenModal, Key }) => {
           </button>
         </header>
         <section class="modal-card-body">
+          <div className="field">
+            <label className="label">LedgerKey</label>
+            <div className="control">{Key}</div>
+          </div>
           <div className="field">
             <label className="label">Address</label>
             <div className="control">{ledger[0]}</div>
