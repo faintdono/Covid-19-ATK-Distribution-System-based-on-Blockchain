@@ -1,11 +1,11 @@
 import React from "react";
 import { useEthers } from "@usedapp/core";
-import useGetUserKey from "../../hooks/useGetUserKey";
+import useGetter from "../../hooks/useGetter";
 import Ledger from "../Ledger";
 
 const MiddleAndRight = () => {
   const { account } = useEthers();
-  const values = useGetUserKey(account);
+  const values = useGetter("getUserKey", account);
   let Keys = [];
   if (values === undefined) {
     return <div>loading...</div>;
@@ -13,29 +13,22 @@ const MiddleAndRight = () => {
     Keys = values;
   }
   return (
-    <>
-      {Keys.map((key) => (
-        <>
-          <div className="column">
-            <ul>
-              <li key={key.id}>
-                <Ledger K={key} />
-                
-              </li>
-            </ul>
-          </div>
-          <div className="column is-one-fifth">
-            <div className="buttons">
+    <div>
+      <div className="column">
+        <article className="menu">
+          <div className="menu-label">Keys</div>
+          <div class="menu-list">
+            {Keys.map((key) => (
               <ul>
                 <li key={key.id}>
-                  {/* <History K={key}/> */}
+                  <Ledger K={key} />
                 </li>
               </ul>
-            </div>
+            )).reverse()}
           </div>
-        </>
-      )).reverse()}
-    </>
+        </article>
+      </div>
+    </div>
   );
 };
 export default MiddleAndRight;

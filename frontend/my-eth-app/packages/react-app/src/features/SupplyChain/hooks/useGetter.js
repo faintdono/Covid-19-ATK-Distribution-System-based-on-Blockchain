@@ -9,12 +9,12 @@ const supplyChainInterface = new utils.Interface(abis.SupplyChain);
 const supplyChainAddress = addresses.supplyChain;
 const scContract = new Contract(supplyChainAddress, supplyChainInterface);
 
-const useGetLedger = (key) => {
+const useGeter = (func,arg) => {
   const { value, error } =
     useCall({
       contract: scContract,
-      method: "getLedger",
-      args: [key],
+      method: func,
+      args: [arg],
     }) ?? {};
 
   if (error) {
@@ -25,4 +25,4 @@ const useGetLedger = (key) => {
   return value?.[0];
 };
 
-export default useGetLedger;
+export default useGeter;

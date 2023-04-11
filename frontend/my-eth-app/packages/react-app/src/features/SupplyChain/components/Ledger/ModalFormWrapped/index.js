@@ -1,8 +1,8 @@
 import React from "react";
-import useGetLedger from "../../../hooks/useGetLedger";
+import useGetter from "../../../hooks/useGetter";
 
 const Modal = ({ setOpenModal, Key }) => {
-  const ledger = useGetLedger(Key);
+  const ledger = useGetter("getLedger", Key);
   if (ledger === undefined) {
     return (
       <div className="modal is-active">

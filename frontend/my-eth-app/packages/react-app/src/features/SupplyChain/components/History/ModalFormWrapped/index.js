@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import useGetLedger from "../../../hooks/useGetLedger";
+import useGeter from "../../../hooks/useGetter";
 
 const Modal = ({ setOpenModal, UserKey }) => {
   const [Key, setKey] = useState(UserKey);
   const [listAddress, setListAddress] = useState([]);
 
-  const Ledger = useGetLedger(Key);
+  const Ledger = useGeter("getLedger", Key);
 
   let exKey = Key;
   if (Ledger === undefined) {
