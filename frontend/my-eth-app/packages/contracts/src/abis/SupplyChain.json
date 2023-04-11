@@ -208,12 +208,49 @@
         "type": "bytes32"
       }
     ],
-    "name": "getRootKey",
+    "name": "getProduct",
     "outputs": [
       {
-        "internalType": "bytes32",
+        "components": [
+          {
+            "internalType": "string",
+            "name": "lotID",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "sku",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "manufacturerName",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "manufacturer",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "manufacturingDate",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "expiryDate",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "productAmount",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct Types.Product",
         "name": "",
-        "type": "bytes32"
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",

@@ -132,6 +132,16 @@
         "internalType": "address",
         "name": "_id",
         "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_email",
+        "type": "string"
       }
     ],
     "name": "addUser",
