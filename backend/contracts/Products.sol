@@ -185,7 +185,9 @@ contract Products {
         return userKey[_userAddress];
     }
 
-    function getLedger(bytes32 _key) external view returns (Types.Ledger memory) {
+    function getLedger(
+        bytes32 _key
+    ) external view returns (Types.Ledger memory) {
         return ledger[_key];
     }
 
@@ -199,7 +201,8 @@ contract Products {
     function getProduct(
         bytes32 _key
     ) external view returns (Types.Product memory) {
-        return product[_key];
+        bytes32 key = getRootKey(_key);
+        return product[key];
     }
 
     // need to know [lotID, sku, invoice, orderID, key, sellerAddress]
