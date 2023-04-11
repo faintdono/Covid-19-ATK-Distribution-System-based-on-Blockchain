@@ -86,6 +86,22 @@ contract SupplyChain is Products {
         }
     }
 
+    function verifyProduct(
+        string memory _lotID,
+        string memory _sku,
+        string memory _manufacturerName,
+        string memory _expireDate,
+        bytes32 _ledgerKey
+    ) public view returns (bool) {
+        bytes32 Key = getRootKey(_ledgerKey);
+        Types.Product memory _product = product[Key];
+        return
+            compareStrings(_product.lotID, _lotID) &&
+            compareStrings(_product.sku, _sku) &&
+            compareStrings(_product.manufacturerName, _manufacturerName) &&
+            compareStrings(_product.expiryDate, _expireDate);
+    }
+
     modifier verifyCaller(address _address) {
         require(
             (msg.sender == _address) &&

@@ -59,7 +59,7 @@ contract Products {
             invoice: "",
             key: bytes32(0),
             sellerAddress: address(0),
-            amount: _product.productAmount, 
+            amount: _product.productAmount,
             status: Types.LedgerStatus.saleable
         });
 
@@ -72,22 +72,6 @@ contract Products {
             _product.manufacturingDate,
             _product.productAmount
         );
-    }
-
-    function verifyProduct(
-        string memory _lotID,
-        string memory _sku,
-        string memory _manufacturerName,
-        string memory _expireDate,
-        bytes32 _ledgerKey
-    ) public view returns (bool) {
-        bytes32 Key = getRootKey(_ledgerKey);
-        Types.Product memory _product = product[Key];
-        return
-            compareStrings(_product.lotID, _lotID) &&
-            compareStrings(_product.sku, _sku) &&
-            compareStrings(_product.manufacturerName, _manufacturerName) &&
-            compareStrings(_product.expiryDate, _expireDate);
     }
 
     function sell(

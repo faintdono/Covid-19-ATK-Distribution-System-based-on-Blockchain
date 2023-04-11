@@ -209,7 +209,7 @@ contract OrderManagement {
         string memory _orderID
     )
         public
-        onlyReceiver(_orderID)
+        onlySender(_orderID)
         orderReturnable(_orderID)
         verifycaller(msg.sender)
     {
