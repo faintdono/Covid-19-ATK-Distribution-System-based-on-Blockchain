@@ -181,19 +181,25 @@ contract Products {
     //geter function
     function getUserKey(
         address _userAddress
-    ) public view returns (bytes32[] memory) {
+    ) external view returns (bytes32[] memory) {
         return userKey[_userAddress];
     }
 
-    function getLedger(bytes32 _key) public view returns (Types.Ledger memory) {
+    function getLedger(bytes32 _key) external view returns (Types.Ledger memory) {
         return ledger[_key];
     }
 
-    function getRootKey(bytes32 _key) public view returns (bytes32) {
+    function getRootKey(bytes32 _key) internal view returns (bytes32) {
         if (ledger[_key].key == bytes32(0)) {
             return _key;
         }
         return (getRootKey(ledger[_key].key));
+    }
+
+    function getProduct(
+        bytes32 _key
+    ) external view returns (Types.Product memory) {
+        return product[_key];
     }
 
     // need to know [lotID, sku, invoice, orderID, key, sellerAddress]
