@@ -18,7 +18,9 @@ describe("Registration", () => {
       const result = registration.addUser(
         123456789,
         "manufacturer",
-        manufacturer.address
+        manufacturer.address,
+        "test",
+        "test@examples.com"
       );
       await expect(result)
         .to.emit(registration, "UserAdded")
@@ -29,7 +31,9 @@ describe("Registration", () => {
       const result = registration.addUser(
         223456789,
         "distributor",
-        distributor.address
+        distributor.address,
+        "test",
+        "test@examples.com"
       );
       await expect(result)
         .to.emit(registration, "UserAdded")
@@ -40,7 +44,9 @@ describe("Registration", () => {
       const result = registration.addUser(
         323456789,
         "wholesaler",
-        wholesaler.address
+        wholesaler.address,
+        "test",
+        "test@examples.com"
       );
       await expect(result)
         .to.emit(registration, "UserAdded")
@@ -51,7 +57,9 @@ describe("Registration", () => {
       const result = registration.addUser(
         423456789,
         "retailer",
-        retailer.address
+        retailer.address,
+        "test",
+        "test@examples.com"
       );
       await expect(result)
         .to.emit(registration, "UserAdded")
@@ -59,11 +67,19 @@ describe("Registration", () => {
     });
 
     it("[REVERT] add existing address into the same role", async () => {
-      registration.addUser(423456789, "retailer", retailer.address);
+      registration.addUser(
+        423456789,
+        "retailer",
+        retailer.address,
+        "test",
+        "test@examples.com"
+      );
       const result = registration.addUser(
         423456789,
         "retailer",
-        retailer.address
+        retailer.address,
+        "test",
+        "test@examples.com"
       );
       await expect(result).to.be.reverted;
     });
@@ -163,7 +179,13 @@ describe("Registration", () => {
       await expect(
         registration
           .connect(manufacturer)
-          .addUser(123456789, "manufacturer", manufacturer.address)
+          .addUser(
+            123456789,
+            "manufacturer",
+            manufacturer.address,
+            "test",
+            "test@examples.com"
+          )
       ).to.be.rejectedWith("Only owner can call this function.");
     });
   });

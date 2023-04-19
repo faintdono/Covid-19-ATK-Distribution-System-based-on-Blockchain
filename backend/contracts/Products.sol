@@ -191,7 +191,7 @@ contract Products {
         return ledger[_key];
     }
 
-    function getRootKey(bytes32 _key) internal view returns (bytes32) {
+    function getRootKey(bytes32 _key) public view returns (bytes32) {
         if (ledger[_key].key == bytes32(0)) {
             return _key;
         }

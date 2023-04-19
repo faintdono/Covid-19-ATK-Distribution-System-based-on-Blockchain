@@ -15,10 +15,34 @@ describe("Order Management", () => {
     const OrderManagement = await ethers.getContractFactory("OrderManagement");
     ordermanagement = await OrderManagement.deploy(registration.address);
 
-    registration.addUser(123456789, "manufacturer", manufacturer.address);
-    registration.addUser(223456789, "distributor", distributor.address);
-    registration.addUser(323456789, "wholesaler", wholesaler.address);
-    registration.addUser(423456789, "retailer", retailer.address);
+    registration.addUser(
+      123456789,
+      "manufacturer",
+      manufacturer.address,
+      "test",
+      "test@examples.com"
+    );
+    registration.addUser(
+      223456789,
+      "distributor",
+      distributor.address,
+      "test",
+      "test@examples.com"
+    );
+    registration.addUser(
+      323456789,
+      "wholesaler",
+      wholesaler.address,
+      "test",
+      "test@examples.com"
+    );
+    registration.addUser(
+      423456789,
+      "retailer",
+      retailer.address,
+      "test",
+      "test@examples.com"
+    );
   });
 
   describe("Normal Orders", () => {

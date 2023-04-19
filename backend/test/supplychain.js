@@ -126,7 +126,7 @@ describe("Supply Chain", () => {
     const month = date.getMonth() + 1;
     const year = date.getFullYear();
     let nonce = await ordermanagement.getNonce();
-    nonce = nonce.toString(); 
+    nonce = nonce.toString();
     const step = nonce.length / 3;
     let finalString = "OD";
     for (var x = 0; x < 3; x++) {
@@ -153,10 +153,34 @@ describe("Supply Chain", () => {
     const Registration = await ethers.getContractFactory("Registration");
     registration = await Registration.deploy();
 
-    registration.addUser(123456789, "manufacturer", manufacturer.address);
-    registration.addUser(223456789, "distributor", distributor.address);
-    registration.addUser(323456789, "wholesaler", wholesaler.address);
-    registration.addUser(423456789, "retailer", retailer.address);
+    registration.addUser(
+      123456789,
+      "manufacturer",
+      manufacturer.address,
+      "test",
+      "test@examples.com"
+    );
+    registration.addUser(
+      223456789,
+      "distributor",
+      distributor.address,
+      "test",
+      "test@examples.com"
+    );
+    registration.addUser(
+      323456789,
+      "wholesaler",
+      wholesaler.address,
+      "test",
+      "test@examples.com"
+    );
+    registration.addUser(
+      423456789,
+      "retailer",
+      retailer.address,
+      "test",
+      "test@examples.com"
+    );
 
     const OrderManagement = await ethers.getContractFactory("OrderManagement");
     ordermanagement = await OrderManagement.deploy(registration.address);
