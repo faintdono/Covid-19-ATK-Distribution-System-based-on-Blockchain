@@ -21,6 +21,30 @@ const Modal = ({ setOpenModal, OrderID }) => {
     "Returned",
   ];
 
+  const DateTime = (timestamp) => {
+    var date = new Date(timestamp * 1000);
+    var hours = date.getHours();
+    var minutes = "0" + date.getMinutes();
+    var seconds = "0" + date.getSeconds();
+    var year = date.getFullYear();
+    var month = "0" + (date.getMonth() + 1);
+    var day = "0" + date.getDate();
+    var formattedTime =
+      hours +
+      ":" +
+      minutes.substr(-2) +
+      ":" +
+      seconds.substr(-2) +
+      " " +
+      day.substr(-2) +
+      "/" +
+      month.substr(-2) +
+      "/" +
+      year;
+
+    return formattedTime;
+  };
+
   if (order === undefined) {
     return (
       <div className="modal is-active">
@@ -84,7 +108,7 @@ const Modal = ({ setOpenModal, OrderID }) => {
             </div>
             <div className="field">
               <label className="label">Date</label>
-              <div className="control">{Date(order[7].toNumber())}</div>
+              <div className="control">{DateTime(order[7].toNumber())}</div>
             </div>
             <div className="field">
               <label className="label">Status</label>
@@ -92,7 +116,7 @@ const Modal = ({ setOpenModal, OrderID }) => {
             </div>
             <div className="field">
               <label className="label">Last Update</label>
-              <div className="control">{Date(order[9].toNumber())}</div>
+              <div className="control">{DateTime(order[9].toNumber())}</div>
             </div>
             <div className="buttons">
               <ConfirmOrder OD={OrderID} />
@@ -157,7 +181,7 @@ const Modal = ({ setOpenModal, OrderID }) => {
             </div>
             <div className="field">
               <label className="label">Date</label>
-              <div className="control">{Date(order[7].toNumber())}</div>
+              <div className="control">{DateTime(order[7].toNumber())}</div>
             </div>
             <div className="field">
               <label className="label">Status</label>
@@ -165,7 +189,7 @@ const Modal = ({ setOpenModal, OrderID }) => {
             </div>
             <div className="field">
               <label className="label">Last Update</label>
-              <div className="control">{Date(order[9].toNumber())}</div>
+              <div className="control">{DateTime(order[9].toNumber())}</div>
             </div>
             <div className="buttons" data-dismiss="modal">
               <ShipOrder OD={OrderID} />
@@ -223,7 +247,7 @@ const Modal = ({ setOpenModal, OrderID }) => {
             </div>
             <div className="field">
               <label className="label">Date</label>
-              <div className="control">{Date(order[7].toNumber())}</div>
+              <div className="control">{DateTime(order[7].toNumber())}</div>
             </div>
             <div className="field">
               <label className="label">Status</label>
@@ -231,7 +255,7 @@ const Modal = ({ setOpenModal, OrderID }) => {
             </div>
             <div className="field">
               <label className="label">Last Update</label>
-              <div className="control">{Date(order[9].toNumber())}</div>
+              <div className="control">{DateTime(order[9].toNumber())}</div>
             </div>
             <div className="buttons" data-dismiss="modal">
               <CancelOrder OD={OrderID} />

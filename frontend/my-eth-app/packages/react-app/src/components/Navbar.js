@@ -8,7 +8,7 @@ const NavBar = () => (
     <div className="navbar-brand">
       <a
         class="navbar-item"
-        href="https://https://github.com/faintdono/Covid-19-ATK-Distribution-System-based-on-Blockchain"
+        href="https://github.com/faintdono/Covid-19-ATK-Distribution-System-based-on-Blockchain"
       >
         <img src="./logo-brand.png" alt="" width="112" height="28" />
       </a>
