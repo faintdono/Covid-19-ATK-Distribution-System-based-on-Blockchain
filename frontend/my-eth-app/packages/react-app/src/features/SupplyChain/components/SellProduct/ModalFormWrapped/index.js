@@ -99,7 +99,7 @@ const Modal = ({ setOpenModal }) => {
                     <div className="control">{product[5].toString()}</div>
                   </div>
                   <div className="field">
-                    <label className="label">Totol Amount</label>
+                    <label className="label">Total Amount</label>
                     <div className="control">{product[6].toString()}</div>
                   </div>
                 </div>
