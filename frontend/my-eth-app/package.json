@@ -13,7 +13,12 @@
     "react-app:eject": "yarn workspace @my-app/react-app eject",
     "react-app:ipfs": "yarn workspace @my-app/react-app ipfs",
     "react-app:start": "yarn workspace @my-app/react-app start",
-    "react-app:test": "yarn workspace @my-app/react-app test"
+    "react-app:test": "yarn workspace @my-app/react-app test",
+    "admin-app:build": "yarn workspace @my-app/admin-app build",
+    "admin-app:eject": "yarn workspace @my-app/admin-app eject",
+    "admin-app:ipfs": "yarn workspace @my-app/admin-app ipfs",
+    "admin-app:start": "yarn workspace @my-app/admin-app start",
+    "admin-app:test": "yarn workspace @my-app/admin-app test"
   },
   "workspaces": {
     "packages": [

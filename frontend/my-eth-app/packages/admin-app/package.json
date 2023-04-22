@@ -1,0 +1,50 @@
+{
+  "name": "@my-app/admin-app",
+  "version": "1.0.0",
+  "homepage": "./",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "dependencies": {
+    "@ethersproject/contracts": "^5.6.0",
+    "@ethersproject/providers": "^5.6.0",
+    "@my-app/contracts": "^1.0.0",
+    "@testing-library/dom": "^8.11.3",
+    "@testing-library/jest-dom": "^5.16.2",
+    "@testing-library/react": "^12.1.4",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/react": "^18.0.37",
+    "@usedapp/core": "^1.2.8",
+    "ethers": "^5.7.0",
+    "ipfs-deploy": "^11.2.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-hook-form": "^7.43.9",
+    "react-router-dom": "6.10.0",
+    "react-scripts": "5.0.1",
+    "styled-components": "^5.3.3"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "scripts": {
+    "build": "react-scripts --openssl-legacy-provider build",
+    "eject": "react-scripts eject",
+    "ipfs": "yarn build && ipfs-deploy build/",
+    "start": "set PORT=3001 && react-scripts --openssl-legacy-provider start",
+    "test": "react-scripts test"
+  },
+  "license": "GPL-3.0"
+}
