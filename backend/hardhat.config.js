@@ -4,10 +4,10 @@ require("@nomiclabs/hardhat-ethers");
 require("dotenv").config();
 
 const {
-  GOERLI_ACC_PRIV1,
-  GOERLI_ACC_PRIV2,
-  GOERLI_ACC_PRIV3,
-  GOERLI_ACC_PRIV4,
+ACC_PRIV1,
+ACC_PRIV2,
+ACC_PRIV3,
+ACC_PRIV4,
 } = process.env;
 
 const { task } = require("hardhat/config");
@@ -31,14 +31,13 @@ module.exports = {
     },
   },
   networks: {
-    goerli: {
+    sepolia: {
       url: "https://goerli.infura.io/v3/9352c4ea35594880b179f70ece40051e",
       accounts: [
-        `${GOERLI_ACC_PRIV1}`,
-        `${GOERLI_ACC_PRIV2}`,
-        `${GOERLI_ACC_PRIV3}`,
-        `${GOERLI_ACC_PRIV4}`,
-        // `${GOERLI_ACC_PRIV5}`,
+        `${ACC_PRIV1}`,
+        `${ACC_PRIV2}`,
+        `${ACC_PRIV3}`,
+        `${ACC_PRIV4}`,
       ],
     },
   },
