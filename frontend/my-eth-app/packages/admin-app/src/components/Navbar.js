@@ -16,23 +16,6 @@ const NavBar = () => (
         <a href="/" className="navbar-item">
           Home
         </a>
-
-        <a href="/product" className="navbar-item">
-          Product
-        </a>
-
-        <a href="/orders" className="navbar-item">
-          Order
-        </a>
-
-        <div className="navbar-item has-dropdown is-hoverable">
-          <div className="navbar-link">More</div>
-          <div className="navbar-dropdown">
-            <a href="/projects" className="navbar-item">
-              Projects
-            </a>
-          </div>
-        </div>
         <div className="navbar-item">
           <div className="button is-primary">
             <WalletButton />

@@ -4,15 +4,19 @@ import useAddUser from "../../../hooks/useAddUser";
 const Form = () => {
   const refDuns = useRef(null);
   const refAddress = useRef(null);
+  const refRole = useRef(null);
   const refName = useRef(null);
   const refEmail = useRef(null);
   const { send: addUser } = useAddUser();
+
   const Clear = () => {
     refDuns.current.value = "";
     refAddress.current.value = "";
+    refRole.current.value = "role";
     refName.current.value = "";
     refEmail.current.value = "";
   };
+
   return (
     <div className="form" id="AddUser-form">
       <div className="field">
@@ -31,7 +35,7 @@ const Form = () => {
         <label className="label">Role</label>
         <div class="control">
           <div className="select is-fullwidth">
-            <select id="Role">
+            <select id="Role" ref={refRole}>
               <option value="role">Select a Role</option>
               <option value="manufacturer">Manufacturer</option>
               <option value="distributor">Distributor</option>
@@ -85,7 +89,6 @@ const Form = () => {
           const address = document.getElementById("address").value;
           const name = document.getElementById("name").value;
           const email = document.getElementById("email").value;
-
           addUser(dunsOrTax, role, address, name, email);
           Clear();
         }}
