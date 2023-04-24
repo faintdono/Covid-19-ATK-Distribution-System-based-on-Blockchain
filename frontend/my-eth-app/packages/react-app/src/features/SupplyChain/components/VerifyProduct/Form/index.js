@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Result from "../Result";
+import History from "../../History";
 
 const Form = () => {
   const [Res, setRes] = useState(false);
@@ -77,15 +78,19 @@ const Form = () => {
           />
         </div>
       </div>
-      <div className="field">
-        <label className="label">Ledger Key</label>
-        <div className="control">
+      <label className="label">Ledger Key</label>
+      <div className="field has-addons">
+        <div className="control is-expanded">
           <input
             className="input"
             type="text"
             placeholder="0x0000000000000000000000000000000000000000000000000000000000000000"
             id="Key"
+            onChange={() => setKey(document.getElementById("Key").value)}
           />
+        </div>
+        <div class="control">
+          <History K={Key} />
         </div>
       </div>
       <button

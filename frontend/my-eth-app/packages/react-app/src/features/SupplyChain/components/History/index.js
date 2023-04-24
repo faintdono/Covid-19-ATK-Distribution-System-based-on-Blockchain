@@ -6,11 +6,13 @@ const History = ({ K }) => {
   return (
     <>
       <button
-        className="button is-info is-inverted "
+        className="button is-link is-light"
         onClick={() => setOpenModal(true)}
       >
-        <i className="fa fa-history" aria-hidden="true"></i>
-        history
+        <span className="icon">
+          <i className="fa fa-history" aria-hidden="true"></i>
+        </span>
+        <span>history</span>
       </button>
       {openModal && <Modal setOpenModal={setOpenModal} UserKey={K} />}
     </>

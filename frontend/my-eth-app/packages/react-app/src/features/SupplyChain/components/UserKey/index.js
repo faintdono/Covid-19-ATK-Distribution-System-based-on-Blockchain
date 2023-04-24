@@ -3,7 +3,7 @@ import { useEthers } from "@usedapp/core";
 import useGetter from "../../hooks/useGetter";
 import Ledger from "../Ledger";
 
-const MiddleAndRight = () => {
+const UserKey = () => {
   const { account } = useEthers();
   const values = useGetter("getUserKey", account);
   let Keys = [];
@@ -31,4 +31,4 @@ const MiddleAndRight = () => {
     </div>
   );
 };
-export default MiddleAndRight;
+export default UserKey;

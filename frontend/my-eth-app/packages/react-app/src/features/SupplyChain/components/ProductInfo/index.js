@@ -6,11 +6,13 @@ const ProductInfo = ({ K }) => {
   return (
     <>
       <button
-        className="button is-info is-inverted "
+        className="button is-info is-light"
         onClick={() => setOpenModal(true)}
       >
-        <i className="fa fa-info" aria-hidden="true"></i>
-        Info
+        <span className="icon">
+          <i className="fa fa-info" aria-hidden="true"></i>
+        </span>
+        <span>Info</span>
       </button>
       {openModal && <Modal setOpenModal={setOpenModal} UserKey={K} />}
     </>
