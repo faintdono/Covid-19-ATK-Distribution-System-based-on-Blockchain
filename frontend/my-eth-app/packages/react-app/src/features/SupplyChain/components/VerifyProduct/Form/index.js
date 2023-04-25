@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Result from "../Result";
 import History from "../../History";
+import LedgerInfo from "../../LedgerInfo";
 
 const Form = () => {
   const [Res, setRes] = useState(false);
@@ -91,6 +92,9 @@ const Form = () => {
         </div>
         <div class="control">
           <History K={Key} />
+        </div>
+        <div class="control">
+          <LedgerInfo K={Key} />
         </div>
       </div>
       <button

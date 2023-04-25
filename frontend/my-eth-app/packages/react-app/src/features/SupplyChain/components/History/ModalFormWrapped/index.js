@@ -27,7 +27,28 @@ const Modal = ({ setOpenModal, UserKey }) => {
     setListAddress([...listAddress, Ledger[0]]);
     exKey = Ledger[5];
     setKey(Ledger[5]);
+  } else if (
+    Ledger[0].toString() === "0x0000000000000000000000000000000000000000" &&
+    listAddress[0] === "0x0000000000000000000000000000000000000000"
+  ) {
+    return (
+      <div className="modal is-active">
+        <div
+          className="modal-background"
+          onClick={() => setOpenModal(false)}
+        ></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title">History</p>
+          </header>
+          <section class="modal-card-body">
+            undefined Key can't have History
+          </section>
+        </div>
+      </div>
+    );
   }
+
   return (
     <div className="modal is-active">
       <div
