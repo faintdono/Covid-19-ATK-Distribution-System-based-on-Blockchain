@@ -69,7 +69,7 @@ const Modal = ({ setOpenModal, Key }) => {
       </div>
     );
   } else if (calculateTime() === "Founded") {
-    if (ledger[0].toString() === "0x0000000000000000000000000000000000000000ๅ") {
+    if (ledger[0].toString() === "0x0000000000000000000000000000000000000000") {
       return (
         <div className="modal is-active">
           <div
