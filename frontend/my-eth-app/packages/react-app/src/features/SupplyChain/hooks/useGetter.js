@@ -9,7 +9,7 @@ const supplyChainInterface = new utils.Interface(abis.SupplyChain);
 const supplyChainAddress = addresses.supplyChain;
 const scContract = new Contract(supplyChainAddress, supplyChainInterface);
 
-const useGeter = (func,arg) => {
+const useGetter = (func,arg) => {
   const { value, error } =
     useCall({
       contract: scContract,
@@ -25,4 +25,4 @@ const useGeter = (func,arg) => {
   return value?.[0];
 };
 
-export default useGeter;
+export default useGetter;

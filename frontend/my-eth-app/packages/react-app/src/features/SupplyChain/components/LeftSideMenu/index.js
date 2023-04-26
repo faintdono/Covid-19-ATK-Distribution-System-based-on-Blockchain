@@ -4,6 +4,7 @@ import { useEthers } from "@usedapp/core";
 import AddProduct from "../AddProduct";
 import SellProduct from "../SellProduct";
 import UpdateLedger from "../UpdateLedger";
+import ReturnProduct from "../ReturnProduct";
 
 const LeftSideMenu = () => {
   const { account } = useEthers();
@@ -40,6 +41,9 @@ const LeftSideMenu = () => {
           </li>
           <li>
             <UpdateLedger />
+          </li>
+          <li>
+            <ReturnProduct />
           </li>
         </ul>
       </aside>
