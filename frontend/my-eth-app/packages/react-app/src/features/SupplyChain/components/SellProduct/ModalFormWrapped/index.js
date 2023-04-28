@@ -3,12 +3,13 @@ import useSellProduct from "../../../hooks/useSellProduct";
 import useGetter from "../../../hooks/useGetter";
 import { useEthers } from "@usedapp/core";
 
-const Modal = ({ setOpenModal }) => {
+
+const Modal = ({ setOpenModal, setErrorOpenModal }) => {
   const { account } = useEthers();
 
   const [LedgerKey, setLedgerKey] = useState("");
 
-  const { send: sellProduct } = useSellProduct();
+  const { send: sellProduct, state: error } = useSellProduct();
   const values = useGetter("getUserKey", account);
   const info = useGetter("getProduct", LedgerKey);
 
@@ -115,7 +116,10 @@ const Modal = ({ setOpenModal }) => {
                 document.getElementById("OrderID").value,
                 document.getElementById("Key").value
               );
-              setOpenModal(false);
+              if (error) {
+                setOpenModal(false);
+                setErrorOpenModal(true)
+              }
             }}
           >
             Submit

@@ -87,7 +87,15 @@ const Form = () => {
             type="text"
             placeholder="0x0000000000000000000000000000000000000000000000000000000000000000"
             id="Key"
-            onChange={() => setKey(document.getElementById("Key").value)}
+            onChange={() => {
+              if (document.getElementById("Key").value === "") {
+                setKey(
+                  "0x0000000000000000000000000000000000000000000000000000000000000000"
+                );
+              } else {
+                setKey(document.getElementById("Key").value);
+              }
+            }}
           />
         </div>
         <div class="control">
