@@ -177,7 +177,7 @@ const Modal = ({ setOpenModal, OrderID }) => {
             </div>
             <div className="field">
               <label className="label">Amount</label>
-              <div className="control">{order[6].toString}</div>
+              <div className="control">{order[6].toString()}</div>
             </div>
             <div className="field">
               <label className="label">Date</label>
