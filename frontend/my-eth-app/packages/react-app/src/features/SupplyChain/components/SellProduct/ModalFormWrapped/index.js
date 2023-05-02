@@ -2,14 +2,13 @@ import React, { useState } from "react";
 import useSellProduct from "../../../hooks/useSellProduct";
 import useGetter from "../../../hooks/useGetter";
 import { useEthers } from "@usedapp/core";
-
+import { set } from "react-hook-form";
 
 const Modal = ({ setOpenModal, setErrorOpenModal }) => {
   const { account } = useEthers();
 
   const [LedgerKey, setLedgerKey] = useState("");
-
-  const { send: sellProduct, state: error } = useSellProduct();
+  const { send: sellProduct, state } = useSellProduct();
   const values = useGetter("getUserKey", account);
   const info = useGetter("getProduct", LedgerKey);
 
@@ -23,6 +22,14 @@ const Modal = ({ setOpenModal, setErrorOpenModal }) => {
   } else {
     product = info;
   }
+
+  if (state.status === "Exception") {
+    setOpenModal(false);
+    setErrorOpenModal(true);
+  } else if (state.status === "Mining") {
+    setOpenModal(false);
+  }
+
   return (
     <div className="modal is-active">
       <div
@@ -116,10 +123,6 @@ const Modal = ({ setOpenModal, setErrorOpenModal }) => {
                 document.getElementById("OrderID").value,
                 document.getElementById("Key").value
               );
-              if (error) {
-                setOpenModal(false);
-                setErrorOpenModal(true)
-              }
             }}
           >
             Submit
